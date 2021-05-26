@@ -24,19 +24,13 @@ namespace TetrisClient
         {
             InitializeComponent();
 
-            Matrix matrix = new Matrix(new int[,]
-                {
-                    { 0, 0, 1 },
-                    { 1, 1, 1 },
-                    { 0, 0, 0 },
-                }
-            );
-            matrix = matrix.Rotate90();
-            
+            BoardManager bm = new BoardManager();
+
+
             int offsetY = 0;
             int offsetX = 0;
 
-            int[,] values = matrix.Value;
+            int[,] values = bm.currentBlock.shape.Value;
             for (int i = 0; i < values.GetLength(0); i++)
             {
                 for (int j = 0; j < values.GetLength(1); j++)
@@ -51,7 +45,7 @@ namespace TetrisClient
                         Height = 25, // Hoogte van een 'cell' in de Grid
                         Stroke = Brushes.White, // De rand
                         StrokeThickness = 1, // Dikte van de rand
-                        Fill = Brushes.Red, // Achtergrondkleur
+                        Fill = bm.currentBlock.color, // Achtergrondkleur
                     };
 
                     TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
