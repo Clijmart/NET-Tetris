@@ -22,11 +22,6 @@ namespace TetrisClient
 
         public Matrix shape { get; set; }
 
-        public Block()
-        {
-
-        }
-
     }
     public enum Tetromino
     {
@@ -67,8 +62,8 @@ namespace TetrisClient
                 case Tetromino.IBlock:
                     block.shape = new Matrix(new int[,]
                         {
-                            { 0, 0, 0, 0 },
                             { 1, 1, 1, 1 },
+                            { 0, 0, 0, 0 },
                             { 0, 0, 0, 0 },
                             { 0, 0, 0, 0 },
                         }
@@ -78,9 +73,9 @@ namespace TetrisClient
                 case Tetromino.JBlock:
                     block.shape = new Matrix(new int[,]
                         {
-                            { 0, 0, 0 },
                             { 1, 1, 1 },
                             { 0, 0, 1 },
+                            { 0, 0, 0 },
                         }
                     );
                     block.color = Brushes.Orange;

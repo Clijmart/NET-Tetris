@@ -26,31 +26,57 @@ namespace TetrisClient
 
             BoardManager bm = new BoardManager();
 
+            drawBlocks(bm);
 
-            int offsetY = 0;
-            int offsetX = 0;
-
-            int[,] values = bm.currentBlock.shape.Value;
-            for (int i = 0; i < values.GetLength(0); i++)
+            void drawBlocks(BoardManager bm)
             {
-                for (int j = 0; j < values.GetLength(1); j++)
+                int offsetY = 0;
+                int offsetX = 0;
+                int[,] currentBlock = bm.currentBlock.shape.Value;
+                int[,] nextBlock = bm.nextBlock.shape.Value;
+                for (int i = 0; i < currentBlock.GetLength(0); i++)
                 {
-                    // Als de waarde niet gelijk is aan 1,
-                    // dan hoeft die niet getekent te worden:
-                    if (values[i, j] != 1) continue;
-
-                    Rectangle rectangle = new Rectangle()
+                    for (int j = 0; j < currentBlock.GetLength(1); j++)
                     {
-                        Width = 25, // Breedte van een 'cell' in de Grid
-                        Height = 25, // Hoogte van een 'cell' in de Grid
-                        Stroke = Brushes.White, // De rand
-                        StrokeThickness = 1, // Dikte van de rand
-                        Fill = bm.currentBlock.color, // Achtergrondkleur
-                    };
+                        // Als de waarde niet gelijk is aan 1,
+                        // dan hoeft die niet getekent te worden:
+                        if (currentBlock[i, j] != 1) continue;
 
-                    TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
-                    Grid.SetRow(rectangle, i + offsetY); // Zet de rij
-                    Grid.SetColumn(rectangle, j + offsetX); // Zet de kolom
+                        Rectangle rectangle = new Rectangle()
+                        {
+                            Width = 25, // Breedte van een 'cell' in de Grid
+                            Height = 25, // Hoogte van een 'cell' in de Grid
+                            Stroke = Brushes.White, // De rand
+                            StrokeThickness = 1, // Dikte van de rand
+                            Fill = bm.currentBlock.color, // Achtergrondkleur
+                        };
+
+                        TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
+                        Grid.SetRow(rectangle, i + offsetY); // Zet de rij
+                        Grid.SetColumn(rectangle, j + offsetX); // Zet de kolom
+                    }
+                }
+                for (int i = 0; i < nextBlock.GetLength(0); i++)
+                {
+                    for (int j = 0; j < nextBlock.GetLength(1); j++)
+                    {
+                        // Als de waarde niet gelijk is aan 1,
+                        // dan hoeft die niet getekent te worden:
+                        if (nextBlock[i, j] != 1) continue;
+
+                        Rectangle rectangle = new Rectangle()
+                        {
+                            Width = 25, // Breedte van een 'cell' in de Grid
+                            Height = 25, // Hoogte van een 'cell' in de Grid
+                            Stroke = Brushes.White, // De rand
+                            StrokeThickness = 1, // Dikte van de rand
+                            Fill = bm.nextBlock.color, // Achtergrondkleur
+                        };
+
+                        NextBlockGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
+                        Grid.SetRow(rectangle, i + offsetY); // Zet de rij
+                        Grid.SetColumn(rectangle, j + offsetX); // Zet de kolom
+                    }
                 }
             }
         }
