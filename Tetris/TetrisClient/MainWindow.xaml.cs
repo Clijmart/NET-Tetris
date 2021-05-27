@@ -26,7 +26,12 @@ namespace TetrisClient
 
             BoardManager bm = new BoardManager();
 
-            drawBlocks(bm);
+            initGame(bm);
+
+            void initGame(BoardManager bm)
+            {
+                drawBlocks(bm);
+            }
 
             void drawBlocks(BoardManager bm)
             {
@@ -74,8 +79,8 @@ namespace TetrisClient
                         };
 
                         NextBlockGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
-                        Grid.SetRow(rectangle, i + offsetY); // Zet de rij
-                        Grid.SetColumn(rectangle, j + offsetX); // Zet de kolom
+                        Grid.SetRow(rectangle, i); // Zet de rij
+                        Grid.SetColumn(rectangle, j); // Zet de kolom
                     }
                 }
             }
