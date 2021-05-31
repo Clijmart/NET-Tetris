@@ -6,13 +6,16 @@
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
         Title="Tetris" Height="427" Width="375"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        KeyDown="Window_KeyDown">
+
+
     <Grid x:Name="MainGrid" Background="LightGray" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Name="TetrisGrid" Background="#f4f4f4" HorizontalAlignment="Left" Width="225">
+        <Grid Name="TetrisGrid" Background="#f4f4f4" HorizontalAlignment="Left" Width="250">
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
@@ -44,7 +47,7 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <Grid Name="NextBlockGrid" Margin="250,0,0,0" Background="#f4f4f4" MinHeight="100" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100">
+        <Grid Name="NextBlockGrid" Margin="265,10,0,0" Background="#f4f4f4" MinHeight="100" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100">
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>

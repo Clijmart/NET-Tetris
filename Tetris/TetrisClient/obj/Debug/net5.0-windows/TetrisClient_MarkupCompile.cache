@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET5_0;NETCOREAPP
 C:\Users\ieman\source\repos\practicum-5-net-2020-ex-gamechane-engineers\Tetris\TetrisClient\App.xaml
-2138221129
+31741014009
 
-6-1754016598
+71465415543
 208-493412205
-MainWindow.xaml;MultiplayerWindow.xaml;
+MainWindow.xaml;MultiplayerWindow.xaml;TetrisControls.xaml;
 
 False
 

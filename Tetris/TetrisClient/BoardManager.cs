@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,13 +14,48 @@ using System.Windows.Shapes;
 
 namespace TetrisClient
 {
-    public class Block
+    public class Block : ICloneable
     {
         public Tetromino name { get; set; }
         public SolidColorBrush color { get; set; }
 
         public Matrix shape { get; set; }
 
+        public int xCord { get; set; }
+        public int yCord { get; set; }
+
+        public Block()
+        {
+            xCord = 4;
+        }
+        public void MoveRight()
+        {
+            xCord += 1;
+        }
+        public void MoveLeft()
+        {
+            xCord -= 1;
+        }
+        public void Rotate()
+        {
+            shape = shape.Rotate90();
+        }
+        public void Place(int[,] tetrisWell)
+        {
+            for (int i = 0; i < shape.Value.GetLength(0); i++)
+            {
+                for (int j = 0; j < shape.Value.GetLength(1); j++)
+                {
+                    if (shape.Value[i, j] != 1) continue;
+                    tetrisWell[i + yCord, j + xCord] = 1;
+                }
+            }
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
     public enum Tetromino
     {
@@ -36,31 +70,38 @@ namespace TetrisClient
 
     public class BoardManager
     {
+
         private static Random randStatus = new Random();
+
+        public int[,] tetrisWell {get; set; }
         public Block currentBlock { get; set; }
         public Block nextBlock { get; set; }
+        public int level { get; set; }
+
+
 
         public BoardManager()
         {
             currentBlock = new Block();
             nextBlock = new Block();
+            tetrisWell = new int[16, 10];
 
-            Array values = Enum.GetValues(typeof(Tetromino));
-            Random random = new Random();
-            currentBlock.name = (Tetromino)values.GetValue(random.Next(values.Length));
-            nextBlock.name = (Tetromino)values.GetValue(random.Next(values.Length));
-            BuildBlock(currentBlock);
-            BuildBlock(nextBlock);
+            BuildBlock();
+            
+            SelectNextBlock();
+            
 
         }
 
 
-        public void BuildBlock(Block block)
+        public void BuildBlock()
         {
-            switch (block.name)
+            Array values = Enum.GetValues(typeof(Tetromino));
+            nextBlock.name = (Tetromino)values.GetValue(randStatus.Next(values.Length));
+            switch (nextBlock.name)
             {
                 case Tetromino.IBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 1, 1, 1, 1 },
                             { 0, 0, 0, 0 },
@@ -68,69 +109,74 @@ namespace TetrisClient
                             { 0, 0, 0, 0 },
                         }
                     );
-                    block.color = Brushes.LimeGreen;
+                    nextBlock.color = Brushes.LimeGreen;
                     return;
                 case Tetromino.JBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 1, 1, 1 },
                             { 0, 0, 1 },
                             { 0, 0, 0 },
                         }
                     );
-                    block.color = Brushes.Orange;
+                    nextBlock.color = Brushes.Orange;
                     return;
                 case Tetromino.LBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 0, 0, 1 },
                             { 1, 1, 1 },
                             { 0, 0, 0 },
                         }
                     );
-                    block.color = Brushes.Blue;
+                    nextBlock.color = Brushes.Blue;
                     return;
                 case Tetromino.OBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 1, 1 },
                             { 1, 1 },
                         }
                     );
-                    block.color = Brushes.Purple;
+                    nextBlock.color = Brushes.Purple;
                     return;
                 case Tetromino.SBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 0, 1, 1 },
                             { 1, 1, 0 },
                             { 0, 0, 0 },
                         }
                     );
-                    block.color = Brushes.Red;
+                    nextBlock.color = Brushes.Red;
                     return;
                 case Tetromino.ZBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 1, 1, 0 },
                             { 0, 1, 1 },
                             { 0, 0, 0 },
                         }
                     );
-                    block.color = Brushes.YellowGreen;
+                    nextBlock.color = Brushes.YellowGreen;
                     return;
                 case Tetromino.TBlock:
-                    block.shape = new Matrix(new int[,]
+                    nextBlock.shape = new Matrix(new int[,]
                         {
                             { 1, 1, 1 },
                             { 0, 1, 0 },
                             { 0, 0, 0 },
                         }
                     );
-                    block.color = Brushes.Cyan;
+                    nextBlock.color = Brushes.Cyan;
                     return;
                 default: return;
             }
+        }
+        public void SelectNextBlock()
+        {
+            currentBlock = (Block) nextBlock.Clone();
+            BuildBlock();
         }
     }
 }
