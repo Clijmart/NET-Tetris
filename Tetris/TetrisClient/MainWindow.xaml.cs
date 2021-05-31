@@ -51,12 +51,6 @@ namespace TetrisClient
         {
             switch (e.Key)
             {
-                case Key.Space:
-                    {
-                        bm.SelectNextBlock();
-                        DrawBlocks(bm);
-                        return;
-                    }
                 case Key.Left:
                     {
                         bm.currentBlock.MoveLeft();
@@ -71,6 +65,13 @@ namespace TetrisClient
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
+                case Key.Down:
+                    {
+                        bm.currentBlock.MoveDown();
+                        DrawBlocks(bm);
+                        System.Diagnostics.Debug.WriteLine(e.Key);
+                        return;
+                    }
                 case Key.Up:
                     {
                         bm.currentBlock.Rotate();
@@ -78,11 +79,12 @@ namespace TetrisClient
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
-                case Key.Down:
+                case Key.Space:
                     {
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         bm.currentBlock.Place(bm.tetrisWell);
                         DrawBlocks(bm);
+                        bm.SelectNextBlock();
                         return;
                     }
             }
@@ -136,15 +138,13 @@ namespace TetrisClient
             {
                 for (int j = 0; j < bm.tetrisWell.GetUpperBound(1) + 1; j++)
                 {
-                    if (bm.tetrisWell[i, j] != 1) continue;
-
                     Rectangle rectangle = new Rectangle()
                     {
                         Width = 25, // Breedte van een 'cell' in de Grid
                         Height = 25, // Hoogte van een 'cell' in de Grid
                         Stroke = Brushes.White, // De rand
                         StrokeThickness = 1, // Dikte van de rand
-                        Fill = Brushes.Red, // Achtergrondkleur
+                        Fill = bm.tetrisWell[i, j], // Achtergrondkleur
                     };
 
                     TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de 

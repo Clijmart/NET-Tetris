@@ -36,18 +36,22 @@ namespace TetrisClient
         {
             xCord -= 1;
         }
+        public void MoveDown()
+        {
+            yCord += 1;
+        }
         public void Rotate()
         {
             shape = shape.Rotate90();
         }
-        public void Place(int[,] tetrisWell)
+        public void Place(SolidColorBrush[,] tetrisWell)
         {
             for (int i = 0; i < shape.Value.GetLength(0); i++)
             {
                 for (int j = 0; j < shape.Value.GetLength(1); j++)
                 {
                     if (shape.Value[i, j] != 1) continue;
-                    tetrisWell[i + yCord, j + xCord] = 1;
+                    tetrisWell[i + yCord, j + xCord] = color;
                 }
             }
         }
@@ -73,7 +77,7 @@ namespace TetrisClient
 
         private static Random randStatus = new Random();
 
-        public int[,] tetrisWell {get; set; }
+        public SolidColorBrush[,] tetrisWell {get; set; }
         public Block currentBlock { get; set; }
         public Block nextBlock { get; set; }
         public int level { get; set; }
@@ -84,7 +88,7 @@ namespace TetrisClient
         {
             currentBlock = new Block();
             nextBlock = new Block();
-            tetrisWell = new int[16, 10];
+            tetrisWell = new SolidColorBrush[16, 10];
 
             BuildBlock();
             
