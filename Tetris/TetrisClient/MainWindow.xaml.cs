@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Media;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace TetrisClient
@@ -27,7 +18,9 @@ namespace TetrisClient
         {
             InitializeComponent();
 
-           /* SoundPlayer player = new SoundPlayer("C:/Users/ieman/source/repos/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
+            //ToDo: Voeg soundtrack toe
+            
+            /* SoundPlayer player = new SoundPlayer("C:/Users/ieman/source/repos/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
             player.Load();
             player.Volume = 10;
             player.Play();
@@ -42,11 +35,20 @@ namespace TetrisClient
             InitGame(bm);
         }
 
+        /// <summary>
+        /// Initializes the game by preparing the board and resetting variables.
+        /// </summary>
+        /// <param name="bm">The BoardManager used in this game.</param>
         void InitGame(BoardManager bm)
         {
-            DrawBlocks(bm);
+            DrawGrids(bm);
         }
 
+        /// <summary>
+        /// Handles the KeyEvents sent by the player.
+        /// </summary>
+        /// <param name="sender">The sender of the KeyEvent.</param>
+        /// <param name="KeyEventArgs">The Arguments that are sent with the KeyEvent.</param>
         void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -54,28 +56,28 @@ namespace TetrisClient
                 case Key.Left:
                     {
                         bm.currentBlock.MoveLeft();
-                        DrawBlocks(bm);
+                        DrawGrids(bm);
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Right:
                     {
                         bm.currentBlock.MoveRight();
-                        DrawBlocks(bm);
+                        DrawGrids(bm);
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Down:
                     {
                         bm.currentBlock.MoveDown();
-                        DrawBlocks(bm);
+                        DrawGrids(bm);
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Up:
                     {
                         bm.currentBlock.Rotate();
-                        DrawBlocks(bm);
+                        DrawGrids(bm);
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
@@ -83,124 +85,94 @@ namespace TetrisClient
                     {
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         bm.currentBlock.Place(bm.tetrisWell);
-                        DrawBlocks(bm);
                         bm.SelectNextBlock();
+                        DrawGrids(bm);
                         return;
                     }
             }
         }
-        void ClearGrid()
+
+        /// <summary>
+        /// Clears all Block Grids.
+        /// </summary>
+        void ClearGrids()
         {
-            for (int i = 0; i < 16; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-
-                    Rectangle rectangle = new Rectangle()
-                    {
-                        Width = 25, // Breedte van een 'cell' in de Grid
-                        Height = 25, // Hoogte van een 'cell' in de Grid
-                        Stroke = Brushes.White, // De rand
-                        StrokeThickness = 1, // Dikte van de rand
-                        Fill = Brushes.White, // Achtergrondkleur
-                    };
-
-                    TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de 
-                    Grid.SetRow(rectangle, i); // Zet de rij
-                    Grid.SetColumn(rectangle, j); // Zet de kolom
-                }
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-
-                    Rectangle rectangle = new Rectangle()
-                    {
-                        Width = 25, // Breedte van een 'cell' in de Grid
-                        Height = 25, // Hoogte van een 'cell' in de Grid
-                        Stroke = Brushes.White, // De rand
-                        StrokeThickness = 1, // Dikte van de rand
-                        Fill = Brushes.White, // Achtergrondkleur
-                    };
-
-                    NextBlockGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de 
-                    Grid.SetRow(rectangle, i); // Zet de rij
-                    Grid.SetColumn(rectangle, j); // Zet de kolom
-                }
-            }
+            TetrisGrid.Children.Clear();
+            NextBlockGrid.Children.Clear();
         }
-        void DrawBlocks(BoardManager bm)
-        {
-            ClearGrid();
 
+        /// <summary>
+        /// Draws all Block Grids.
+        /// </summary>
+        /// <param name="bm">The BoardManager used to draw the grid.</param>
+        void DrawGrids(BoardManager bm)
+        {
+            ClearGrids();
+
+            // Fill the grid by looping through the tetris well.
             for (int i = 0; i < bm.tetrisWell.GetUpperBound(0) + 1; i++)
             {
                 for (int j = 0; j < bm.tetrisWell.GetUpperBound(1) + 1; j++)
                 {
-                    Rectangle rectangle = new Rectangle()
-                    {
-                        Width = 25, // Breedte van een 'cell' in de Grid
-                        Height = 25, // Hoogte van een 'cell' in de Grid
-                        Stroke = Brushes.White, // De rand
-                        StrokeThickness = 1, // Dikte van de rand
-                        Fill = bm.tetrisWell[i, j], // Achtergrondkleur
-                    };
+                    Rectangle rectangle = createRectangle(bm.tetrisWell[i, j]);
 
-                    TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de 
-                    Grid.SetRow(rectangle, i); // Zet de rij
-                    Grid.SetColumn(rectangle, j); // Zet de kolom
+                    TetrisGrid.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i);
+                    Grid.SetColumn(rectangle, j);
                 }
             }
 
+            // Add the current block to the grid.
             int offsetY = bm.currentBlock.yCord;
             int offsetX = bm.currentBlock.xCord;
             int[,] currentBlock = bm.currentBlock.shape.Value;
-            int[,] nextBlock = bm.nextBlock.shape.Value;
             for (int i = 0; i < currentBlock.GetLength(0); i++)
             {
                 for (int j = 0; j < currentBlock.GetLength(1); j++)
                 {
-                    // Als de waarde niet gelijk is aan 1,
-                    // dan hoeft die niet getekent te worden:
                     if (currentBlock[i, j] != 1) continue;
 
-                    Rectangle rectangle = new Rectangle()
-                    {
-                        Width = 25, // Breedte van een 'cell' in de Grid
-                        Height = 25, // Hoogte van een 'cell' in de Grid
-                        Stroke = Brushes.White, // De rand
-                        StrokeThickness = 1, // Dikte van de rand
-                        Fill = bm.currentBlock.color, // Achtergrondkleur
-                    };
+                    Rectangle rectangle = createRectangle(bm.currentBlock.color);
 
-                    TetrisGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
-                    Grid.SetRow(rectangle, i + offsetY); // Zet de rij
-                    Grid.SetColumn(rectangle, j + offsetX); // Zet de kolom
+                    TetrisGrid.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i + offsetY);
+                    Grid.SetColumn(rectangle, j + offsetX);
                 }
             }
+
+            // Add the next block to the grid.
+            int[,] nextBlock = bm.nextBlock.shape.Value;
             for (int i = 0; i < nextBlock.GetLength(0); i++)
             {
                 for (int j = 0; j < nextBlock.GetLength(1); j++)
                 {
-                    // Als de waarde niet gelijk is aan 1,
-                    // dan hoeft die niet getekent te worden:
                     if (nextBlock[i, j] != 1) continue;
 
-                    Rectangle rectangle = new Rectangle()
-                    {
-                        Width = 25, // Breedte van een 'cell' in de Grid
-                        Height = 25, // Hoogte van een 'cell' in de Grid
-                        Stroke = Brushes.White, // De rand
-                        StrokeThickness = 1, // Dikte van de rand
-                        Fill = bm.nextBlock.color, // Achtergrondkleur
-                    };
+                    Rectangle rectangle = createRectangle(bm.nextBlock.color);
 
-                    NextBlockGrid.Children.Add(rectangle); // Voeg de rectangle toe aan de Grid
-                    Grid.SetRow(rectangle, i); // Zet de rij
-                    Grid.SetColumn(rectangle, j); // Zet de kolom
+                    NextBlockGrid.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i);
+                    Grid.SetColumn(rectangle, j);
                 }
             }
+        }
+
+        /// <summary>
+        /// Creates a Rectangle that can be used to draw a cell in the grid.
+        /// </summary>
+        /// <param name="color">The color used to draw the Rectangle.</param>
+        private Rectangle createRectangle(SolidColorBrush color)
+        {
+            Rectangle rectangle = new Rectangle()
+            {
+                Width = 25,
+                Height = 25,
+                Stroke = Brushes.White,
+                StrokeThickness = 1,
+                Fill = color,
+            };
+
+            return rectangle;
         }
     }
 }

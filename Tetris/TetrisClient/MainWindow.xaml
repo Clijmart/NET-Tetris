@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
-        Title="Tetris" Height="427" Width="375"
+        Title="Tetris" Height="450" Width="400"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
 
