@@ -168,21 +168,21 @@ namespace TetrisClient
             switch (tetromino)
             {
                 case Tetromino.IBlock:
-                    return Brushes.LightBlue;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#78F0F0"));
                 case Tetromino.JBlock:
-                    return Brushes.Blue;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#7878F0"));
                 case Tetromino.LBlock:
-                    return Brushes.Orange;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#F0C878"));
                 case Tetromino.OBlock:
-                    return Brushes.Yellow;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#F0F078"));
                 case Tetromino.SBlock:
-                    return Brushes.Green;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#78F078"));
                 case Tetromino.ZBlock:
-                    return Brushes.Red;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#F07878"));
                 case Tetromino.TBlock:
-                    return Brushes.Purple;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#C878F0"));
                 default:
-                    return Brushes.White;
+                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#C878F0"));
             }
         }
     }
