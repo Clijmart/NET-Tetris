@@ -14,10 +14,41 @@ namespace TetrisClient
 
         public BoardManager()
         {
-            currentBlock = new Block();
-            nextBlock = new Block();
             tetrisWell = new SolidColorBrush[16, 10];
-            
+            currentBlock = new Block(tetrisWell);
+            nextBlock = new Block(tetrisWell);
+
+            NextTurn();
+        }
+
+        public void NextTurn()
+        {
+            // ToDo: Implement Filled Row code below, contains bug: After removing filled rows, the next placed block disappears.
+            /*
+            for (int row = 0; row < tetrisWell.GetLength(0); row++)
+            {
+                Boolean rowFilled = true;
+                for (int cell = 0; cell < tetrisWell.GetLength(1); cell++)
+                {
+                    if (tetrisWell[row, cell] == null) rowFilled = false;
+                }
+                if (rowFilled)
+                {
+                    SolidColorBrush[,] newTetrisWell = new SolidColorBrush[tetrisWell.GetLength(0), tetrisWell.GetLength(1)];
+                    for (int i = tetrisWell.GetUpperBound(0), k = tetrisWell.GetUpperBound(0); i >= 0; i--)
+                    {
+                        if (i == row) continue;
+
+                        for (int j = 0; j < tetrisWell.GetLength(1); j++)
+                        {
+                            newTetrisWell[k, j] = tetrisWell[i, j];
+                        }
+                        k--;
+                    }
+                    tetrisWell = newTetrisWell;
+                }
+            }
+            */
             SelectNextBlock();
         }
 
@@ -27,7 +58,7 @@ namespace TetrisClient
         public void SelectNextBlock()
         {
             currentBlock = (Block) nextBlock.Clone();
-            nextBlock = new Block();
+            nextBlock = new Block(tetrisWell);
         }
     }
 }

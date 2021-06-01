@@ -5,6 +5,8 @@ namespace TetrisClient
 {
     public class Block : ICloneable
     {
+        public SolidColorBrush[,] tetrisWell { get; set; }
+
         public Tetromino tetromino { get; set; }
         public SolidColorBrush color { get; set; }
 
@@ -13,9 +15,10 @@ namespace TetrisClient
         public int xCord { get; set; }
         public int yCord { get; set; }
 
-        public Block()
+        public Block(SolidColorBrush[,] tetrisWell)
         {
-            xCord = 4;
+            this.tetrisWell = tetrisWell;
+            xCord = (tetrisWell.GetUpperBound(1) - tetrisWell.GetLowerBound(1)) / 2 - 1; // Center the Block
 
             tetromino = BlockManager.GetRandomTetromino();
             shape = BlockManager.GetTetrominoShape(tetromino);
@@ -39,12 +42,10 @@ namespace TetrisClient
             shape = shape.Rotate90();
         }
 
-
         /// <summary>
         /// Places the Block into the tetris well.
         /// </summary>
-        /// <param name="tetrisWell">The tetris well to place the block into.</param>
-        public void Place(SolidColorBrush[,] tetrisWell)
+        public void Place()
         {
             for (int i = 0; i < shape.Value.GetLength(0); i++)
             {
@@ -76,10 +77,43 @@ namespace TetrisClient
     public static class BlockManager
     {
         /// <summary>
+        /// Checks if the Block can be moved to the specified location in the tetris well.
+        /// </summary>
+        /// <param name="tetrisWell">The tetris well to check the block on.</param>
+        /// <param name="block">The block to check on.</param>
+        public static Boolean CanMove(SolidColorBrush[,] tetrisWell, Block block)
+        {
+            Boolean willCollide = false;
+
+            for (int i = 0; i < block.shape.Value.GetLength(0); i++)
+            {
+                for (int j = 0; j < block.shape.Value.GetLength(1); j++)
+                {
+                    if (block.shape.Value[i, j] != 1) continue;
+
+                    if (block.yCord + i < tetrisWell.GetLowerBound(0) 
+                        || block.yCord + i >= tetrisWell.GetUpperBound(0) + 1 
+                        || block.xCord + j < tetrisWell.GetLowerBound(1) 
+                        || block.xCord + j >= tetrisWell.GetUpperBound(1) + 1)
+                    {
+                        willCollide = true;
+                    }
+                    else if (tetrisWell[block.yCord + i, block.xCord + j] != null)
+                    {
+                        willCollide = true;
+                    }
+                }
+            }
+
+            return !willCollide;
+        }
+
+        /// <summary>
         /// Get a random Tetromino shape.
         /// </summary>
         public static Tetromino GetRandomTetromino()
         {
+            // ToDo: Make it select the 7 different tetrominos every 7 turns, but randomize the order.
             Array values = Enum.GetValues(typeof(Tetromino));
             return (Tetromino)values.GetValue(BoardManager.randStatus.Next(values.Length));
         }
@@ -104,8 +138,8 @@ namespace TetrisClient
                 case Tetromino.JBlock:
                     return new Matrix(new int[,]
                         {
+                                { 1, 0, 0 },
                                 { 1, 1, 1 },
-                                { 0, 0, 1 },
                                 { 0, 0, 0 },
                         }
                     );

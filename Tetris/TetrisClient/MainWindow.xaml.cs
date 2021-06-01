@@ -55,37 +55,62 @@ namespace TetrisClient
             {
                 case Key.Left:
                     {
-                        bm.currentBlock.MoveLeft();
-                        DrawGrids(bm);
+                        Block tempBlock = (Block) bm.currentBlock.Clone();
+                        tempBlock.MoveLeft();
+                        if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
+                        {
+                            bm.currentBlock.MoveLeft();
+                            DrawGrids(bm);
+                        }
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Right:
                     {
-                        bm.currentBlock.MoveRight();
-                        DrawGrids(bm);
+                        Block tempBlock = (Block) bm.currentBlock.Clone();
+                        tempBlock.MoveRight();
+                        if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
+                        {
+                            bm.currentBlock.MoveRight();
+                            DrawGrids(bm);
+                        }
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Down:
                     {
-                        bm.currentBlock.MoveDown();
-                        DrawGrids(bm);
+                        Block tempBlock = (Block) bm.currentBlock.Clone();
+                        tempBlock.MoveDown();
+                        if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
+                        {
+                            bm.currentBlock.MoveDown();
+                            DrawGrids(bm);
+                        } else
+                        {
+                            bm.currentBlock.Place();
+                            bm.NextTurn();
+                            DrawGrids(bm);
+                        }
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Up:
                     {
-                        bm.currentBlock.Rotate();
-                        DrawGrids(bm);
+                        Block tempBlock = (Block)bm.currentBlock.Clone();
+                        tempBlock.Rotate();
+                        if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
+                        {
+                            bm.currentBlock.Rotate();
+                            DrawGrids(bm);
+                        }
                         System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Space:
                     {
                         System.Diagnostics.Debug.WriteLine(e.Key);
-                        bm.currentBlock.Place(bm.tetrisWell);
-                        bm.SelectNextBlock();
+                        bm.currentBlock.Place();
+                        bm.NextTurn();
                         DrawGrids(bm);
                         return;
                     }
@@ -110,9 +135,9 @@ namespace TetrisClient
             ClearGrids();
 
             // Fill the grid by looping through the tetris well.
-            for (int i = 0; i < bm.tetrisWell.GetUpperBound(0) + 1; i++)
+            for (int i = 0; i < bm.tetrisWell.GetLength(0); i++)
             {
-                for (int j = 0; j < bm.tetrisWell.GetUpperBound(1) + 1; j++)
+                for (int j = 0; j < bm.tetrisWell.GetLength(1); j++)
                 {
                     Rectangle rectangle = createRectangle(bm.tetrisWell[i, j]);
 
