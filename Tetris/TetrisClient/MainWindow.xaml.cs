@@ -10,29 +10,6 @@ using System.Windows.Shapes;
 
 namespace TetrisClient
 {
-    public class Sound
-    {
-        private MediaPlayer m_mediaPlayer;
-
-        public void Play(string filename)
-        {
-            m_mediaPlayer = new MediaPlayer();
-            m_mediaPlayer.Open(new Uri(filename));
-            m_mediaPlayer.Play();
-        }
-
-        // `volume` is assumed to be between 0 and 100.
-        public void SetVolume(int volume)
-        {
-            // MediaPlayer volume is a float value between 0 and 1.
-            m_mediaPlayer.Volume = volume / 100.0f;
-        }
-
-        public void Stop()
-        {
-            m_mediaPlayer.Stop();
-        }
-    }
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -46,10 +23,19 @@ namespace TetrisClient
 
             InitializeComponent();
 
-            Sound backgroundMusic = new Sound();
-            backgroundMusic.Play("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
-            backgroundMusic.SetVolume(20);
+            //ToDo: Voeg soundtrack toe
+            /*
+            SoundPlayer player = new SoundPlayer("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
+            player.Load();
+            player.Play();
 
+            bool soundFinished = true;
+            if (soundFinished)
+            {
+                soundFinished = false;
+                Task.Factory.StartNew(() => { player.PlaySync(); soundFinished = true; });
+            }
+            */
             InitGame(bm);
         }
 

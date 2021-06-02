@@ -14,5 +14,11 @@
       <Folder Include="NewFolder1\" />
       <Folder Include="NewFolder1\NewFolder\" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <None Update="resources\Tetris_theme.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 
 </Project>

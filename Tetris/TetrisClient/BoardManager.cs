@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace TetrisClient
 {
+   
     public class BoardManager
     {
         public MainWindow mainWindow { get; set; }
@@ -17,6 +19,8 @@ namespace TetrisClient
         public Boolean running { get; set; }
         public int time { get; set; }
         public int level { get; set; }
+        private SoundManager soundManager { get; set; }
+
 
         public DispatcherTimer dispatcherTimer;
 
@@ -31,6 +35,8 @@ namespace TetrisClient
             time = 0;
             level = 1;
 
+            soundManager = new SoundManager();
+            soundManager.PlayMusic();
             NextTurn();
 
             //  DispatcherTimer setup
