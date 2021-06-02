@@ -1,30 +1,63 @@
 ﻿using System;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace TetrisClient
 {
     public class BoardManager
     {
+        public MainWindow mainWindow { get; set; }
+
         public static Random randStatus = new Random();
 
-        public SolidColorBrush[,] tetrisWell {get; set; }
+        public SolidColorBrush[,] tetrisWell { get; set; }
         public Block currentBlock { get; set; }
         public Block nextBlock { get; set; }
+
+        public Boolean running { get; set; }
+        public int time { get; set; }
         public int level { get; set; }
 
-        public BoardManager()
+        public DispatcherTimer dispatcherTimer;
+
+        public BoardManager(MainWindow mainWindow)
         {
+            this.mainWindow = mainWindow;
+
             tetrisWell = new SolidColorBrush[16, 10];
-            currentBlock = new Block(tetrisWell);
-            nextBlock = new Block(tetrisWell);
+            currentBlock = new Block(this);
+            nextBlock = new Block(this);
+
+            time = 0;
+            level = 1;
 
             NextTurn();
+
+            //  DispatcherTimer setup
+            this.dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            dispatcherTimer.Start();
+
+            running = true;
+        }
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            if (running)
+            {
+                time++;
+
+                if (time % (10 - Math.Min(5, (level + 1) / 10)) == 0)
+                {
+                    currentBlock.MoveDown();
+                    mainWindow.DrawGrids();
+                }
+            }
         }
 
         public void NextTurn()
         {
-            // ToDo: Implement Filled Row code below, contains bug: After removing filled rows, the next placed block disappears.
-            /*
             for (int row = 0; row < tetrisWell.GetLength(0); row++)
             {
                 Boolean rowFilled = true;
@@ -48,7 +81,8 @@ namespace TetrisClient
                     tetrisWell = newTetrisWell;
                 }
             }
-            */
+
+            level++;
             SelectNextBlock();
         }
 
@@ -57,8 +91,15 @@ namespace TetrisClient
         /// </summary>
         public void SelectNextBlock()
         {
-            currentBlock = (Block) nextBlock.Clone();
-            nextBlock = new Block(tetrisWell);
+            currentBlock = (Block)nextBlock.Clone();
+            currentBlock.bm.tetrisWell = tetrisWell;
+            nextBlock = new Block(this);
+        }
+
+        public void EndGame()
+        {
+            running = false;
+            dispatcherTimer.Stop();
         }
     }
 }

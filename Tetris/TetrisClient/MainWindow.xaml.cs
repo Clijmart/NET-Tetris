@@ -39,30 +39,17 @@ namespace TetrisClient
     /// </summary>
     public partial class MainWindow : Window
     {
-        BoardManager bm = new BoardManager();
+        public BoardManager bm { get; set; }
 
         public MainWindow()
         {
+
             InitializeComponent();
 
             Sound backgroundMusic = new Sound();
             backgroundMusic.Play("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
             backgroundMusic.SetVolume(20);
-            Thread.Sleep(10000);
 
-            //ToDo: Voeg soundtrack toe
-            /*
-            SoundPlayer player = new SoundPlayer("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
-            player.Load();
-            player.Play();
-
-            bool soundFinished = true;
-            if (soundFinished)
-            {
-                soundFinished = false;
-                Task.Factory.StartNew(() => { player.PlaySync(); soundFinished = true; });
-            }
-            */
             InitGame(bm);
         }
 
@@ -72,7 +59,9 @@ namespace TetrisClient
         /// <param name="bm">The BoardManager used in this game.</param>
         void InitGame(BoardManager bm)
         {
-            DrawGrids(bm);
+            this.bm = new BoardManager(this);
+
+            DrawGrids();
         }
 
         /// <summary>
@@ -91,9 +80,8 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.MoveLeft();
-                            DrawGrids(bm);
+                            DrawGrids();
                         }
-                        System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Right:
@@ -103,9 +91,8 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.MoveRight();
-                            DrawGrids(bm);
+                            DrawGrids();
                         }
-                        System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Down:
@@ -115,14 +102,13 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.MoveDown();
-                            DrawGrids(bm);
+                            DrawGrids();
                         } else
                         {
                             bm.currentBlock.Place();
                             bm.NextTurn();
-                            DrawGrids(bm);
+                            DrawGrids();
                         }
-                        System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Up:
@@ -132,17 +118,15 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.Rotate();
-                            DrawGrids(bm);
+                            DrawGrids();
                         }
-                        System.Diagnostics.Debug.WriteLine(e.Key);
                         return;
                     }
                 case Key.Space:
                     {
-                        System.Diagnostics.Debug.WriteLine(e.Key);
                         bm.currentBlock.Place();
                         bm.NextTurn();
-                        DrawGrids(bm);
+                        DrawGrids();
                         return;
                     }
             }
@@ -151,7 +135,7 @@ namespace TetrisClient
         /// <summary>
         /// Clears all Block Grids.
         /// </summary>
-        void ClearGrids()
+        public void ClearGrids()
         {
             TetrisGrid.Children.Clear();
             NextBlockGrid.Children.Clear();
@@ -160,8 +144,7 @@ namespace TetrisClient
         /// <summary>
         /// Draws all Block Grids.
         /// </summary>
-        /// <param name="bm">The BoardManager used to draw the grid.</param>
-        void DrawGrids(BoardManager bm)
+        public void DrawGrids()
         {
             ClearGrids();
 

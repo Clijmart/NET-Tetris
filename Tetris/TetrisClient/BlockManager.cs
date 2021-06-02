@@ -5,7 +5,7 @@ namespace TetrisClient
 {
     public class Block : ICloneable
     {
-        public SolidColorBrush[,] tetrisWell { get; set; }
+        public BoardManager bm { get; set; }
 
         public Tetromino tetromino { get; set; }
         public SolidColorBrush color { get; set; }
@@ -15,10 +15,10 @@ namespace TetrisClient
         public int xCord { get; set; }
         public int yCord { get; set; }
 
-        public Block(SolidColorBrush[,] tetrisWell)
+        public Block(BoardManager bm)
         {
-            this.tetrisWell = tetrisWell;
-            xCord = (tetrisWell.GetUpperBound(1) - tetrisWell.GetLowerBound(1)) / 2 - 1; // Center the Block
+            this.bm = bm;
+            xCord = (bm.tetrisWell.GetUpperBound(1) - bm.tetrisWell.GetLowerBound(1)) / 2 - 1; // Center the Block
 
             tetromino = BlockManager.GetRandomTetromino();
             shape = BlockManager.GetTetrominoShape(tetromino);
@@ -35,7 +35,16 @@ namespace TetrisClient
         }
         public void MoveDown()
         {
-            yCord += 1;
+            Block tempBlock = (Block) this.Clone();
+            tempBlock.yCord += 1;
+            if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
+            {
+                this.yCord += 1;
+            }
+            else
+            {
+                this.Place();
+            }
         }
         public void Rotate()
         {
@@ -47,19 +56,52 @@ namespace TetrisClient
         /// </summary>
         public void Place()
         {
-            for (int i = 0; i < shape.Value.GetLength(0); i++)
+            if (BlockManager.CanMove(bm.tetrisWell, this))
             {
-                for (int j = 0; j < shape.Value.GetLength(1); j++)
+                System.Diagnostics.Debug.WriteLine(ColorArrayToString(bm.tetrisWell));
+                for (int i = 0; i < shape.Value.GetLength(0); i++)
                 {
-                    if (shape.Value[i, j] != 1) continue;
-                    tetrisWell[i + yCord, j + xCord] = color;
+                    for (int j = 0; j < shape.Value.GetLength(1); j++)
+                    {
+                        if (shape.Value[i, j] != 1) continue;
+                        bm.tetrisWell[i + yCord, j + xCord] = color;
+                    }
                 }
+                bm.NextTurn();
+            } else
+            {
+                bm.EndGame();
             }
         }
 
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public String ColorArrayToString(SolidColorBrush[,] colorArray)
+        {
+            String output = "[";
+            for (int row = 0; row < colorArray.GetLength(0); row++)
+            {
+                output += "[";
+                for (int col = 0; col < colorArray.GetLength(1); col++)
+                {
+                    if (colorArray[row, col] != null)
+                    {
+                        output += colorArray[row, col].Color.ToString();
+                    } else
+                    {
+                        output += "#FFFFFFFF";
+                    }
+                    if (col != colorArray.GetUpperBound(1)) output += ",";
+                }
+                output += "]\n";
+                if (row != colorArray.GetUpperBound(0)) output += ",";
+            }
+            output += "]";
+
+            return output;
         }
     }
 
