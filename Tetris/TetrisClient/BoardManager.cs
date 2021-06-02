@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace TetrisClient
 {
+   
     public class BoardManager
     {
         public static Random randStatus = new Random();
@@ -11,13 +13,17 @@ namespace TetrisClient
         public Block currentBlock { get; set; }
         public Block nextBlock { get; set; }
         public int level { get; set; }
+        private SoundManager soundManager { get; set; }
+
 
         public BoardManager()
         {
             tetrisWell = new SolidColorBrush[16, 10];
             currentBlock = new Block(tetrisWell);
             nextBlock = new Block(tetrisWell);
+            soundManager = new SoundManager();
 
+            soundManager.PlayMusic();
             NextTurn();
         }
 
@@ -60,5 +66,6 @@ namespace TetrisClient
             currentBlock = (Block) nextBlock.Clone();
             nextBlock = new Block(tetrisWell);
         }
+        
     }
 }
