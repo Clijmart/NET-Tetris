@@ -81,6 +81,7 @@ namespace TetrisClient
         /// </summary>
         /// <param name="tetrisWell">The tetris well to check the block on.</param>
         /// <param name="block">The block to check on.</param>
+        /// <returns>A boolean stating if the block can be moved.</returns>
         public static Boolean CanMove(SolidColorBrush[,] tetrisWell, Block block)
         {
             Boolean willCollide = false;
@@ -91,6 +92,7 @@ namespace TetrisClient
                 {
                     if (block.shape.Value[i, j] != 1) continue;
 
+                    // Grid borders
                     if (block.yCord + i < tetrisWell.GetLowerBound(0) 
                         || block.yCord + i >= tetrisWell.GetUpperBound(0) + 1 
                         || block.xCord + j < tetrisWell.GetLowerBound(1) 
@@ -98,6 +100,7 @@ namespace TetrisClient
                     {
                         willCollide = true;
                     }
+                    // Overlapping cells
                     else if (tetrisWell[block.yCord + i, block.xCord + j] != null)
                     {
                         willCollide = true;
@@ -111,6 +114,7 @@ namespace TetrisClient
         /// <summary>
         /// Get a random Tetromino shape.
         /// </summary>
+        /// <returns>A random Tetromino.</returns>
         public static Tetromino GetRandomTetromino()
         {
             // ToDo: Make it select the 7 different tetrominos every 7 turns, but randomize the order.
@@ -122,6 +126,7 @@ namespace TetrisClient
         /// Get the shape Matrix of a given Tetromino.
         /// </summary>
         /// <param name="tetromino">The Tetromino to find the shape of.</param>
+        /// <returns>The shape Matrix the given Tetromino.</returns>
         public static Matrix GetTetrominoShape(Tetromino tetromino)
         {
             switch (tetromino)
@@ -197,6 +202,7 @@ namespace TetrisClient
         /// Get the color of a given Tetromino.
         /// </summary>
         /// <param name="tetromino">The Tetromino to find the color of.</param>
+        /// <returns>The color of the given Tetromino.</returns>
         public static SolidColorBrush GetTetrominoColor(Tetromino tetromino)
         {
             switch (tetromino)

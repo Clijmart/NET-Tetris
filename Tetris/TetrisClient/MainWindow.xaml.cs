@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Media;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -7,6 +10,30 @@ using System.Windows.Shapes;
 
 namespace TetrisClient
 {
+    public class Sound
+    {
+        private MediaPlayer m_mediaPlayer;
+
+        public void Play(string filename)
+        {
+            m_mediaPlayer = new MediaPlayer();
+            m_mediaPlayer.Open(new Uri(filename));
+            m_mediaPlayer.Play();
+        }
+
+        // `volume` is assumed to be between 0 and 100.
+        public void SetVolume(int volume)
+        {
+            // MediaPlayer volume is a float value between 0 and 1.
+            m_mediaPlayer.Volume = volume / 100.0f;
+        }
+
+        public void Stop()
+        {
+            m_mediaPlayer.Stop();
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -18,11 +45,15 @@ namespace TetrisClient
         {
             InitializeComponent();
 
+            Sound backgroundMusic = new Sound();
+            backgroundMusic.Play("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
+            backgroundMusic.SetVolume(20);
+            Thread.Sleep(10000);
+
             //ToDo: Voeg soundtrack toe
-            
-            /* SoundPlayer player = new SoundPlayer("C:/Users/ieman/source/repos/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
+            /*
+            SoundPlayer player = new SoundPlayer("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
             player.Load();
-            player.Volume = 10;
             player.Play();
 
             bool soundFinished = true;
@@ -30,8 +61,8 @@ namespace TetrisClient
             {
                 soundFinished = false;
                 Task.Factory.StartNew(() => { player.PlaySync(); soundFinished = true; });
-            }*/
-
+            }
+            */
             InitGame(bm);
         }
 
@@ -186,6 +217,7 @@ namespace TetrisClient
         /// Creates a Rectangle that can be used to draw a cell in the grid.
         /// </summary>
         /// <param name="color">The color used to draw the Rectangle.</param>
+        /// <returns>A new Rectangle with the given color.</returns>
         private Rectangle createRectangle(SolidColorBrush color)
         {
             Rectangle rectangle = new Rectangle()
