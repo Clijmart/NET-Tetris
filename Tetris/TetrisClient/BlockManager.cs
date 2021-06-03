@@ -219,18 +219,24 @@ namespace TetrisClient
         }
 
         private static List<Tetromino> BlockBag = new List<Tetromino>(Enum.GetValues(typeof(Tetromino)).Length);
-
         /// <summary>
-        /// Get a random Tetromino shape.
+        /// Get a random Tetromino shape from the BlockBag.
         /// </summary>
-        /// <returns>A random Tetromino.</returns>
+        /// <returns>A Tetromino.</returns>
         public static Tetromino GetRandomTetromino()
         {
-            //BlockBag.Sort(x => BoardManager.randStatus.Next());
+            if (BlockBag.Count == 0)
+            {
+                foreach (Tetromino a in Enum.GetValues(typeof(Tetromino)))
+                {
+                    BlockBag.Add(a);
+                }
+            }
+            int i = BoardManager.randStatus.Next(BlockBag.Count);
+            Tetromino t = BlockBag[i];
+            BlockBag.RemoveAt(i);
 
-            // ToDo: Make it select the 7 different tetrominos every 7 turns, but randomize the order.
-            Array values = Enum.GetValues(typeof(Tetromino));
-            return (Tetromino) values.GetValue(BoardManager.randStatus.Next(values.Length));
+            return t;
         }
 
         /// <summary>
