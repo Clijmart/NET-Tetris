@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -15,6 +16,7 @@ namespace TetrisClient
         public SolidColorBrush[,] tetrisWell { get; set; }
         public Block currentBlock { get; set; }
         public Block nextBlock { get; set; }
+        public Block ghostBlock { get; set; }
 
         public Boolean running { get; set; }
         public int time { get; set; }
@@ -31,6 +33,8 @@ namespace TetrisClient
             tetrisWell = new SolidColorBrush[16, 10];
             currentBlock = new Block(this);
             nextBlock = new Block(this);
+
+            ghostBlock = currentBlock.CalculateGhost();
 
             time = 0;
             level = 1;
@@ -56,7 +60,10 @@ namespace TetrisClient
 
                 if (time % (10 - Math.Min(5, (level + 1) / 10)) == 0)
                 {
-                    currentBlock.MoveDown();
+                    if (!currentBlock.MoveDown())
+                    {
+                        currentBlock.Place();
+                    }
                     mainWindow.DrawGrids();
                 }
             }
@@ -98,6 +105,7 @@ namespace TetrisClient
         public void SelectNextBlock()
         {
             currentBlock = (Block)nextBlock.Clone();
+            ghostBlock = currentBlock.CalculateGhost();
             currentBlock.bm.tetrisWell = tetrisWell;
             nextBlock = new Block(this);
         }

@@ -66,6 +66,7 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.MoveLeft();
+                            bm.ghostBlock = bm.currentBlock.CalculateGhost();
                             DrawGrids();
                         }
                         return;
@@ -77,24 +78,19 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.MoveRight();
+                            bm.ghostBlock = bm.currentBlock.CalculateGhost();
                             DrawGrids();
                         }
                         return;
                     }
                 case Key.Down:
                     {
-                        Block tempBlock = (Block) bm.currentBlock.Clone();
-                        tempBlock.MoveDown();
-                        if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
-                        {
-                            bm.currentBlock.MoveDown();
-                            DrawGrids();
-                        } else
+                        if (!bm.currentBlock.MoveDown())
                         {
                             bm.currentBlock.Place();
-                            bm.NextTurn();
-                            DrawGrids();
                         }
+
+                        DrawGrids();
                         return;
                     }
                 case Key.Up:
@@ -104,14 +100,18 @@ namespace TetrisClient
                         if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
                         {
                             bm.currentBlock.Rotate();
+                            bm.ghostBlock = bm.currentBlock.CalculateGhost();
                             DrawGrids();
                         }
                         return;
                     }
                 case Key.Space:
                     {
-                        bm.currentBlock.Place();
-                        bm.NextTurn();
+                        bm.currentBlock = bm.ghostBlock;
+                        if (!bm.currentBlock.MoveDown())
+                        {
+                            bm.currentBlock.Place();
+                        }
                         DrawGrids();
                         return;
                     }
@@ -139,7 +139,7 @@ namespace TetrisClient
             {
                 for (int j = 0; j < bm.tetrisWell.GetLength(1); j++)
                 {
-                    Rectangle rectangle = createRectangle(bm.tetrisWell[i, j]);
+                    Rectangle rectangle = createRectangle(bm.tetrisWell[i, j], null);
 
                     TetrisGrid.Children.Add(rectangle);
                     Grid.SetRow(rectangle, i);
@@ -147,9 +147,27 @@ namespace TetrisClient
                 }
             }
 
+            // Add the ghost block to the grid.
+            int ghostY = bm.ghostBlock.yCord;
+            int ghostX = bm.ghostBlock.xCord;
+            int[,] ghostBlock = bm.ghostBlock.shape.Value;
+            for (int i = 0; i < ghostBlock.GetLength(0); i++)
+            {
+                for (int j = 0; j < ghostBlock.GetLength(1); j++)
+                {
+                    if (ghostBlock[i, j] != 1) continue;
+
+                    Rectangle rectangle = createRectangle(null, bm.ghostBlock.color);
+
+                    TetrisGrid.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i + ghostY);
+                    Grid.SetColumn(rectangle, j + ghostX);
+                }
+            }
+
             // Add the current block to the grid.
-            int offsetY = bm.currentBlock.yCord;
-            int offsetX = bm.currentBlock.xCord;
+            int currentY = bm.currentBlock.yCord;
+            int currentX = bm.currentBlock.xCord;
             int[,] currentBlock = bm.currentBlock.shape.Value;
             for (int i = 0; i < currentBlock.GetLength(0); i++)
             {
@@ -157,11 +175,11 @@ namespace TetrisClient
                 {
                     if (currentBlock[i, j] != 1) continue;
 
-                    Rectangle rectangle = createRectangle(bm.currentBlock.color);
+                    Rectangle rectangle = createRectangle(bm.currentBlock.color, null);
 
                     TetrisGrid.Children.Add(rectangle);
-                    Grid.SetRow(rectangle, i + offsetY);
-                    Grid.SetColumn(rectangle, j + offsetX);
+                    Grid.SetRow(rectangle, i + currentY);
+                    Grid.SetColumn(rectangle, j + currentX);
                 }
             }
 
@@ -173,7 +191,7 @@ namespace TetrisClient
                 {
                     if (nextBlock[i, j] != 1) continue;
 
-                    Rectangle rectangle = createRectangle(bm.nextBlock.color);
+                    Rectangle rectangle = createRectangle(bm.nextBlock.color, null);
 
                     NextBlockGrid.Children.Add(rectangle);
                     Grid.SetRow(rectangle, i);
@@ -187,15 +205,19 @@ namespace TetrisClient
         /// </summary>
         /// <param name="color">The color used to draw the Rectangle.</param>
         /// <returns>A new Rectangle with the given color.</returns>
-        private Rectangle createRectangle(SolidColorBrush color)
+        private Rectangle createRectangle(SolidColorBrush fill, SolidColorBrush border)
         {
+            if (border == null)
+            {
+                border = Brushes.White;
+            }
             Rectangle rectangle = new Rectangle()
             {
                 Width = 25,
                 Height = 25,
-                Stroke = Brushes.White,
+                Stroke = border,
                 StrokeThickness = 1,
-                Fill = color,
+                Fill = fill,
             };
 
             return rectangle;

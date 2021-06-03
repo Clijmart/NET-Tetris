@@ -33,17 +33,18 @@ namespace TetrisClient
         {
             xCord -= 1;
         }
-        public void MoveDown()
+        public Boolean MoveDown()
         {
             Block tempBlock = (Block) this.Clone();
             tempBlock.yCord += 1;
             if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
             {
                 this.yCord += 1;
+                return true;
             }
             else
             {
-                this.Place();
+                return false;
             }
         }
         public void Rotate()
@@ -77,6 +78,20 @@ namespace TetrisClient
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public Block CalculateGhost()
+        {
+            Boolean reachedEnd = false;
+            Block ghostBlock = (Block) this.Clone();
+            while (!reachedEnd)
+            {
+                if (!ghostBlock.MoveDown())
+                {
+                    reachedEnd = true;
+                }
+            }
+            return ghostBlock;
         }
 
         public String ColorArrayToString(SolidColorBrush[,] colorArray)
