@@ -6,7 +6,6 @@ using System.Windows.Threading;
 
 namespace TetrisClient
 {
-   
     public class BoardManager
     {
         public MainWindow mainWindow { get; set; }
@@ -32,7 +31,7 @@ namespace TetrisClient
         {
             this.mainWindow = mainWindow;
 
-            tetrisWell = new SolidColorBrush[16, 10];
+            tetrisWell = new SolidColorBrush[mainWindow.TetrisGrid.RowDefinitions.Count, mainWindow.TetrisGrid.ColumnDefinitions.Count];
             currentBlock = new Block(this);
             nextBlock = new Block(this);
 
@@ -48,46 +47,55 @@ namespace TetrisClient
 
             //  DispatcherTimer setup
             this.dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             dispatcherTimer.Start();
 
             running = true;
         }
 
-        public int getLevel()
+        /// <summary>
+        /// Calculates the level based on the amount of lines cleared.
+        /// </summary>
+        /// <returns>An integer with the current level.</returns>
+        public int CalculateLevel()
         {
             return linesCleared / 10;
         }
 
+        /// <summary>
+        /// Calculates the score using the amount of filled lines and the current level.
+        /// </summary>
+        /// <param name="linesfilled">The amount of lines to calculate the schore for.</param>
+        /// <param name="level">The current level.</param>
+        /// <returns>An integer with the calculated score.</returns>
         public static int CalculateScore(int linesFilled, int level)
         {
             int s = 0;
-            switch (linesFilled)
+            s += linesFilled switch
             {
-                case 1:
-                    s += 40 * (level + 1);
-                    break;
-                case 2:
-                    s += 100 * (level + 1);
-                    break;
-                case 3:
-                    s += 300 * (level + 1);
-                    break;
-                case 4:
-                    s += 1200 * (level + 1);
-                    break;
-            }
+                1 => 40 * (level + 1),
+                2 => 100 * (level + 1),
+                3 => 300 * (level + 1),
+                4 => 1200 * (level + 1),
+                _ => 420 * linesFilled * (level + 1),
+            };
             return s;
         }
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        /// <summary>
+        /// Runs every timer tick.
+        /// Moves the current block down and updates the window if necessary. 
+        /// </summary>
+        /// <param name="sender">The sender of the KeyEvent.</param>
+        /// <param name="EventArgs">The Arguments that are sent with the TimerTick.</param>
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             if (running)
             {
                 time++;
 
-                if (time % (10 - Math.Min(8, getLevel() * 2)) == 0)
+                if (time % (10 - Math.Min(8, CalculateLevel() * 2)) == 0)
                 {
                     if (!currentBlock.MoveDown())
                     {
@@ -100,6 +108,10 @@ namespace TetrisClient
             }
         }
 
+        /// <summary>
+        /// Prepares the game for the next turn.
+        /// Checks if any rows need to be cleared, increases score and selects the next block.
+        /// </summary>
         public void NextTurn()
         {
             int rowsFilled = 0;
@@ -128,7 +140,7 @@ namespace TetrisClient
                 }
             }
 
-            score += CalculateScore(rowsFilled, getLevel());
+            score += CalculateScore(rowsFilled, CalculateLevel());
 
             linesCleared += rowsFilled;
             SelectNextBlock();
@@ -145,10 +157,14 @@ namespace TetrisClient
             nextBlock = new Block(this);
         }
 
+        /// <summary>
+        /// Ends the game.
+        /// </summary>
         public void EndGame()
         {
             running = false;
             dispatcherTimer.Stop();
+            soundManager.StopMusic();
         }
     }
 }

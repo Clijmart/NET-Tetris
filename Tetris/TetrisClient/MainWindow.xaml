@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
-        Title="Tetris" Height="450" Width="400"
+        Title="Tetris" Height="550" Width="375"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
 
@@ -17,6 +17,10 @@
         </Grid.RowDefinitions>
         <Grid Name="TetrisGrid" Background="#f4f4f4" HorizontalAlignment="Left" Width="250">
             <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>

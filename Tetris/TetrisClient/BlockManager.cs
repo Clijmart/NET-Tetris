@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace TetrisClient
 {
-    public class Block : ICloneable
+    public class Block
     {
         public BoardManager bm { get; set; }
 
@@ -25,14 +25,28 @@ namespace TetrisClient
             color = BlockManager.GetTetrominoColor(tetromino);
         }
 
+        /// <summary>
+        /// Moves the Block right by 1.
+        /// </summary>
+        /// <returns>A boolean stating if the block was moved.</returns>
         public void MoveRight()
         {
             xCord += 1;
         }
+
+        /// <summary>
+        /// Moves the Block left by 1.
+        /// </summary>
+        /// <returns>A boolean stating if the block was moved.</returns>
         public void MoveLeft()
         {
             xCord -= 1;
         }
+
+        /// <summary>
+        /// Moves the Block down by 1.
+        /// </summary>
+        /// <returns>A boolean stating if the block was moved.</returns>
         public Boolean MoveDown()
         {
             Block tempBlock = (Block) this.Clone();
@@ -47,6 +61,10 @@ namespace TetrisClient
                 return false;
             }
         }
+
+        /// <summary>
+        /// Rotates the Block.
+        /// </summary>
         public void Rotate()
         {
             shape = shape.Rotate90();
@@ -75,11 +93,19 @@ namespace TetrisClient
             }
         }
 
-        public object Clone()
+        /// <summary>
+        /// Creates a clone of the Block.
+        /// </summary>
+        /// <returns>A new copy of the Block instance.</returns>
+        public Block Clone()
         {
-            return MemberwiseClone();
+            return (Block) MemberwiseClone();
         }
 
+        /// <summary>
+        /// Returns the ghost of the Block.
+        /// </summary>
+        /// <returns>A new Block instance.</returns>
         public Block CalculateGhost()
         {
             Boolean reachedEnd = false;
@@ -94,6 +120,11 @@ namespace TetrisClient
             return ghostBlock;
         }
 
+        /// <summary>
+        /// Turns an array of colors into a neatly formatted string.
+        /// </summary>
+        /// <param name="colorArray">An array of Brush colors.</param>
+        /// <returns>A string.</returns>
         public String ColorArrayToString(SolidColorBrush[,] colorArray)
         {
             String output = "[";
@@ -120,6 +151,9 @@ namespace TetrisClient
         }
     }
 
+    /// <summary>
+    /// An enum of all available Tetromino shapes.
+    /// </summary>
     public enum Tetromino
     {
         JBlock,
@@ -191,8 +225,8 @@ namespace TetrisClient
                 case Tetromino.IBlock:
                     return new Matrix(new int[,]
                        {
-                                { 1, 1, 1, 1 },
                                 { 0, 0, 0, 0 },
+                                { 1, 1, 1, 1 },
                                 { 0, 0, 0, 0 },
                                 { 0, 0, 0, 0 },
                        }

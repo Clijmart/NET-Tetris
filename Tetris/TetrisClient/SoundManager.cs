@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace TetrisClient
 {
-    class SoundManager
+    public class SoundManager
     {
         public double speed { get; set; }
         public double volume { get;  set; }
@@ -44,7 +44,11 @@ namespace TetrisClient
 
                 }));
             });
-           
+
+        }
+        public void StopMusic()
+        {
+            musicPlayer.Stop();
         }
     }
 }

@@ -23,31 +23,25 @@ namespace TetrisClient
 
             InitializeComponent();
 
-            //ToDo: Voeg soundtrack toe
-            /*
-            SoundPlayer player = new SoundPlayer("C:/Users/martc/OneDrive/Documents/HBO_ICT/NET/Projecten/Practicum5/practicum-5-net-2020-ex-gamechane-engineers/Tetris/TetrisClient/resources/Tetris_theme.wav");
-            player.Load();
-            player.Play();
-
-            bool soundFinished = true;
-            if (soundFinished)
-            {
-                soundFinished = false;
-                Task.Factory.StartNew(() => { player.PlaySync(); soundFinished = true; });
-            }
-            */
-            InitGame(bm);
+            InitGame();
         }
 
         /// <summary>
         /// Initializes the game by preparing the board and resetting variables.
         /// </summary>
-        /// <param name="bm">The BoardManager used in this game.</param>
-        void InitGame(BoardManager bm)
+        public void InitGame()
         {
             this.bm = new BoardManager(this);
 
             DrawGrids();
+        }
+
+        /// <summary>
+        /// Ends the game by clearing the board and resetting variables.
+        /// </summary>
+        public void EndGame()
+        {
+            bm.EndGame();
         }
 
         /// <summary>
@@ -115,9 +109,18 @@ namespace TetrisClient
                         DrawGrids();
                         return;
                     }
+                case Key.Escape:
+                    {
+                        EndGame();
+                        InitGame();
+                        return;
+                    }
             }
         }
 
+        /// <summary>
+        /// Updates all Text.
+        /// </summary>
         public void UpdateText()
         {
             Score.Text = bm.score.ToString();
@@ -209,14 +212,16 @@ namespace TetrisClient
         /// <summary>
         /// Creates a Rectangle that can be used to draw a cell in the grid.
         /// </summary>
-        /// <param name="color">The color used to draw the Rectangle.</param>
-        /// <returns>A new Rectangle with the given color.</returns>
+        /// <param name="fill">The color used to fill the Rectangle.</param>
+        /// <param name="border">The color used for the border of the Rectangle.</param>
+        /// <returns>A new Rectangle with the given colors.</returns>
         private Rectangle createRectangle(SolidColorBrush fill, SolidColorBrush border)
         {
             if (border == null)
             {
                 border = Brushes.White;
             }
+
             Rectangle rectangle = new Rectangle()
             {
                 Width = 25,
