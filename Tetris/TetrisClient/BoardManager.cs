@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace TetrisClient
 {
@@ -91,14 +88,20 @@ namespace TetrisClient
                 bool rowFilled = true;
                 for (int cell = 0; cell < TetrisWell.GetLength(1); cell++)
                 {
-                    if (TetrisWell[row, cell] == null) rowFilled = false;
+                    if (TetrisWell[row, cell] == null)
+                    {
+                        rowFilled = false;
+                    }
                 }
                 if (rowFilled)
                 {
                     SolidColorBrush[,] newTetrisWell = new SolidColorBrush[TetrisWell.GetLength(0), TetrisWell.GetLength(1)];
                     for (int i = TetrisWell.GetUpperBound(0), k = TetrisWell.GetUpperBound(0); i >= 0; i--)
                     {
-                        if (i == row) continue;
+                        if (i == row)
+                        {
+                            continue;
+                        }
 
                         for (int j = 0; j < TetrisWell.GetLength(1); j++)
                         {

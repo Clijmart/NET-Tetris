@@ -218,7 +218,7 @@ namespace TetrisClient
             return !willCollide;
         }
 
-        private static List<Tetromino> BlockBag = new List<Tetromino>(Enum.GetValues(typeof(Tetromino)).Length);
+        private static readonly List<Tetromino> BlockBag = new(Enum.GetValues(typeof(Tetromino)).Length);
         /// <summary>
         /// Get a random Tetromino shape from the BlockBag.
         /// </summary>

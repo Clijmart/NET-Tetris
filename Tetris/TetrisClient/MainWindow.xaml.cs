@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Media;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,7 +28,7 @@ namespace TetrisClient
         /// </summary>
         public void InitGame()
         {
-            this.Bm = new BoardManager(this);
+            Bm = new BoardManager(this);
 
             DrawGrids();
         }
@@ -44,12 +41,13 @@ namespace TetrisClient
             Bm.EndGame();
         }
 
+        // ToDo: Ignore key repeat, check key down on timer.
         /// <summary>
         /// Handles the KeyEvents sent by the player.
         /// </summary>
         /// <param name="sender">The sender of the KeyEvent.</param>
         /// <param name="KeyEventArgs">The Arguments that are sent with the KeyEvent.</param>
-        void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -89,7 +87,7 @@ namespace TetrisClient
                     }
                 case Key.Up:
                     {
-                        Block tempBlock = (Block)Bm.CurrentBlock.Clone();
+                        Block tempBlock = Bm.CurrentBlock.Clone();
                         tempBlock.Rotate();
                         if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
                         {
@@ -115,6 +113,9 @@ namespace TetrisClient
                         InitGame();
                         return;
                     }
+
+                default:
+                    break;
             }
         }
 
@@ -127,7 +128,7 @@ namespace TetrisClient
             Lines.Text = Bm.LinesCleared.ToString();
             Score.Text = Bm.Score.ToString();
 
-            TimeSpan timeSpan = new TimeSpan(0, 0, Bm.Time / 10);
+            TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
         }
 
@@ -168,7 +169,10 @@ namespace TetrisClient
             {
                 for (int j = 0; j < ghostBlock.GetLength(1); j++)
                 {
-                    if (ghostBlock[i, j] != 1) continue;
+                    if (ghostBlock[i, j] != 1)
+                    {
+                        continue;
+                    }
 
                     Rectangle rectangle = CreateRectangle(null, Bm.GhostBlock.Color);
 
@@ -186,7 +190,10 @@ namespace TetrisClient
             {
                 for (int j = 0; j < currentBlock.GetLength(1); j++)
                 {
-                    if (currentBlock[i, j] != 1) continue;
+                    if (currentBlock[i, j] != 1)
+                    {
+                        continue;
+                    }
 
                     Rectangle rectangle = CreateRectangle(Bm.CurrentBlock.Color, null);
 
@@ -202,7 +209,10 @@ namespace TetrisClient
             {
                 for (int j = 0; j < nextBlock.GetLength(1); j++)
                 {
-                    if (nextBlock[i, j] != 1) continue;
+                    if (nextBlock[i, j] != 1)
+                    {
+                        continue;
+                    }
 
                     Rectangle rectangle = CreateRectangle(Bm.NextBlock.Color, null);
 

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -12,7 +7,7 @@ namespace TetrisClient
     public class SoundManager
     {
         public double Speed { get; set; }
-        public double Volume { get;  set; }
+        public double Volume { get; set; }
         private Uri MusicPath { get; set; }
         private MediaPlayer MusicPlayer { get; set; }
 
