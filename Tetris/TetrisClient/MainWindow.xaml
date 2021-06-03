@@ -61,5 +61,7 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
+        <TextBlock Name="Score" Margin="265,180,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
+        <TextBlock Name="Time" Margin="265,270,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
     </Grid>
 </Window>

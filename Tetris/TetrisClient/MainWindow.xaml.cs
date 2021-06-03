@@ -118,6 +118,12 @@ namespace TetrisClient
             }
         }
 
+        public void UpdateText()
+        {
+            Score.Text = bm.score.ToString();
+            Time.Text = (bm.time / 10).ToString();
+        }
+
         /// <summary>
         /// Clears all Block Grids.
         /// </summary>
