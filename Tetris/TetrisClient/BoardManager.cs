@@ -8,50 +8,46 @@ namespace TetrisClient
 {
     public class BoardManager
     {
-        public MainWindow mainWindow { get; set; }
+        public MainWindow MainWindow { get; set; }
 
-        public static Random randStatus = new Random();
+        public static readonly Random randStatus = new();
 
-        public SolidColorBrush[,] tetrisWell { get; set; }
-        public Block currentBlock { get; set; }
-        public Block nextBlock { get; set; }
-        public Block ghostBlock { get; set; }
+        public SolidColorBrush[,] TetrisWell { get; set; }
+        public Block CurrentBlock { get; set; }
+        public Block NextBlock { get; set; }
+        public Block GhostBlock { get; set; }
 
-        public Boolean running { get; set; }
-        public int time { get; set; }
-        public int linesCleared { get; set; }
-        public int score { get; set; }
+        public bool Running { get; set; }
+        public int Time { get; set; }
+        public Timer Timer { get; set; }
+        public int LinesCleared { get; set; }
+        public int Score { get; set; }
 
-        private SoundManager soundManager { get; set; }
+        private SoundManager SoundManager { get; set; }
 
-
-        public DispatcherTimer dispatcherTimer;
 
         public BoardManager(MainWindow mainWindow)
         {
-            this.mainWindow = mainWindow;
+            MainWindow = mainWindow;
 
-            tetrisWell = new SolidColorBrush[mainWindow.TetrisGrid.RowDefinitions.Count, mainWindow.TetrisGrid.ColumnDefinitions.Count];
-            currentBlock = new Block(this);
-            nextBlock = new Block(this);
+            TetrisWell = new SolidColorBrush[mainWindow.TetrisGrid.RowDefinitions.Count, mainWindow.TetrisGrid.ColumnDefinitions.Count];
+            CurrentBlock = new Block(this);
+            NextBlock = new Block(this);
 
-            ghostBlock = currentBlock.CalculateGhost();
+            GhostBlock = CurrentBlock.CalculateGhost();
 
-            time = 0;
-            linesCleared = 0;
-            score = 0;
+            Time = 0;
+            LinesCleared = 0;
+            Score = 0;
 
-            soundManager = new SoundManager();
-            soundManager.PlayMusic();
+            SoundManager = new SoundManager();
+            SoundManager.PlayMusic();
             NextTurn();
 
             //  DispatcherTimer setup
-            this.dispatcherTimer = new DispatcherTimer();
-            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
-            dispatcherTimer.Start();
-
-            running = true;
+            Timer = new(this);
+            Timer.StartTimer();
+            Running = true;
         }
 
         /// <summary>
@@ -60,7 +56,7 @@ namespace TetrisClient
         /// <returns>An integer with the current level.</returns>
         public int CalculateLevel()
         {
-            return linesCleared / 10;
+            return LinesCleared / 10;
         }
 
         /// <summary>
@@ -84,65 +80,40 @@ namespace TetrisClient
         }
 
         /// <summary>
-        /// Runs every timer tick.
-        /// Moves the current block down and updates the window if necessary. 
-        /// </summary>
-        /// <param name="sender">The sender of the KeyEvent.</param>
-        /// <param name="EventArgs">The Arguments that are sent with the TimerTick.</param>
-        private void DispatcherTimer_Tick(object sender, EventArgs e)
-        {
-            if (running)
-            {
-                time++;
-
-                if (time % (10 - Math.Min(8, CalculateLevel() * 2)) == 0)
-                {
-                    if (!currentBlock.MoveDown())
-                    {
-                        currentBlock.Place();
-                    }
-                    mainWindow.DrawGrids();
-                }
-
-                mainWindow.UpdateText();
-            }
-        }
-
-        /// <summary>
         /// Prepares the game for the next turn.
         /// Checks if any rows need to be cleared, increases score and selects the next block.
         /// </summary>
         public void NextTurn()
         {
             int rowsFilled = 0;
-            for (int row = 0; row < tetrisWell.GetLength(0); row++)
+            for (int row = 0; row < TetrisWell.GetLength(0); row++)
             {
-                Boolean rowFilled = true;
-                for (int cell = 0; cell < tetrisWell.GetLength(1); cell++)
+                bool rowFilled = true;
+                for (int cell = 0; cell < TetrisWell.GetLength(1); cell++)
                 {
-                    if (tetrisWell[row, cell] == null) rowFilled = false;
+                    if (TetrisWell[row, cell] == null) rowFilled = false;
                 }
                 if (rowFilled)
                 {
-                    SolidColorBrush[,] newTetrisWell = new SolidColorBrush[tetrisWell.GetLength(0), tetrisWell.GetLength(1)];
-                    for (int i = tetrisWell.GetUpperBound(0), k = tetrisWell.GetUpperBound(0); i >= 0; i--)
+                    SolidColorBrush[,] newTetrisWell = new SolidColorBrush[TetrisWell.GetLength(0), TetrisWell.GetLength(1)];
+                    for (int i = TetrisWell.GetUpperBound(0), k = TetrisWell.GetUpperBound(0); i >= 0; i--)
                     {
                         if (i == row) continue;
 
-                        for (int j = 0; j < tetrisWell.GetLength(1); j++)
+                        for (int j = 0; j < TetrisWell.GetLength(1); j++)
                         {
-                            newTetrisWell[k, j] = tetrisWell[i, j];
+                            newTetrisWell[k, j] = TetrisWell[i, j];
                         }
                         k--;
                     }
-                    tetrisWell = newTetrisWell;
+                    TetrisWell = newTetrisWell;
                     rowsFilled++;
                 }
             }
 
-            score += CalculateScore(rowsFilled, CalculateLevel());
+            Score += CalculateScore(rowsFilled, CalculateLevel());
 
-            linesCleared += rowsFilled;
+            LinesCleared += rowsFilled;
             SelectNextBlock();
         }
 
@@ -151,10 +122,10 @@ namespace TetrisClient
         /// </summary>
         public void SelectNextBlock()
         {
-            currentBlock = (Block) nextBlock.Clone();
-            ghostBlock = currentBlock.CalculateGhost();
-            currentBlock.bm.tetrisWell = tetrisWell;
-            nextBlock = new Block(this);
+            CurrentBlock = NextBlock.Clone();
+            GhostBlock = CurrentBlock.CalculateGhost();
+            CurrentBlock.Bm.TetrisWell = TetrisWell;
+            NextBlock = new Block(this);
         }
 
         /// <summary>
@@ -162,9 +133,9 @@ namespace TetrisClient
         /// </summary>
         public void EndGame()
         {
-            running = false;
-            dispatcherTimer.Stop();
-            soundManager.StopMusic();
+            Running = false;
+            Timer.StopTimer();
+            SoundManager.StopMusic();
         }
     }
 }

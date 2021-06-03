@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
-        Title="Tetris" Height="550" Width="375"
+        Title="Tetris" Height="550" Width="400"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
 
@@ -65,7 +65,9 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <TextBlock Name="Score" Margin="265,180,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
-        <TextBlock Name="Time" Margin="265,270,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
+        <TextBlock Name="Level" Margin="265,150,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
+        <TextBlock Name="Lines" Margin="265,200,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
+        <TextBlock Name="Score" Margin="265,250,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
+        <TextBlock Name="Time" Margin="265,450,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100"/>
     </Grid>
 </Window>

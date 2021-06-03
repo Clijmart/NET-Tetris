@@ -11,17 +11,17 @@ namespace TetrisClient
 {
     public class SoundManager
     {
-        public double speed { get; set; }
-        public double volume { get;  set; }
-        private Uri musicPath { get; set; }
-        private MediaPlayer musicPlayer { get; set; }
+        public double Speed { get; set; }
+        public double Volume { get;  set; }
+        private Uri MusicPath { get; set; }
+        private MediaPlayer MusicPlayer { get; set; }
 
         public SoundManager()
         {
-            speed = 1;
-            volume = 0.1;
-            musicPath = new(Environment.CurrentDirectory + "/resources/Tetris_theme.wav", UriKind.Relative);
-            musicPlayer = new MediaPlayer();
+            Speed = 1;
+            Volume = 0.1;
+            MusicPath = new(Environment.CurrentDirectory + "/resources/Tetris_theme.wav", UriKind.Relative);
+            MusicPlayer = new MediaPlayer();
 
         }
         public async void PlayMusic()
@@ -30,16 +30,16 @@ namespace TetrisClient
             {
                 System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    musicPlayer.Open(musicPath);
-                    musicPlayer.Volume = volume;
-                    musicPlayer.SpeedRatio = speed;
-                    musicPlayer.MediaEnded += new EventHandler(RestartMusic);
-                    musicPlayer.Play();
+                    MusicPlayer.Open(MusicPath);
+                    MusicPlayer.Volume = Volume;
+                    MusicPlayer.SpeedRatio = Speed;
+                    MusicPlayer.MediaEnded += new EventHandler(RestartMusic);
+                    MusicPlayer.Play();
 
                     void RestartMusic(object sender, EventArgs e)
                     {
-                        musicPlayer.Position = TimeSpan.Zero;
-                        musicPlayer.Play();
+                        MusicPlayer.Position = TimeSpan.Zero;
+                        MusicPlayer.Play();
                     }
 
                 }));
@@ -48,7 +48,7 @@ namespace TetrisClient
         }
         public void StopMusic()
         {
-            musicPlayer.Stop();
+            MusicPlayer.Stop();
         }
     }
 }

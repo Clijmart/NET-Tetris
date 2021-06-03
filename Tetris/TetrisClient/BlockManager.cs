@@ -1,28 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace TetrisClient
 {
     public class Block
     {
-        public BoardManager bm { get; set; }
+        public BoardManager Bm { get; set; }
 
-        public Tetromino tetromino { get; set; }
-        public SolidColorBrush color { get; set; }
+        public Tetromino Tetromino { get; set; }
+        public SolidColorBrush Color { get; set; }
 
-        public Matrix shape { get; set; }
+        public Matrix Shape { get; set; }
 
-        public int xCord { get; set; }
-        public int yCord { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public Block(BoardManager bm)
         {
-            this.bm = bm;
-            xCord = (bm.tetrisWell.GetUpperBound(1) - bm.tetrisWell.GetLowerBound(1)) / 2 - 1; // Center the Block
+            Bm = bm;
+            X = ((bm.TetrisWell.GetUpperBound(1) - bm.TetrisWell.GetLowerBound(1)) / 2) - 1; // Center the Block
 
-            tetromino = BlockManager.GetRandomTetromino();
-            shape = BlockManager.GetTetrominoShape(tetromino);
-            color = BlockManager.GetTetrominoColor(tetromino);
+            Tetromino = BlockManager.GetRandomTetromino();
+            Shape = BlockManager.GetTetrominoShape(Tetromino);
+            Color = BlockManager.GetTetrominoColor(Tetromino);
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace TetrisClient
         /// <returns>A boolean stating if the block was moved.</returns>
         public void MoveRight()
         {
-            xCord += 1;
+            X += 1;
         }
 
         /// <summary>
@@ -40,20 +41,20 @@ namespace TetrisClient
         /// <returns>A boolean stating if the block was moved.</returns>
         public void MoveLeft()
         {
-            xCord -= 1;
+            X -= 1;
         }
 
         /// <summary>
         /// Moves the Block down by 1.
         /// </summary>
         /// <returns>A boolean stating if the block was moved.</returns>
-        public Boolean MoveDown()
+        public bool MoveDown()
         {
-            Block tempBlock = (Block) this.Clone();
-            tempBlock.yCord += 1;
-            if (BlockManager.CanMove(bm.tetrisWell, tempBlock))
+            Block tempBlock = Clone();
+            tempBlock.Y += 1;
+            if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
             {
-                this.yCord += 1;
+                Y += 1;
                 return true;
             }
             else
@@ -67,7 +68,7 @@ namespace TetrisClient
         /// </summary>
         public void Rotate()
         {
-            shape = shape.Rotate90();
+            Shape = Shape.Rotate90();
         }
 
         /// <summary>
@@ -75,21 +76,26 @@ namespace TetrisClient
         /// </summary>
         public void Place()
         {
-            if (BlockManager.CanMove(bm.tetrisWell, this))
+            if (BlockManager.CanMove(Bm.TetrisWell, this))
             {
-                System.Diagnostics.Debug.WriteLine(ColorArrayToString(bm.tetrisWell));
-                for (int i = 0; i < shape.Value.GetLength(0); i++)
+                System.Diagnostics.Debug.WriteLine(ColorArrayToString(Bm.TetrisWell));
+                for (int i = 0; i < Shape.Value.GetLength(0); i++)
                 {
-                    for (int j = 0; j < shape.Value.GetLength(1); j++)
+                    for (int j = 0; j < Shape.Value.GetLength(1); j++)
                     {
-                        if (shape.Value[i, j] != 1) continue;
-                        bm.tetrisWell[i + yCord, j + xCord] = color;
+                        if (Shape.Value[i, j] != 1)
+                        {
+                            continue;
+                        }
+
+                        Bm.TetrisWell[i + Y, j + X] = Color;
                     }
                 }
-                bm.NextTurn();
-            } else
+                Bm.NextTurn();
+            }
+            else
             {
-                bm.EndGame();
+                Bm.EndGame();
             }
         }
 
@@ -108,8 +114,8 @@ namespace TetrisClient
         /// <returns>A new Block instance.</returns>
         public Block CalculateGhost()
         {
-            Boolean reachedEnd = false;
-            Block ghostBlock = (Block) this.Clone();
+            bool reachedEnd = false;
+            Block ghostBlock = Clone();
             while (!reachedEnd)
             {
                 if (!ghostBlock.MoveDown())
@@ -125,9 +131,9 @@ namespace TetrisClient
         /// </summary>
         /// <param name="colorArray">An array of Brush colors.</param>
         /// <returns>A string.</returns>
-        public String ColorArrayToString(SolidColorBrush[,] colorArray)
+        public static string ColorArrayToString(SolidColorBrush[,] colorArray)
         {
-            String output = "[";
+            string output = "[";
             for (int row = 0; row < colorArray.GetLength(0); row++)
             {
                 output += "[";
@@ -136,14 +142,21 @@ namespace TetrisClient
                     if (colorArray[row, col] != null)
                     {
                         output += colorArray[row, col].Color.ToString();
-                    } else
+                    }
+                    else
                     {
                         output += "#FFFFFFFF";
                     }
-                    if (col != colorArray.GetUpperBound(1)) output += ",";
+                    if (col != colorArray.GetUpperBound(1))
+                    {
+                        output += ",";
+                    }
                 }
                 output += "]\n";
-                if (row != colorArray.GetUpperBound(0)) output += ",";
+                if (row != colorArray.GetUpperBound(0))
+                {
+                    output += ",";
+                }
             }
             output += "]";
 
@@ -173,26 +186,29 @@ namespace TetrisClient
         /// <param name="tetrisWell">The tetris well to check the block on.</param>
         /// <param name="block">The block to check on.</param>
         /// <returns>A boolean stating if the block can be moved.</returns>
-        public static Boolean CanMove(SolidColorBrush[,] tetrisWell, Block block)
+        public static bool CanMove(SolidColorBrush[,] tetrisWell, Block block)
         {
-            Boolean willCollide = false;
+            bool willCollide = false;
 
-            for (int i = 0; i < block.shape.Value.GetLength(0); i++)
+            for (int i = 0; i < block.Shape.Value.GetLength(0); i++)
             {
-                for (int j = 0; j < block.shape.Value.GetLength(1); j++)
+                for (int j = 0; j < block.Shape.Value.GetLength(1); j++)
                 {
-                    if (block.shape.Value[i, j] != 1) continue;
+                    if (block.Shape.Value[i, j] != 1)
+                    {
+                        continue;
+                    }
 
                     // Grid borders
-                    if (block.yCord + i < tetrisWell.GetLowerBound(0) 
-                        || block.yCord + i >= tetrisWell.GetUpperBound(0) + 1 
-                        || block.xCord + j < tetrisWell.GetLowerBound(1) 
-                        || block.xCord + j >= tetrisWell.GetUpperBound(1) + 1)
+                    if (block.Y + i < tetrisWell.GetLowerBound(0)
+                        || block.Y + i >= tetrisWell.GetUpperBound(0) + 1
+                        || block.X + j < tetrisWell.GetLowerBound(1)
+                        || block.X + j >= tetrisWell.GetUpperBound(1) + 1)
                     {
                         willCollide = true;
                     }
                     // Overlapping cells
-                    else if (tetrisWell[block.yCord + i, block.xCord + j] != null)
+                    else if (tetrisWell[block.Y + i, block.X + j] != null)
                     {
                         willCollide = true;
                     }
@@ -202,15 +218,19 @@ namespace TetrisClient
             return !willCollide;
         }
 
+        private static List<Tetromino> BlockBag = new List<Tetromino>(Enum.GetValues(typeof(Tetromino)).Length);
+
         /// <summary>
         /// Get a random Tetromino shape.
         /// </summary>
         /// <returns>A random Tetromino.</returns>
         public static Tetromino GetRandomTetromino()
         {
+            //BlockBag.Sort(x => BoardManager.randStatus.Next());
+
             // ToDo: Make it select the 7 different tetrominos every 7 turns, but randomize the order.
             Array values = Enum.GetValues(typeof(Tetromino));
-            return (Tetromino)values.GetValue(BoardManager.randStatus.Next(values.Length));
+            return (Tetromino) values.GetValue(BoardManager.randStatus.Next(values.Length));
         }
 
         /// <summary>
@@ -220,73 +240,65 @@ namespace TetrisClient
         /// <returns>The shape Matrix the given Tetromino.</returns>
         public static Matrix GetTetrominoShape(Tetromino tetromino)
         {
-            switch (tetromino)
+            return tetromino switch
             {
-                case Tetromino.IBlock:
-                    return new Matrix(new int[,]
-                       {
+                Tetromino.IBlock => new Matrix(new int[,]
+                                      {
                                 { 0, 0, 0, 0 },
                                 { 1, 1, 1, 1 },
                                 { 0, 0, 0, 0 },
                                 { 0, 0, 0, 0 },
-                       }
-                   );
-                case Tetromino.JBlock:
-                    return new Matrix(new int[,]
-                        {
+                                      }
+                                  ),
+                Tetromino.JBlock => new Matrix(new int[,]
+                   {
                                 { 1, 0, 0 },
                                 { 1, 1, 1 },
                                 { 0, 0, 0 },
-                        }
-                    );
-                case Tetromino.LBlock:
-                    return new Matrix(new int[,]
-                        {
+                   }
+               ),
+                Tetromino.LBlock => new Matrix(new int[,]
+                  {
                                 { 0, 0, 1 },
                                 { 1, 1, 1 },
                                 { 0, 0, 0 },
-                        }
-                    );
-                case Tetromino.OBlock:
-                    return new Matrix(new int[,]
-                        {
+                  }
+              ),
+                Tetromino.OBlock => new Matrix(new int[,]
+                  {
                                 { 1, 1 },
                                 { 1, 1 },
-                        }
-                    );
-                case Tetromino.SBlock:
-                    return new Matrix(new int[,]
-                        {
+                  }
+              ),
+                Tetromino.SBlock => new Matrix(new int[,]
+                  {
                                 { 0, 1, 1 },
                                 { 1, 1, 0 },
                                 { 0, 0, 0 },
-                        }
-                    );
-                case Tetromino.ZBlock:
-                    return new Matrix(new int[,]
-                        {
+                  }
+              ),
+                Tetromino.ZBlock => new Matrix(new int[,]
+                  {
                                 { 1, 1, 0 },
                                 { 0, 1, 1 },
                                 { 0, 0, 0 },
-                        }
-                    );
-                case Tetromino.TBlock:
-                    return new Matrix(new int[,]
-                        {
+                  }
+              ),
+                Tetromino.TBlock => new Matrix(new int[,]
+                  {
                                 { 1, 1, 1 },
                                 { 0, 1, 0 },
                                 { 0, 0, 0 },
-                        }
-                    );
-                default:
-                    return new Matrix(new int[,]
-                        {
+                  }
+              ),
+                _ => new Matrix(new int[,]
+                  {
                                 { 0, 0, 0 },
                                 { 0, 0, 0 },
                                 { 0, 0, 0 },
-                        }
-                    );
-            }
+                  }
+              ),
+            };
         }
 
         /// <summary>
@@ -296,25 +308,17 @@ namespace TetrisClient
         /// <returns>The color of the given Tetromino.</returns>
         public static SolidColorBrush GetTetrominoColor(Tetromino tetromino)
         {
-            switch (tetromino)
+            return tetromino switch
             {
-                case Tetromino.IBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#78F0F0"));
-                case Tetromino.JBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#7878F0"));
-                case Tetromino.LBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#F0C878"));
-                case Tetromino.OBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#F0F078"));
-                case Tetromino.SBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#78F078"));
-                case Tetromino.ZBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#F07878"));
-                case Tetromino.TBlock:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#C878F0"));
-                default:
-                    return (SolidColorBrush)(new BrushConverter().ConvertFrom("#C878F0"));
-            }
+                Tetromino.IBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#78F0F0"),
+                Tetromino.JBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#7878F0"),
+                Tetromino.LBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#F0C878"),
+                Tetromino.OBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#F0F078"),
+                Tetromino.SBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#78F078"),
+                Tetromino.ZBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#F07878"),
+                Tetromino.TBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#C878F0"),
+                _ => (SolidColorBrush) new BrushConverter().ConvertFrom("#C878F0"),
+            };
         }
     }
 }
