@@ -41,7 +41,6 @@ namespace TetrisClient
             Bm.EndGame();
         }
 
-        // ToDo: Ignore key repeat, check key down on timer.
         /// <summary>
         /// Handles the KeyEvents sent by the player.
         /// </summary>
@@ -49,6 +48,12 @@ namespace TetrisClient
         /// <param name="KeyEventArgs">The Arguments that are sent with the KeyEvent.</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.IsRepeat && Bm.BlockRepeat)
+            {
+                return;
+            }
+            Bm.BlockRepeat = false;
+
             switch (e.Key)
             {
                 case Key.Left:

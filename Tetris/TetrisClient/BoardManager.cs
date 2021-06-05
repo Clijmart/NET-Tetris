@@ -20,6 +20,8 @@ namespace TetrisClient
         public int LinesCleared { get; set; }
         public int Score { get; set; }
 
+        public bool BlockRepeat { get; set; }
+
         private SoundManager SoundManager { get; set; }
 
 
@@ -82,6 +84,8 @@ namespace TetrisClient
         /// </summary>
         public void NextTurn()
         {
+            BlockRepeat = true;
+
             int rowsFilled = 0;
             for (int row = 0; row < TetrisWell.GetLength(0); row++)
             {
