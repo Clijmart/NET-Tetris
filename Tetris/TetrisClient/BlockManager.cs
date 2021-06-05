@@ -30,18 +30,34 @@ namespace TetrisClient
         /// Moves the Block right by 1.
         /// </summary>
         /// <returns>A boolean stating if the block was moved.</returns>
-        public void MoveRight()
+        public bool MoveRight()
         {
-            X += 1;
+            Block tempBlock = Clone();
+            tempBlock.X += 1;
+            if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
+            {
+                X += 1;
+                Bm.GhostBlock = CalculateGhost();
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
         /// Moves the Block left by 1.
         /// </summary>
         /// <returns>A boolean stating if the block was moved.</returns>
-        public void MoveLeft()
+        public bool MoveLeft()
         {
-            X -= 1;
+            Block tempBlock = Clone();
+            tempBlock.X -= 1;
+            if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
+            {
+                X -= 1;
+                Bm.GhostBlock = CalculateGhost();
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -66,9 +82,39 @@ namespace TetrisClient
         /// <summary>
         /// Rotates the Block.
         /// </summary>
-        public void Rotate()
+        /// <returns>A boolean stating if the block was rotated.</returns>
+        public bool Rotate()
         {
-            Shape = Shape.Rotate90();
+            bool foundRotation = false;
+            
+            // The locations to check at
+            var tryX = new List<int> { 0, 1, -1 };
+            if (Tetromino == Tetromino.IBlock)
+            {
+                tryX.AddRange(new int[] { 2, -2 });
+            }
+
+            Block tempBlock = Clone();
+            tempBlock.Shape = tempBlock.Shape.Rotate90();
+            
+            foreach (int x in tryX)
+            {
+                tempBlock.X = X + x;
+                if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
+                {
+                    foundRotation = true;
+                    break;
+                }
+            }
+            
+            if (foundRotation)
+            {
+                X = tempBlock.X;
+                Shape = tempBlock.Shape;
+                Bm.GhostBlock = CalculateGhost();
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

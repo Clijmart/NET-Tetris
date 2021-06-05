@@ -58,24 +58,16 @@ namespace TetrisClient
             {
                 case Key.Left:
                     {
-                        Block tempBlock = Bm.CurrentBlock.Clone();
-                        tempBlock.MoveLeft();
-                        if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
+                        if (Bm.CurrentBlock.MoveLeft())
                         {
-                            Bm.CurrentBlock.MoveLeft();
-                            Bm.GhostBlock = Bm.CurrentBlock.CalculateGhost();
                             DrawGrids();
                         }
                         return;
                     }
                 case Key.Right:
                     {
-                        Block tempBlock = Bm.CurrentBlock.Clone();
-                        tempBlock.MoveRight();
-                        if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
+                        if (Bm.CurrentBlock.MoveRight())
                         {
-                            Bm.CurrentBlock.MoveRight();
-                            Bm.GhostBlock = Bm.CurrentBlock.CalculateGhost();
                             DrawGrids();
                         }
                         return;
@@ -92,12 +84,8 @@ namespace TetrisClient
                     }
                 case Key.Up:
                     {
-                        Block tempBlock = Bm.CurrentBlock.Clone();
-                        tempBlock.Rotate();
-                        if (BlockManager.CanMove(Bm.TetrisWell, tempBlock))
+                        if (Bm.CurrentBlock.Rotate())
                         {
-                            Bm.CurrentBlock.Rotate();
-                            Bm.GhostBlock = Bm.CurrentBlock.CalculateGhost();
                             DrawGrids();
                         }
                         return;
