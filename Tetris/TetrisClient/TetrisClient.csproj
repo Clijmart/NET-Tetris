@@ -5,18 +5,31 @@
         <TargetFramework>net5.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="NewFolder1\**" />
+      <EmbeddedResource Remove="NewFolder1\**" />
+      <None Remove="NewFolder1\**" />
+      <Page Remove="NewFolder1\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Menu.png" />
+      <None Remove="resources\Menu.png" />
+      <None Remove="resources\SplashScreen.png" />
+    </ItemGroup>
     
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.0-preview.2.21154.6" />
     </ItemGroup>
     
     <ItemGroup>
-      <Folder Include="NewFolder1\" />
-      <Folder Include="NewFolder1\NewFolder\" />
+      <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
     
     <ItemGroup>
-      <None Include="..\.editorconfig" Link=".editorconfig" />
+      <Resource Include="Menu.png" />
+      <SplashScreen Include="resources\SplashScreen.png" />
     </ItemGroup>
     
     <ItemGroup>
