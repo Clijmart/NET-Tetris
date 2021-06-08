@@ -14,30 +14,7 @@ namespace TetrisClient
         public MultiplayerWindow()
         {
             InitializeComponent();
-
-            // De url waar de meegeleverde TetrisHub op draait:
-            string url = "http://127.0.0.1:5000/TetrisHub"; 
-            
-            // De Builder waarmee de connectie aangemaakt wordt:
-            _connection = new HubConnectionBuilder()
-                .WithUrl(url)
-                .WithAutomaticReconnect()
-                .Build();
-          
-            // De eerste paramater moet gelijk zijn met de methodenaam in TetrisHub.cs
-            // Wat er tussen de <..> staat bepaald wat de type van de paramater `seed` is.
-            // Op deze manier loopt het onderstaande gelijk met de methode in TetrisHub.cs.
-            _connection.On<int>("ReadyUp", seed =>
-            {
-                // Seed van de andere client:
-                P2Random = new Random(seed);
-                MessageBox.Show(seed.ToString());
-            });
-            
-            // Let op: het starten van de connectie moet *nadat* alle event listeners zijn gezet!
-            // Als de methode waarin dit voorkomt al `async` (asynchroon) is, dan kan `Task.Run` weggehaald worden.
-            // In het startersproject staat dit in de constructor, daarom is dit echter wel nodig:
-            Task.Run(async () => await _connection.StartAsync());
+       
         }
 
         // Events kunnen `async` zijn in WPF:
@@ -63,6 +40,50 @@ namespace TetrisClient
             Menu menu = new Menu();
             menu.Show();
             Close();
+        }
+        private void ConnectButton(object sender, RoutedEventArgs e)
+        {
+            string url = "http://" + InputField.Text + "/TetrisHub";
+            System.Diagnostics.Debug.WriteLine(url);
+
+            try
+            {
+                _connection = new HubConnectionBuilder()
+                .WithUrl(url)
+                .WithAutomaticReconnect()
+                .Build();
+
+                // De eerste paramater moet gelijk zijn met de methodenaam in TetrisHub.cs
+                // Wat er tussen de <..> staat bepaald wat de type van de paramater `seed` is.
+                // Op deze manier loopt het onderstaande gelijk met de methode in TetrisHub.cs.
+                _connection.On<int>("ReadyUp", seed =>
+                {
+                    // Seed van de andere client:
+                    P2Random = new Random(seed);
+                    MessageBox.Show(seed.ToString());
+                });
+
+                // Let op: het starten van de connectie moet *nadat* alle event listeners zijn gezet!
+                // Als de methode waarin dit voorkomt al `async` (asynchroon) is, dan kan `Task.Run` weggehaald worden.
+                // In het startersproject staat dit in de constructor, daarom is dit echter wel nodig:
+                Task.Run(async () => await _connection.StartAsync());
+
+                if (_connection.State.Equals(HubConnectionState.Connected))
+                {
+                    Status.Content = "Connected!";
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine(_connection.State);
+                    Status.Content = "Can't connect to given IP";
+                }
+
+            } catch(Exception er)
+            {
+                Status.Content = "Not a valid IP";
+            }
+
+            
         }
     }
 }

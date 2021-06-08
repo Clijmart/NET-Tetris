@@ -7,8 +7,10 @@
         mc:Ignorable="d"
         Title="MultiplayerWindow"  Height="550" Width="400">
     <Grid>
-        <Button Content="Ready up!" Click="StartGame_OnClick" Margin="76,254,92,224" Background="#FF2F7FDE"></Button>
-        <Label Name="Status" Content="Waiting for Connection..." HorizontalAlignment="Center" Margin="0,156,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <Button Content="Ready up!" Click="StartGame_OnClick" Margin="84,253,84,225" Background="#FF2F7FDE"></Button>
+        <Label Name="Status" Content="Waiting for Connection..." HorizontalAlignment="Center" Margin="0,0,0,419" VerticalAlignment="Bottom" Height="25" Width="142"/>
         <Button Content="&#xE112; Go Back" Click="GoBackButton" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="27" Width="78" Background="{x:Null}" Cursor="Hand" FontFamily="Segoe UI Symbol" Foreground="#FF7C7C7C" BorderBrush="{x:Null}"/>
+        <TextBox HorizontalAlignment="Center" Name="InputField" TextAlignment="Center"  Margin="0,0,0,383" Text="Enter Server IP..." TextWrapping="Wrap" VerticalAlignment="Bottom" Height="21" Width="212" Cursor="IBeam"/>
+        <Button Content="Connect" Click="ConnectButton" Margin="150,0,150,328" Background="#FF2F7FDE" Height="38" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>
