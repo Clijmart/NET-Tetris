@@ -57,5 +57,11 @@ namespace TetrisClient
             // Hier geven we de int mee die de methode `ReadyUp` verwacht.
             await _connection.InvokeAsync("ReadyUp", seed);
         }
+        private void GoBackButton(object sender, RoutedEventArgs e)
+        {
+            Menu menu = new Menu();
+            menu.Show();
+            Close();
+        }
     }
 }
