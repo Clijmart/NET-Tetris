@@ -27,7 +27,13 @@ namespace TetrisClient
         {
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
-            this.Close();
+            Close();
+        }
+        private void ButtonMultiPlayer(object sender, RoutedEventArgs e)
+        {
+            MultiplayerWindow multiplayerWindow = new MultiplayerWindow();
+            multiplayerWindow.Show();
+            Close();
         }
     }
 }

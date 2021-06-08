@@ -41,6 +41,14 @@ namespace TetrisClient
             });
 
         }
+        public void IncreaseSpeed()
+        {
+            if(Speed <= 1.15)
+            {
+                Speed = Speed + 0.03;
+                MusicPlayer.SpeedRatio = Speed;
+            }
+        }
         public void StopMusic()
         {
             MusicPlayer.Stop();

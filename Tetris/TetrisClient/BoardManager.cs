@@ -15,6 +15,8 @@ namespace TetrisClient
         public Block GhostBlock { get; set; }
 
         public bool Running { get; set; }
+        private int Level { get; set; }
+        private int PreviousLevel { get; set; }
         public int Time { get; set; }
         public Timer Timer { get; set; }
         public int LinesCleared { get; set; }
@@ -55,7 +57,18 @@ namespace TetrisClient
         /// <returns>An integer with the current level.</returns>
         public int CalculateLevel()
         {
-            return LinesCleared / 10;
+            Level = LinesCleared / 10;
+            IncreaseSpeedWithLevel();
+            return Level;
+        }
+
+        public void IncreaseSpeedWithLevel()
+        {
+            if(PreviousLevel != Level)
+            {
+                PreviousLevel = Level;
+                SoundManager.IncreaseSpeed();
+            }
         }
 
         /// <summary>

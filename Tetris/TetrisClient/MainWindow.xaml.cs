@@ -40,6 +40,15 @@ namespace TetrisClient
         {
             Bm.EndGame();
         }
+        private void ExitButton(object sender, RoutedEventArgs e)
+        {
+            Bm.EndGame();
+
+            Menu menu = new Menu();
+            menu.Show();
+
+            Close();
+        }
 
         /// <summary>
         /// Handles the KeyEvents sent by the player.
