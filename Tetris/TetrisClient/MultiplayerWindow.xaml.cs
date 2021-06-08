@@ -23,7 +23,7 @@ namespace TetrisClient
                 .WithUrl(url)
                 .WithAutomaticReconnect()
                 .Build();
-            
+          
             // De eerste paramater moet gelijk zijn met de methodenaam in TetrisHub.cs
             // Wat er tussen de <..> staat bepaald wat de type van de paramater `seed` is.
             // Op deze manier loopt het onderstaande gelijk met de methode in TetrisHub.cs.
@@ -48,7 +48,8 @@ namespace TetrisClient
             {
                 return;
             }
-            
+
+            Status.Content = "Connected!";
             int seed = Guid.NewGuid().GetHashCode();
             
             P1Random = new Random(seed);
