@@ -16,7 +16,7 @@ namespace TetrisClient
         public Timer(BoardManager bm)
         {
             Bm = bm;
-            DispatcherTimer = new DispatcherTimer();
+            DispatcherTimer = new DispatcherTimer(DispatcherPriority.Send);
         }
 
         public async void StartTimer()
