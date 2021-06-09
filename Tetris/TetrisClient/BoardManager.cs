@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Media;
 
 namespace TetrisClient
@@ -6,6 +7,7 @@ namespace TetrisClient
     public class BoardManager
     {
         public MainWindow MainWindow { get; set; }
+        public MultiplayerWindow MultiplayerWindow { get; set; }
 
         public static readonly Random randStatus = new();
 
@@ -26,12 +28,22 @@ namespace TetrisClient
 
         private SoundManager SoundManager { get; set; }
 
+        public BoardManager(MultiplayerWindow multiplayerWindow)
+        {
+            MultiplayerWindow = multiplayerWindow;
+            TetrisWell = new SolidColorBrush[MultiplayerWindow.TetrisGridP1.RowDefinitions.Count, MultiplayerWindow.TetrisGridP1.ColumnDefinitions.Count];
+            InitBoardManager();
+        }
 
         public BoardManager(MainWindow mainWindow)
         {
             MainWindow = mainWindow;
+            TetrisWell = new SolidColorBrush[MainWindow.TetrisGrid.RowDefinitions.Count, MainWindow.TetrisGrid.ColumnDefinitions.Count];
+            InitBoardManager();
+        }
 
-            TetrisWell = new SolidColorBrush[mainWindow.TetrisGrid.RowDefinitions.Count, mainWindow.TetrisGrid.ColumnDefinitions.Count];
+        public void InitBoardManager()
+        {
             CurrentBlock = new Block(this);
             NextBlock = new Block(this);
 

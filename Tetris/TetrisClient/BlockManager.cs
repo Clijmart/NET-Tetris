@@ -124,7 +124,6 @@ namespace TetrisClient
         {
             if (BlockManager.CanMove(Bm.TetrisWell, this))
             {
-                System.Diagnostics.Debug.WriteLine(ColorArrayToString(Bm.TetrisWell));
                 for (int i = 0; i < Shape.Value.GetLength(0); i++)
                 {
                     for (int j = 0; j < Shape.Value.GetLength(1); j++)
@@ -170,43 +169,6 @@ namespace TetrisClient
                 }
             }
             return ghostBlock;
-        }
-
-        /// <summary>
-        /// Turns an array of colors into a neatly formatted string.
-        /// </summary>
-        /// <param name="colorArray">An array of Brush colors.</param>
-        /// <returns>A string.</returns>
-        public static string ColorArrayToString(SolidColorBrush[,] colorArray)
-        {
-            string output = "[";
-            for (int row = 0; row < colorArray.GetLength(0); row++)
-            {
-                output += "[";
-                for (int col = 0; col < colorArray.GetLength(1); col++)
-                {
-                    if (colorArray[row, col] != null)
-                    {
-                        output += colorArray[row, col].Color.ToString();
-                    }
-                    else
-                    {
-                        output += "#FFFFFFFF";
-                    }
-                    if (col != colorArray.GetUpperBound(1))
-                    {
-                        output += ",";
-                    }
-                }
-                output += "]\n";
-                if (row != colorArray.GetUpperBound(0))
-                {
-                    output += ",";
-                }
-            }
-            output += "]";
-
-            return output;
         }
     }
 
@@ -371,6 +333,43 @@ namespace TetrisClient
                 Tetromino.TBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#C878F0"),
                 _ => (SolidColorBrush) new BrushConverter().ConvertFrom("#C878F0"),
             };
+        }
+
+        /// <summary>
+        /// Turns an array of colors into a neatly formatted string.
+        /// </summary>
+        /// <param name="colorArray">An array of Brush colors.</param>
+        /// <returns>A string.</returns>
+        public static string ColorArrayToString(SolidColorBrush[,] colorArray)
+        {
+            string output = "[";
+            for (int row = 0; row < colorArray.GetLength(0); row++)
+            {
+                output += "[";
+                for (int col = 0; col < colorArray.GetLength(1); col++)
+                {
+                    if (colorArray[row, col] != null)
+                    {
+                        output += colorArray[row, col].Color.ToString();
+                    }
+                    else
+                    {
+                        output += "#FFFFFFFF";
+                    }
+                    if (col != colorArray.GetUpperBound(1))
+                    {
+                        output += ",";
+                    }
+                }
+                output += "]\n";
+                if (row != colorArray.GetUpperBound(0))
+                {
+                    output += ",";
+                }
+            }
+            output += "]";
+
+            return output;
         }
     }
 }

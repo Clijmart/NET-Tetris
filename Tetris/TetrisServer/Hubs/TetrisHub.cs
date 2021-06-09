@@ -5,19 +5,9 @@ namespace TetrisServer.Hubs
 {
     public class TetrisHub : Hub
     {
-        public async Task DropShape()
+        public async Task UpdateWell(object TetrisWell)
         {
-            await Clients.Others.SendAsync("DropShape");
-        }
-
-        public async Task RotateShape(string direction)
-        {
-            await Clients.Others.SendAsync("RotateShape", direction);
-        }
-
-        public async Task MoveShape(string moveDirection)
-        {
-            await Clients.Others.SendAsync("MoveShape", moveDirection);
+            await Clients.Others.SendAsync("UpdateWell", TetrisWell);
         }
         
         public async Task ReadyUp(int seed)

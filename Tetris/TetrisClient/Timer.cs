@@ -57,10 +57,23 @@ namespace TetrisClient
                     {
                         Bm.CurrentBlock.Place();
                     }
-                    Bm.MainWindow.DrawGrids();
-                }
-                Bm.MainWindow.UpdateText();
-
+                    if (Bm.MainWindow != null)
+                        {
+                            Bm.MainWindow.DrawGrids();
+                        }
+                    else
+                        {
+                            Bm.MultiplayerWindow.DrawGrids();
+                        }
+                    }
+                    if (Bm.MainWindow != null)
+                    {
+                        Bm.MainWindow.UpdateText();
+                    }
+                    else
+                    {
+                        Bm.MultiplayerWindow.UpdateText();
+                    }
                 }));
                 
             }
