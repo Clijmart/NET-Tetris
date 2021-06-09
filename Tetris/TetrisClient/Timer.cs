@@ -48,6 +48,8 @@ namespace TetrisClient
             if (Bm.Running)
             {
                 Bm.Time++;
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
 
                 if (Bm.Time % (10 - Math.Min(8, Bm.CalculateLevel() * 2)) == 0)
                 {
@@ -57,8 +59,10 @@ namespace TetrisClient
                     }
                     Bm.MainWindow.DrawGrids();
                 }
-
                 Bm.MainWindow.UpdateText();
+
+                }));
+                
             }
         }
     }

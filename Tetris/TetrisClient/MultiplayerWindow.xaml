@@ -5,12 +5,108 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
-        Title="MultiplayerWindow"  Height="550" Width="400">
+        Title="MultiplayerWindow"  Height="610" Width="963"
+        ResizeMode="NoResize">
     <Grid>
-        <Button Content="Ready up!" Click="StartGame_OnClick" Margin="84,253,84,225" Background="#FF2F7FDE"></Button>
-        <Label Name="Status" Content="Waiting for Connection..." HorizontalAlignment="Center" Margin="0,0,0,419" VerticalAlignment="Bottom" Height="25" Width="142"/>
-        <Button Content="&#xE112; Go Back" Click="GoBackButton" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="27" Width="78" Background="{x:Null}" Cursor="Hand" FontFamily="Segoe UI Symbol" Foreground="#FF7C7C7C" BorderBrush="{x:Null}"/>
-        <TextBox HorizontalAlignment="Center" Name="InputField" TextAlignment="Center"  Margin="0,0,0,383" Text="Enter Server IP..." TextWrapping="Wrap" VerticalAlignment="Bottom" Height="21" Width="212" Cursor="IBeam"/>
-        <Button Content="Connect" Click="ConnectButton" Margin="150,0,150,328" Background="#FF2F7FDE" Height="38" VerticalAlignment="Bottom"/>
+        <Button Content="Ready up!" Click="StartGame_OnClick" Margin="823,312,62,242" Background="#FF2F7FDE"></Button>
+        <Label Name="Status" Content="Waiting for Connection..." Margin="0,0,27,397" VerticalAlignment="Bottom" Height="25" HorizontalAlignment="Right" Width="142"/>
+        <Button Content="&#xE112; Go Back" Click="GoBackButton" HorizontalAlignment="Left" Margin="843,0,0,527" VerticalAlignment="Bottom" Height="27" Width="78" Background="{x:Null}" Cursor="Hand" FontFamily="Segoe UI Symbol" Foreground="#FF7C7C7C" BorderBrush="{x:Null}" RenderTransformOrigin="0.687,0.565"/>
+        <TextBox Name="InputField" TextAlignment="Center"  Margin="0,0,20,356" Text="Enter Server IP..." TextWrapping="Wrap" VerticalAlignment="Bottom" Height="21" Cursor="IBeam" HorizontalAlignment="Right" Width="162"/>
+        <Button Content="Connect" Click="ConnectButton" Margin="0,258,42,298" Background="#FF2F7FDE" HorizontalAlignment="Right" Width="115"/>
+        <Grid x:Name="TetrisGridP1" Background="#f4f4f4" HorizontalAlignment="Left" Width="250" Margin="25,0,0,62" Height="496" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <Grid x:Name="TetrisGridP2" Background="#f4f4f4" HorizontalAlignment="Left" Width="250" Margin="299,0,0,62" Height="496" VerticalAlignment="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <Grid x:Name="NextBlockGrid" Margin="592,0,0,454" Background="#f4f4f4" MinHeight="100" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="25"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBlock x:Name="Level" Margin="592,0,0,396" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D" Background="#FFF4F4F4"/>
+        <TextBlock x:Name="Lines" Margin="592,0,0,339" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
+        <TextBlock x:Name="Score" Margin="592,0,0,278" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
+        <TextBlock x:Name="Time" Margin="592,0,0,130" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
+        <Label Content="Level" HorizontalAlignment="Left" Margin="592,0,0,426" VerticalAlignment="Bottom" Height="26" Foreground="#FF5D5D5D"/>
+        <Label Content="Lines" HorizontalAlignment="Left" Margin="592,0,0,369" VerticalAlignment="Bottom" Height="26" Foreground="#FF5D5D5D"/>
+        <Label Content="Score" HorizontalAlignment="Left" Margin="592,0,0,313" Foreground="#FF5D5D5D" Height="26" VerticalAlignment="Bottom"/>
+        <Label Content="Time" HorizontalAlignment="Left" Margin="592,0,0,160" VerticalAlignment="Bottom" Height="26" Foreground="#FF5D5D5D"/>
+
     </Grid>
 </Window>

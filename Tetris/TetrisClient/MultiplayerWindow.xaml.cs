@@ -14,9 +14,12 @@ namespace TetrisClient
         public MultiplayerWindow()
         {
             InitializeComponent();
+            InitMPGame();  
        
         }
-
+        private void InitMPGame() {
+ 
+        }
         // Events kunnen `async` zijn in WPF:
         private async void StartGame_OnClick(object sender, RoutedEventArgs e)
         {
@@ -78,12 +81,13 @@ namespace TetrisClient
                     Status.Content = "Can't connect to given IP";
                 }
 
-            } catch(Exception er)
+            }
+            catch (Exception er)
             {
                 Status.Content = "Not a valid IP";
             }
 
-            
+
         }
     }
 }
