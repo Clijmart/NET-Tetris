@@ -14,5 +14,9 @@ namespace TetrisServer.Hubs
         {
             await Clients.Others.SendAsync("ReadyUp", seed);
         }
+        public async Task StartGame()
+        {
+            await Clients.All.SendAsync("StartGame");
+        }
     }
 }

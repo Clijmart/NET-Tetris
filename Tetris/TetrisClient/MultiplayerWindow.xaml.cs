@@ -23,6 +23,7 @@ namespace TetrisClient
         public MultiplayerWindow()
         {
             InitializeComponent();
+
         }
         // Events kunnen `async` zijn in WPF:
         private async void StartGame_OnClick(object sender, RoutedEventArgs e)
@@ -33,7 +34,6 @@ namespace TetrisClient
                 return;
             }
 
-            Status.Content = "Connected!";
             int seed = Guid.NewGuid().GetHashCode();
             
             P1Random = new Random(seed);
@@ -53,7 +53,7 @@ namespace TetrisClient
             menu.Show();
             Close();
         }
-        private void ConnectButton(object sender, RoutedEventArgs e)
+        private async void ConnectButton(object sender, RoutedEventArgs e)
         {
             string url = "http://" + InputField.Text + "/TetrisHub";
             System.Diagnostics.Debug.WriteLine(url);
@@ -83,7 +83,7 @@ namespace TetrisClient
                 // Let op: het starten van de connectie moet *nadat* alle event listeners zijn gezet!
                 // Als de methode waarin dit voorkomt al `async` (asynchroon) is, dan kan `Task.Run` weggehaald worden.
                 // In het startersproject staat dit in de constructor, daarom is dit echter wel nodig:
-                Task.Run(async () => await _connection.StartAsync());
+                await Task.Run(async () => await _connection.StartAsync());
 
                 if (_connection.State.Equals(HubConnectionState.Connected))
                 {
@@ -98,6 +98,7 @@ namespace TetrisClient
             }
             catch (Exception er)
             {
+                System.Diagnostics.Debug.WriteLine(er);
                 Status.Content = "Not a valid IP";
             }
         }
@@ -105,15 +106,9 @@ namespace TetrisClient
         /// <summary>
         /// Initializes the game by preparing the board and resetting variables.
         /// </summary>
-        public void InitGame()
+        public async void InitGame()
         {
             Bm = new BoardManager(this);
-            string url = "http://127.0.0.1:5000/TetrisHub";
-            _connection = new HubConnectionBuilder()
-                .WithUrl(url)
-                .WithAutomaticReconnect()
-                .Build();
-
             DrawGrids();
         }
 
@@ -223,15 +218,19 @@ namespace TetrisClient
         /// <summary>
         /// Draws all Block Grids.
         /// </summary>
-        public void DrawGrids()
+        public async void DrawGrids()
         {
             //string tetrisWellString = BlockManager.ColorArrayToString(Bm.TetrisWell);
-            SolidColorBrush[,] temp = Bm.TetrisWell;
-            _connection.On<object>("UpdateWell", temp =>
-            {
-                MessageBox.Show(temp.ToString());
-            });
+            object[,] temp = Bm.TetrisWell; // Dit is een SolidColorBrush[,]
+            ///????
+            await _connection.InvokeAsync<object>("UpdateWell", temp);
             ClearGrids();
+
+             _connection.On<object>("UpdateWell", incomingWell =>
+            {
+                MessageBox.Show(incomingWell.ToString());
+            });
+
 
             // Fill the grid by looping through the tetris well.
             for (int i = 0; i < Bm.TetrisWell.GetLength(0); i++)
