@@ -21,7 +21,7 @@ namespace TetrisClient
         }
         public async void PlayMusic()
         {
-            /*
+
             await Task.Run(() =>
             {
                 System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
@@ -40,7 +40,7 @@ namespace TetrisClient
 
                 }));
             });
-            */
+
         }
         public void IncreaseSpeed()
         {
