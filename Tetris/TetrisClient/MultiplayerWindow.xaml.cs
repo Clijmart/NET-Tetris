@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,6 +24,7 @@ namespace TetrisClient
         public MultiplayerWindow()
         {
             InitializeComponent();
+            ReadyUpButton.Visibility = Visibility.Hidden;
 
         }
         // Events kunnen `async` zijn in WPF:
@@ -88,6 +90,7 @@ namespace TetrisClient
                 if (_connection.State.Equals(HubConnectionState.Connected))
                 {
                     Status.Content = "Connected!";
+                    ReadyUpButton.Visibility = Visibility.Visible;
                 }
                 else
                 {
@@ -221,14 +224,15 @@ namespace TetrisClient
         public async void DrawGrids()
         {
             //string tetrisWellString = BlockManager.ColorArrayToString(Bm.TetrisWell);
-            object[,] temp = Bm.TetrisWell; // Dit is een SolidColorBrush[,]
-            ///????
+            object temp = Bm; // Dit is een SolidColorBrush[,]
+
             await _connection.InvokeAsync<object>("UpdateWell", temp);
             ClearGrids();
 
              _connection.On<object>("UpdateWell", incomingWell =>
             {
-                MessageBox.Show(incomingWell.ToString());
+                BoardManager tempBm = (BoardManager) incomingWell;
+                MessageBox.Show(tempBm.TetrisWell.ToString());
             });
 
 

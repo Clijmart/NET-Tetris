@@ -9,7 +9,7 @@
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
     <Grid>
-        <Button Content="Ready up!" Click="StartGame_OnClick" Margin="823,312,62,242" Background="#FF2F7FDE"></Button>
+        <Button Content="Ready up!" Name="ReadyUpButton" Click="StartGame_OnClick" Margin="823,312,62,242" Background="#FF2F7FDE"></Button>
         <Label Name="Status" Content="Waiting for Connection..." Margin="0,0,27,397" VerticalAlignment="Bottom" Height="25" HorizontalAlignment="Right" Width="142"/>
         <Button Content="&#xE112; Go Back" Click="GoBackButton" HorizontalAlignment="Left" Margin="843,0,0,527" VerticalAlignment="Bottom" Height="27" Width="78" Background="{x:Null}" Cursor="Hand" FontFamily="Segoe UI Symbol" Foreground="#FF7C7C7C" BorderBrush="{x:Null}" RenderTransformOrigin="0.687,0.565"/>
         <TextBox Name="InputField" TextAlignment="Center"  Margin="0,0,20,356" Text="Enter Server IP..." TextWrapping="Wrap" VerticalAlignment="Bottom" Height="21" Cursor="IBeam" HorizontalAlignment="Right" Width="162"/>
