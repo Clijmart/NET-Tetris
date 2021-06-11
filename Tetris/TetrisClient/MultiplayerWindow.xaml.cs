@@ -13,13 +13,13 @@ namespace TetrisClient
     public partial class MultiplayerWindow : Window
     {
         private HubConnection _connection;
-        private Random P1Random;
-        private Random P2Random;
+        public Random P1Random;
 
         static string[,] IncomingWell;
 
         private bool P1Ready = false;
         private bool P2Ready = false;
+        private int Seed;
 
 
         public BoardManager Bm { get; set; }
@@ -39,9 +39,12 @@ namespace TetrisClient
                 return;
             }
 
-            int seed = Guid.NewGuid().GetHashCode();
+            if (Seed == 0)
+            {
+                Seed = Guid.NewGuid().GetHashCode();
+            }
+            P1Random = new Random(Seed);
 
-            P1Random = new Random(seed);
             P1Ready = true;
             if (P2Ready)
             {
@@ -50,7 +53,7 @@ namespace TetrisClient
 
             // Het aanroepen van de TetrisHub.cs methode `ReadyUp`.
             // Hier geven we de int mee die de methode `ReadyUp` verwacht.
-            await _connection.InvokeAsync("ReadyUp", seed);
+            await _connection.InvokeAsync("ReadyUp", Seed);
         }
 
         private void GoBackButton(object sender, RoutedEventArgs e)
@@ -77,7 +80,10 @@ namespace TetrisClient
                 _connection.On<int>("ReadyUp", seed =>
                 {
                     // Seed van de andere client:
-                    P2Random = new Random(seed);
+                    if (Seed == 0)
+                    {
+                        Seed = seed;
+                    }
 
                     P2Ready = true;
                     if (P1Ready)

@@ -9,7 +9,7 @@ namespace TetrisClient
         public MainWindow MainWindow { get; set; }
         public MultiplayerWindow MultiplayerWindow { get; set; }
 
-        public static readonly Random randStatus = new();
+        public static Random randStatus { get; set; }
 
         public string[,] TetrisWell { get; set; }
         public Block CurrentBlock { get; set; }
@@ -32,6 +32,7 @@ namespace TetrisClient
         {
             MultiplayerWindow = multiplayerWindow;
             TetrisWell = new string[MultiplayerWindow.TetrisGridP1.RowDefinitions.Count, MultiplayerWindow.TetrisGridP1.ColumnDefinitions.Count];
+            randStatus = multiplayerWindow.P1Random;
             InitBoardManager();
         }
 
@@ -39,6 +40,7 @@ namespace TetrisClient
         {
             MainWindow = mainWindow;
             TetrisWell = new string[MainWindow.TetrisGrid.RowDefinitions.Count, MainWindow.TetrisGrid.ColumnDefinitions.Count];
+            randStatus = new();
             InitBoardManager();
         }
 
