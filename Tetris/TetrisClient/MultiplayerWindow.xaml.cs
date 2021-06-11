@@ -28,8 +28,8 @@ namespace TetrisClient
         {
             InitializeComponent();
             ReadyUpButton.Visibility = Visibility.Hidden;
-
         }
+
         // Events kunnen `async` zijn in WPF:
         private async void StartGame_OnClick(object sender, RoutedEventArgs e)
         {
