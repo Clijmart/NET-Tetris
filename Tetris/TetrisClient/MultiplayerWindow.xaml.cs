@@ -252,7 +252,21 @@ namespace TetrisClient
         /// </summary>
         public void DrawGrids()
         {
-            _connection.InvokeAsync<string[,]>("UpdateWell", Bm.TetrisWell);
+            string[,] newWell = (string[,]) Bm.TetrisWell.Clone();
+            for (int i = 0; i < Bm.CurrentBlock.Shape.Value.GetLength(0); i++)
+            {
+                for (int j = 0; j < Bm.CurrentBlock.Shape.Value.GetLength(1); j++)
+                {
+                    if (Bm.CurrentBlock.Shape.Value[i, j] != 1)
+                    {
+                        continue;
+                    }
+
+                    newWell[i + Bm.CurrentBlock.Y, j + Bm.CurrentBlock.X] = Bm.CurrentBlock.Color;
+                }
+            }
+
+            _connection.InvokeAsync<string[,]>("UpdateWell", newWell);
 
             _connection.On<string[,]>("UpdateWell", incomingWell =>
             {
