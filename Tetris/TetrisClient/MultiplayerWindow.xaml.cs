@@ -11,11 +11,22 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TetrisClient
 {
+    public class WellP2
+    {
+        public SolidColorBrush[,] Well { get; set; }
+
+        public WellP2(SolidColorBrush[,] well)
+        {
+            Well = well; // well, well well...
+        }
+    }
     public partial class MultiplayerWindow : Window
     {
         private HubConnection _connection;
         private Random P1Random;
         private Random P2Random;
+
+        private WellP2 PlayerTwoWell { get; set; }
 
         private bool P1Ready = false;
         private bool P2Ready = false;
@@ -90,25 +101,23 @@ namespace TetrisClient
                 // Probleem kind >:( vvvvvvvvvvvvvv
                 _connection.On<SolidColorBrush[,]>("UpdateWell", incomingWell =>
                 {
-                    ClearGridsP2();
-                    System.Diagnostics.Debug.WriteLine("Well Length: " + incomingWell.GetLength(0)); // Well Length : 20
-
-                    System.Diagnostics.Debug.WriteLine("Well Length: " + incomingWell.GetLength(1)); // Well Length : 10
-                    
-                    for (int x = 0; x < incomingWell.GetLength(0); x++)
+                    void myFunc()
                     {
-                        for (int y = 0; y < incomingWell.GetLength(1); y++)
-                        {
-                            System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!" + incomingWell[x, y]); // Dit Gebeurt niet!
-
-                            //Rectangle rectangle = CreateRectangle(incomingWell[x, y], null);
-                            Rectangle rectangle = CreateRectangle(Brushes.Green, null);
-                            TetrisGridP2.Children.Add(rectangle);
-                            Grid.SetRow(rectangle, x);
-                            Grid.SetColumn(rectangle, y);
-                        }
+                        PlayerTwoWell = new WellP2(incomingWell);
                     }
 
+                    if (Dispatcher.Thread == System.Threading.Thread.CurrentThread)
+                    {
+                        myFunc();
+
+                    }
+                    else
+                    {
+                       Dispatcher.BeginInvoke((System.Threading.ThreadStart) delegate
+                       {
+                           myFunc();
+                       });
+                    }
                 });
 
 
@@ -146,11 +155,11 @@ namespace TetrisClient
                 Bm = new BoardManager(this);
                 DrawGrids();
 
-                TetrisGridP1.Focus();
+                Focus();
                 ConnectButton.Visibility = Visibility.Hidden;
                 ReadyUpButton.Visibility = Visibility.Hidden;
                 InputField.Visibility = Visibility.Hidden;
-            
+
             };
             Dispatcher.Invoke(action);
 
@@ -166,6 +175,7 @@ namespace TetrisClient
             menu.Show();
             Close();
         }
+
 
         /// <summary>
         /// Handles the KeyEvents sent by the player.
@@ -260,25 +270,15 @@ namespace TetrisClient
         {
 
             TetrisGridP1.Children.Clear();
-
+            TetrisGridP2.Children.Clear();
             NextBlockGrid.Children.Clear();
         }
 
-
-        public void ClearGridsP2()
-        {
-            Action action = () =>
-            {
-                TetrisGridP2.Children.Clear();
-            };
-            Dispatcher.Invoke(action);
-        }
         /// <summary>
         /// Draws all Block Grids.
         /// </summary>
         public void DrawGrids()
         {
-            
             ClearGrids();
 
             // Fill the grid by looping through the tetris well.
@@ -294,6 +294,22 @@ namespace TetrisClient
                     Grid.SetColumn(rectangle, j);
                 }
             }
+            if (PlayerTwoWell != null)
+            {
+                for (int i = 0; i < PlayerTwoWell.Well.GetLength(0); i++)
+                {
+
+                    for (int j = 0; j < PlayerTwoWell.Well.GetLength(1); j++)
+                    {
+                        Rectangle rectangle = CreateRectangle(PlayerTwoWell.Well[i, j], null);
+
+                        TetrisGridP2.Children.Add(rectangle);
+                        Grid.SetRow(rectangle, i);
+                        Grid.SetColumn(rectangle, j);
+                    }
+                }
+            }
+
 
             // Add the ghost block to the grid.
             int ghostY = Bm.GhostBlock.Y;
@@ -355,7 +371,7 @@ namespace TetrisClient
                     Grid.SetColumn(rectangle, j);
                 }
             }
-            SolidColorBrush[,] temp = Bm.TetrisWell; // Dit is een SolidColorBrush[,]
+
             _connection.InvokeAsync<SolidColorBrush[,]>("UpdateWell", Bm.TetrisWell);
 
         }

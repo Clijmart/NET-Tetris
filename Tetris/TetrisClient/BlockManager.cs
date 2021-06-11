@@ -183,13 +183,7 @@ namespace TetrisClient
         OBlock,
         IBlock,
         SBlock,
-        ZBlock,
-        Diagonal,
-        Dots,
-        Ez,
-        Pp,
-        Triagonal,
-        Dot
+        ZBlock
     }
 
     public static class BlockManager
@@ -309,52 +303,6 @@ namespace TetrisClient
                                 { 1, 1, 1 },
                                 { 0, 1, 0 },
                                 { 0, 0, 0 },
-                  }
-              ),
-                Tetromino.Diagonal => new Matrix(new int[,]
-                  {
-                                { 1, 0, 0, 0 },
-                                { 0, 1, 0, 0 },
-                                { 0, 0, 1, 0 },
-                                { 0, 0, 0, 1 },
-                  }
-              ),
-                Tetromino.Dots => new Matrix(new int[,]
-                  {
-                                { 0, 0, 0, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                                { 1, 0, 1, 0, 1 },
-                  }
-              ),
-                Tetromino.Dot => new Matrix(new int[,]
-                  {
-                                { 0, 0, 1, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                                { 0, 0, 0, 0, 0 },
-                  }
-              ),
-                Tetromino.Ez => new Matrix(new int[,]
-                  {
-                                { 0, 1 },
-                                { 1, 1 },
-                  }
-              ),
-                Tetromino.Pp => new Matrix(new int[,]
-                  {
-                                { 0, 1, 0 },
-                                { 0, 1, 0 },
-                                { 1, 1, 1 },
-                  }
-              ),
-                Tetromino.Triagonal => new Matrix(new int[,]
-                  {
-                                { 0, 0, 1 },
-                                { 0, 1, 0 },
-                                { 1, 0, 0 },
                   }
               ),
                 _ => new Matrix(new int[,]
