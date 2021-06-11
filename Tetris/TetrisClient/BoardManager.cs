@@ -181,6 +181,15 @@ namespace TetrisClient
             Running = false;
             Timer.StopTimer();
             SoundManager.StopMusic();
+
+            if (MainWindow != null)
+            {
+                MainWindow.EndGame();
+            }
+            else if (MultiplayerWindow != null)
+            {
+                MultiplayerWindow.EndGame();
+            }
         }
     }
 }

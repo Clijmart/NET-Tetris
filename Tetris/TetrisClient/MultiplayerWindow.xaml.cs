@@ -56,9 +56,6 @@ namespace TetrisClient
         private void GoBackButton(object sender, RoutedEventArgs e)
         {
             Bm.EndGame();
-            Menu menu = new Menu();
-            menu.Show();
-            Close();
         }
 
         private async void ConnectButtonMethod(object sender, RoutedEventArgs e)
@@ -164,7 +161,10 @@ namespace TetrisClient
         /// </summary>
         public void EndGame()
         {
-            Bm.EndGame();
+
+            Menu menu = new Menu();
+            menu.Show();
+            Close();
         }
 
         /// <summary>

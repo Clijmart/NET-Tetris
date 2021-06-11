@@ -38,16 +38,15 @@ namespace TetrisClient
         /// </summary>
         public void EndGame()
         {
-            Bm.EndGame();
-        }
-        private void ExitButton(object sender, RoutedEventArgs e)
-        {
-            Bm.EndGame();
-
+            MessageBox.Show("Game Over!");
             Menu menu = new Menu();
             menu.Show();
 
             Close();
+        }
+        private void ExitButton(object sender, RoutedEventArgs e)
+        {
+            Bm.EndGame();
         }
 
         /// <summary>
@@ -111,8 +110,7 @@ namespace TetrisClient
                     }
                 case Key.Escape:
                     {
-                        EndGame();
-                        InitGame();
+                        Bm.EndGame();
                         return;
                     }
 
