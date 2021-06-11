@@ -20,7 +20,9 @@ namespace TetrisClient
         private bool P1Ready = false;
         private bool P2Ready = false;
 
+
         public BoardManager Bm { get; set; }
+
 
         public MultiplayerWindow()
         {
@@ -38,7 +40,7 @@ namespace TetrisClient
             }
 
             int seed = Guid.NewGuid().GetHashCode();
-            
+
             P1Random = new Random(seed);
             P1Ready = true;
             if (P2Ready)
@@ -50,13 +52,16 @@ namespace TetrisClient
             // Hier geven we de int mee die de methode `ReadyUp` verwacht.
             await _connection.InvokeAsync("ReadyUp", seed);
         }
+
         private void GoBackButton(object sender, RoutedEventArgs e)
         {
+            Bm.EndGame();
             Menu menu = new Menu();
             menu.Show();
             Close();
         }
-        private async void ConnectButton(object sender, RoutedEventArgs e)
+
+        private async void ConnectButtonMethod(object sender, RoutedEventArgs e)
         {
             string url = "http://" + InputField.Text + "/TetrisHub";
             System.Diagnostics.Debug.WriteLine(url);
@@ -76,7 +81,7 @@ namespace TetrisClient
                 {
                     // Seed van de andere client:
                     P2Random = new Random(seed);
-                    MessageBox.Show(seed.ToString());
+
                     P2Ready = true;
                     if (P1Ready)
                     {
@@ -84,19 +89,29 @@ namespace TetrisClient
                     }
                 });
 
+
+                // Probleem kind >:( vvvvvvvvvvvvvv
                 _connection.On<SolidColorBrush[,]>("UpdateWell", incomingWell =>
                 {
-                    for (int i = 0; i < incomingWell.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < incomingWell.GetLength(1); j++)
-                        {
-                            Rectangle rectangle = CreateRectangle(incomingWell[i, j], null);
+                    ClearGridsP2();
+                    System.Diagnostics.Debug.WriteLine("Well Length: " + incomingWell.GetLength(0)); // Well Length : 20
 
+                    System.Diagnostics.Debug.WriteLine("Well Length: " + incomingWell.GetLength(1)); // Well Length : 10
+                    
+                    for (int x = 0; x < incomingWell.GetLength(0); x++)
+                    {
+                        for (int y = 0; y < incomingWell.GetLength(1); y++)
+                        {
+                            System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!" + incomingWell[x, y]); // Dit Gebeurt niet!
+
+                            //Rectangle rectangle = CreateRectangle(incomingWell[x, y], null);
+                            Rectangle rectangle = CreateRectangle(Brushes.Green, null);
                             TetrisGridP2.Children.Add(rectangle);
-                            Grid.SetRow(rectangle, i);
-                            Grid.SetColumn(rectangle, j);
+                            Grid.SetRow(rectangle, x);
+                            Grid.SetColumn(rectangle, y);
                         }
                     }
+
                 });
 
 
@@ -127,16 +142,21 @@ namespace TetrisClient
         /// <summary>
         /// Initializes the game by preparing the board and resetting variables.
         /// </summary>
-        public async void InitGame()
+        public void InitGame()
         {
-            await Task.Run(() =>
+            Action action = () =>
             {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    Bm = new BoardManager(this);
-                    DrawGrids();
-                }));
-            });
+                Bm = new BoardManager(this);
+                DrawGrids();
+
+                TetrisGridP1.Focus();
+                ConnectButton.Visibility = Visibility.Hidden;
+                ReadyUpButton.Visibility = Visibility.Hidden;
+                InputField.Visibility = Visibility.Hidden;
+            
+            };
+            Dispatcher.Invoke(action);
+
         }
 
         /// <summary>
@@ -222,132 +242,124 @@ namespace TetrisClient
         /// <summary>
         /// Updates all Text.
         /// </summary>
-        public async void UpdateText()
+        public void UpdateText()
         {
-            await Task.Run(() =>
-            {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    Level.Text = Bm.CalculateLevel().ToString();
-                    Lines.Text = Bm.LinesCleared.ToString();
-                    Score.Text = Bm.Score.ToString();
 
-                    TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
-                    Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
-                }));
-            });
+            Level.Text = Bm.CalculateLevel().ToString();
+            Lines.Text = Bm.LinesCleared.ToString();
+            Score.Text = Bm.Score.ToString();
+
+            TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
+            Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
         }
 
         /// <summary>
         /// Clears all Block Grids.
         /// </summary>
-        public async void ClearGrids()
+        public void ClearGrids()
         {
-            await Task.Run(() =>
-            {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    TetrisGridP1.Children.Clear();
-                    TetrisGridP2.Children.Clear();
-                    NextBlockGrid.Children.Clear();
-                }));
-            });
+
+            TetrisGridP1.Children.Clear();
+
+            NextBlockGrid.Children.Clear();
         }
 
+
+        public void ClearGridsP2()
+        {
+            Action action = () =>
+            {
+                TetrisGridP2.Children.Clear();
+            };
+            Dispatcher.Invoke(action);
+        }
         /// <summary>
         /// Draws all Block Grids.
         /// </summary>
-        public async void DrawGrids()
+        public void DrawGrids()
         {
-            //string tetrisWellString = BlockManager.ColorArrayToString(Bm.TetrisWell);
+            
+            ClearGrids();
 
-            await Task.Run(() =>
+            // Fill the grid by looping through the tetris well.
+            for (int i = 0; i < Bm.TetrisWell.GetLength(0); i++)
             {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+
+                for (int j = 0; j < Bm.TetrisWell.GetLength(1); j++)
                 {
-                    
+                    Rectangle rectangle = CreateRectangle(Bm.TetrisWell[i, j], null);
 
-                    ClearGrids();
+                    TetrisGridP1.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i);
+                    Grid.SetColumn(rectangle, j);
+                }
+            }
 
-                    // Fill the grid by looping through the tetris well.
-                    for (int i = 0; i < Bm.TetrisWell.GetLength(0); i++)
+            // Add the ghost block to the grid.
+            int ghostY = Bm.GhostBlock.Y;
+            int ghostX = Bm.GhostBlock.X;
+            int[,] ghostBlock = Bm.GhostBlock.Shape.Value;
+            for (int i = 0; i < ghostBlock.GetLength(0); i++)
+            {
+                for (int j = 0; j < ghostBlock.GetLength(1); j++)
+                {
+                    if (ghostBlock[i, j] != 1)
                     {
-                        for (int j = 0; j < Bm.TetrisWell.GetLength(1); j++)
-                        {
-                            Rectangle rectangle = CreateRectangle(Bm.TetrisWell[i, j], null);
-
-                            TetrisGridP1.Children.Add(rectangle);
-                            Grid.SetRow(rectangle, i);
-                            Grid.SetColumn(rectangle, j);
-                        }
+                        continue;
                     }
 
-                    // Add the ghost block to the grid.
-                    int ghostY = Bm.GhostBlock.Y;
-                    int ghostX = Bm.GhostBlock.X;
-                    int[,] ghostBlock = Bm.GhostBlock.Shape.Value;
-                    for (int i = 0; i < ghostBlock.GetLength(0); i++)
+                    Rectangle rectangle = CreateRectangle(null, Bm.GhostBlock.Color);
+
+                    TetrisGridP1.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i + ghostY);
+                    Grid.SetColumn(rectangle, j + ghostX);
+                }
+            }
+
+            // Add the current block to the grid.
+            int currentY = Bm.CurrentBlock.Y;
+            int currentX = Bm.CurrentBlock.X;
+            int[,] currentBlock = Bm.CurrentBlock.Shape.Value;
+            for (int i = 0; i < currentBlock.GetLength(0); i++)
+            {
+                for (int j = 0; j < currentBlock.GetLength(1); j++)
+                {
+                    if (currentBlock[i, j] != 1)
                     {
-                        for (int j = 0; j < ghostBlock.GetLength(1); j++)
-                        {
-                            if (ghostBlock[i, j] != 1)
-                            {
-                                continue;
-                            }
-
-                            Rectangle rectangle = CreateRectangle(null, Bm.GhostBlock.Color);
-
-                            TetrisGridP1.Children.Add(rectangle);
-                            Grid.SetRow(rectangle, i + ghostY);
-                            Grid.SetColumn(rectangle, j + ghostX);
-                        }
+                        continue;
                     }
 
-                    // Add the current block to the grid.
-                    int currentY = Bm.CurrentBlock.Y;
-                    int currentX = Bm.CurrentBlock.X;
-                    int[,] currentBlock = Bm.CurrentBlock.Shape.Value;
-                    for (int i = 0; i < currentBlock.GetLength(0); i++)
+                    Rectangle rectangle = CreateRectangle(Bm.CurrentBlock.Color, null);
+
+                    TetrisGridP1.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i + currentY);
+                    Grid.SetColumn(rectangle, j + currentX);
+                }
+            }
+
+            // Add the next block to the grid.
+            int[,] nextBlock = Bm.NextBlock.Shape.Value;
+            for (int i = 0; i < nextBlock.GetLength(0); i++)
+            {
+                for (int j = 0; j < nextBlock.GetLength(1); j++)
+                {
+                    if (nextBlock[i, j] != 1)
                     {
-                        for (int j = 0; j < currentBlock.GetLength(1); j++)
-                        {
-                            if (currentBlock[i, j] != 1)
-                            {
-                                continue;
-                            }
-
-                            Rectangle rectangle = CreateRectangle(Bm.CurrentBlock.Color, null);
-
-                            TetrisGridP1.Children.Add(rectangle);
-                            Grid.SetRow(rectangle, i + currentY);
-                            Grid.SetColumn(rectangle, j + currentX);
-                        }
+                        continue;
                     }
 
-                    // Add the next block to the grid.
-                    int[,] nextBlock = Bm.NextBlock.Shape.Value;
-                    for (int i = 0; i < nextBlock.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < nextBlock.GetLength(1); j++)
-                        {
-                            if (nextBlock[i, j] != 1)
-                            {
-                                continue;
-                            }
+                    Rectangle rectangle = CreateRectangle(Bm.NextBlock.Color, null);
 
-                            Rectangle rectangle = CreateRectangle(Bm.NextBlock.Color, null);
+                    NextBlockGrid.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i);
+                    Grid.SetColumn(rectangle, j);
+                }
+            }
+            SolidColorBrush[,] temp = Bm.TetrisWell; // Dit is een SolidColorBrush[,]
+            _connection.InvokeAsync<SolidColorBrush[,]>("UpdateWell", Bm.TetrisWell);
 
-                            NextBlockGrid.Children.Add(rectangle);
-                            Grid.SetRow(rectangle, i);
-                            Grid.SetColumn(rectangle, j);
-                        }
-                    }
-                    SolidColorBrush[,] temp = Bm.TetrisWell; // Dit is een SolidColorBrush[,]
-
-                    _connection.InvokeAsync<SolidColorBrush[,]>("UpdateWell", temp);
-                }));
-            });
         }
+
 
         /// <summary>
         /// Creates a Rectangle that can be used to draw a cell in the grid.

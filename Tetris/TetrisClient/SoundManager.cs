@@ -19,32 +19,23 @@ namespace TetrisClient
             MusicPlayer = new MediaPlayer();
 
         }
-        public async void PlayMusic()
+        public void PlayMusic()
         {
+            MusicPlayer.Open(MusicPath);
+            MusicPlayer.Volume = Volume;
+            MusicPlayer.SpeedRatio = Speed;
+            MusicPlayer.MediaEnded += new EventHandler(RestartMusic);
+            MusicPlayer.Play();
 
-            await Task.Run(() =>
+            void RestartMusic(object sender, EventArgs e)
             {
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    MusicPlayer.Open(MusicPath);
-                    MusicPlayer.Volume = Volume;
-                    MusicPlayer.SpeedRatio = Speed;
-                    MusicPlayer.MediaEnded += new EventHandler(RestartMusic);
-                    MusicPlayer.Play();
-
-                    void RestartMusic(object sender, EventArgs e)
-                    {
-                        MusicPlayer.Position = TimeSpan.Zero;
-                        MusicPlayer.Play();
-                    }
-
-                }));
-            });
-
+                MusicPlayer.Position = TimeSpan.Zero;
+                MusicPlayer.Play();
+            }
         }
         public void IncreaseSpeed()
         {
-            if(Speed <= 1.15)
+            if (Speed <= 1.15)
             {
                 Speed = Speed + 0.03;
                 MusicPlayer.SpeedRatio = Speed;

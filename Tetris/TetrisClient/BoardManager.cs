@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
@@ -53,14 +54,14 @@ namespace TetrisClient
             LinesCleared = 0;
             Score = 0;
 
-            SoundManager = new SoundManager();
-            SoundManager.PlayMusic();
             NextTurn();
 
             //  DispatcherTimer setup
             Timer = new(this);
             Timer.StartTimer();
             Running = true;
+
+            InitSound();
         }
 
         /// <summary>
@@ -158,6 +159,18 @@ namespace TetrisClient
             GhostBlock = CurrentBlock.CalculateGhost();
             CurrentBlock.Bm.TetrisWell = TetrisWell;
             NextBlock = new Block(this);
+        }
+
+        public async void InitSound()
+        {
+            await Task.Run(() =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    SoundManager = new SoundManager();
+                    SoundManager.PlayMusic();
+                }));
+            });
         }
 
         /// <summary>
