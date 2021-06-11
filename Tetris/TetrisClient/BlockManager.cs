@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Media;
 
 namespace TetrisClient
 {
@@ -9,7 +8,7 @@ namespace TetrisClient
         public BoardManager Bm { get; set; }
 
         public Tetromino Tetromino { get; set; }
-        public SolidColorBrush Color { get; set; }
+        public string Color { get; set; }
 
         public Matrix Shape { get; set; }
 
@@ -194,7 +193,7 @@ namespace TetrisClient
         /// <param name="tetrisWell">The tetris well to check the block on.</param>
         /// <param name="block">The block to check on.</param>
         /// <returns>A boolean stating if the block can be moved.</returns>
-        public static bool CanMove(SolidColorBrush[,] tetrisWell, Block block)
+        public static bool CanMove(string[,] tetrisWell, Block block)
         {
             bool willCollide = false;
 
@@ -320,56 +319,19 @@ namespace TetrisClient
         /// </summary>
         /// <param name="tetromino">The Tetromino to find the color of.</param>
         /// <returns>The color of the given Tetromino.</returns>
-        public static SolidColorBrush GetTetrominoColor(Tetromino tetromino)
+        public static string GetTetrominoColor(Tetromino tetromino)
         {
             return tetromino switch
             {
-                Tetromino.IBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#78F0F0"),
-                Tetromino.JBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#7878F0"),
-                Tetromino.LBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#F0C878"),
-                Tetromino.OBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#F0F078"),
-                Tetromino.SBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#78F078"),
-                Tetromino.ZBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#F07878"),
-                Tetromino.TBlock => (SolidColorBrush) new BrushConverter().ConvertFrom("#C878F0"),
-                _ => (SolidColorBrush) new BrushConverter().ConvertFrom("#C878F0"),
+                Tetromino.IBlock => "#78F0F0",
+                Tetromino.JBlock => "#7878F0",
+                Tetromino.LBlock => "#F0C878",
+                Tetromino.OBlock => "#F0F078",
+                Tetromino.SBlock => "#78F078",
+                Tetromino.ZBlock => "#F07878",
+                Tetromino.TBlock => "#C878F0",
+                _ => "#C878F0",
             };
-        }
-
-        /// <summary>
-        /// Turns an array of colors into a neatly formatted string.
-        /// </summary>
-        /// <param name="colorArray">An array of Brush colors.</param>
-        /// <returns>A string.</returns>
-        public static string ColorArrayToString(SolidColorBrush[,] colorArray)
-        {
-            string output = "[";
-            for (int row = 0; row < colorArray.GetLength(0); row++)
-            {
-                output += "[";
-                for (int col = 0; col < colorArray.GetLength(1); col++)
-                {
-                    if (colorArray[row, col] != null)
-                    {
-                        output += colorArray[row, col].Color.ToString();
-                    }
-                    else
-                    {
-                        output += "#FFFFFFFF";
-                    }
-                    if (col != colorArray.GetUpperBound(1))
-                    {
-                        output += ",";
-                    }
-                }
-                output += "]\n";
-                if (row != colorArray.GetUpperBound(0))
-                {
-                    output += ",";
-                }
-            }
-            output += "]";
-
-            return output;
         }
     }
 }

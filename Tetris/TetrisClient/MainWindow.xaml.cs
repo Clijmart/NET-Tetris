@@ -229,20 +229,15 @@ namespace TetrisClient
         /// <param name="fill">The color used to fill the Rectangle.</param>
         /// <param name="border">The color used for the border of the Rectangle.</param>
         /// <returns>A new Rectangle with the given colors.</returns>
-        private static Rectangle CreateRectangle(SolidColorBrush fill, SolidColorBrush border)
+        private static Rectangle CreateRectangle(string fill, string border)
         {
-            if (border == null)
-            {
-                border = Brushes.White;
-            }
-
             Rectangle rectangle = new()
             {
                 Width = 25,
                 Height = 25,
-                Stroke = border,
+                Stroke = (SolidColorBrush) new BrushConverter().ConvertFrom(border ?? "#FFFFFFFF"),
                 StrokeThickness = 1,
-                Fill = fill,
+                Fill = fill == null ? null : (SolidColorBrush) new BrushConverter().ConvertFrom(fill),
             };
 
             return rectangle;

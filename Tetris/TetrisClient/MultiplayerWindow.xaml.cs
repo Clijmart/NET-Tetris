@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -11,29 +10,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TetrisClient
 {
-    public class WellP2
-    {
-        public SolidColorBrush[,] Well { get; set; }
-
-        public WellP2(SolidColorBrush[,] well)
-        {
-            Well = well; // well, well well...
-        }
-    }
     public partial class MultiplayerWindow : Window
     {
         private HubConnection _connection;
         private Random P1Random;
         private Random P2Random;
 
-        private WellP2 PlayerTwoWell { get; set; }
+        static string[,] IncomingWell;
 
         private bool P1Ready = false;
         private bool P2Ready = false;
 
 
         public BoardManager Bm { get; set; }
-
 
         public MultiplayerWindow()
         {
@@ -98,29 +87,6 @@ namespace TetrisClient
                 });
 
 
-                // Probleem kind >:( vvvvvvvvvvvvvv
-                _connection.On<SolidColorBrush[,]>("UpdateWell", incomingWell =>
-                {
-                    void myFunc()
-                    {
-                        PlayerTwoWell = new WellP2(incomingWell);
-                    }
-
-                    if (Dispatcher.Thread == System.Threading.Thread.CurrentThread)
-                    {
-                        myFunc();
-
-                    }
-                    else
-                    {
-                       Dispatcher.BeginInvoke((System.Threading.ThreadStart) delegate
-                       {
-                           myFunc();
-                       });
-                    }
-                });
-
-
                 await Task.Run(async () => await _connection.StartAsync());
                 // Let op: het starten van de connectie moet *nadat* alle event listeners zijn gezet!
                 // Als de methode waarin dit voorkomt al `async` (asynchroon) is, dan kan `Task.Run` weggehaald worden.
@@ -153,6 +119,7 @@ namespace TetrisClient
             Action action = () =>
             {
                 Bm = new BoardManager(this);
+                IncomingWell = new string[TetrisGridP2.RowDefinitions.Count, TetrisGridP2.ColumnDefinitions.Count];
                 DrawGrids();
 
                 Focus();
@@ -279,12 +246,30 @@ namespace TetrisClient
         /// </summary>
         public void DrawGrids()
         {
+            _connection.InvokeAsync<string[,]>("UpdateWell", Bm.TetrisWell);
+
+            _connection.On<string[,]>("UpdateWell", incomingWell =>
+            {
+                IncomingWell = incomingWell;
+            });
+
             ClearGrids();
+
+            for (int i = 0; i < IncomingWell.GetLength(0); i++)
+            {
+                for (int j = 0; j < IncomingWell.GetLength(1); j++)
+                {
+                    Rectangle rectangle = CreateRectangle(IncomingWell[i, j], null);
+
+                    TetrisGridP2.Children.Add(rectangle);
+                    Grid.SetRow(rectangle, i);
+                    Grid.SetColumn(rectangle, j);
+                }
+            }
 
             // Fill the grid by looping through the tetris well.
             for (int i = 0; i < Bm.TetrisWell.GetLength(0); i++)
             {
-
                 for (int j = 0; j < Bm.TetrisWell.GetLength(1); j++)
                 {
                     Rectangle rectangle = CreateRectangle(Bm.TetrisWell[i, j], null);
@@ -294,22 +279,6 @@ namespace TetrisClient
                     Grid.SetColumn(rectangle, j);
                 }
             }
-            if (PlayerTwoWell != null)
-            {
-                for (int i = 0; i < PlayerTwoWell.Well.GetLength(0); i++)
-                {
-
-                    for (int j = 0; j < PlayerTwoWell.Well.GetLength(1); j++)
-                    {
-                        Rectangle rectangle = CreateRectangle(PlayerTwoWell.Well[i, j], null);
-
-                        TetrisGridP2.Children.Add(rectangle);
-                        Grid.SetRow(rectangle, i);
-                        Grid.SetColumn(rectangle, j);
-                    }
-                }
-            }
-
 
             // Add the ghost block to the grid.
             int ghostY = Bm.GhostBlock.Y;
@@ -371,9 +340,6 @@ namespace TetrisClient
                     Grid.SetColumn(rectangle, j);
                 }
             }
-
-            _connection.InvokeAsync<SolidColorBrush[,]>("UpdateWell", Bm.TetrisWell);
-
         }
 
 
@@ -383,20 +349,15 @@ namespace TetrisClient
         /// <param name="fill">The color used to fill the Rectangle.</param>
         /// <param name="border">The color used for the border of the Rectangle.</param>
         /// <returns>A new Rectangle with the given colors.</returns>
-        private static Rectangle CreateRectangle(SolidColorBrush fill, SolidColorBrush border)
+        private static Rectangle CreateRectangle(string fill, string border)
         {
-            if (border == null)
-            {
-                border = Brushes.White;
-            }
-
             Rectangle rectangle = new()
             {
                 Width = 25,
                 Height = 25,
-                Stroke = border,
+                Stroke = (SolidColorBrush) new BrushConverter().ConvertFrom(border ?? "#FFFFFFFF"),
                 StrokeThickness = 1,
-                Fill = fill,
+                Fill = fill == null ? null : (SolidColorBrush) new BrushConverter().ConvertFrom(fill),
             };
 
             return rectangle;

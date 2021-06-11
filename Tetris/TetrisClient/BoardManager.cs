@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 
 namespace TetrisClient
 {
@@ -12,7 +11,7 @@ namespace TetrisClient
 
         public static readonly Random randStatus = new();
 
-        public SolidColorBrush[,] TetrisWell { get; set; }
+        public string[,] TetrisWell { get; set; }
         public Block CurrentBlock { get; set; }
         public Block NextBlock { get; set; }
         public Block GhostBlock { get; set; }
@@ -32,14 +31,14 @@ namespace TetrisClient
         public BoardManager(MultiplayerWindow multiplayerWindow)
         {
             MultiplayerWindow = multiplayerWindow;
-            TetrisWell = new SolidColorBrush[MultiplayerWindow.TetrisGridP1.RowDefinitions.Count, MultiplayerWindow.TetrisGridP1.ColumnDefinitions.Count];
+            TetrisWell = new string[MultiplayerWindow.TetrisGridP1.RowDefinitions.Count, MultiplayerWindow.TetrisGridP1.ColumnDefinitions.Count];
             InitBoardManager();
         }
 
         public BoardManager(MainWindow mainWindow)
         {
             MainWindow = mainWindow;
-            TetrisWell = new SolidColorBrush[MainWindow.TetrisGrid.RowDefinitions.Count, MainWindow.TetrisGrid.ColumnDefinitions.Count];
+            TetrisWell = new string[MainWindow.TetrisGrid.RowDefinitions.Count, MainWindow.TetrisGrid.ColumnDefinitions.Count];
             InitBoardManager();
         }
 
@@ -77,7 +76,7 @@ namespace TetrisClient
 
         public void IncreaseSpeedWithLevel()
         {
-            if(PreviousLevel != Level)
+            if (PreviousLevel != Level)
             {
                 PreviousLevel = Level;
                 SoundManager.IncreaseSpeed();
@@ -125,7 +124,7 @@ namespace TetrisClient
                 }
                 if (rowFilled)
                 {
-                    SolidColorBrush[,] newTetrisWell = new SolidColorBrush[TetrisWell.GetLength(0), TetrisWell.GetLength(1)];
+                    string[,] newTetrisWell = new string[TetrisWell.GetLength(0), TetrisWell.GetLength(1)];
                     for (int i = TetrisWell.GetUpperBound(0), k = TetrisWell.GetUpperBound(0); i >= 0; i--)
                     {
                         if (i == row)
