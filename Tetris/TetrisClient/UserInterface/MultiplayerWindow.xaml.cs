@@ -18,7 +18,7 @@ namespace TetrisClient
 
         public Random RandomSeeded;
 
-        static string[,] IncomingWell;
+        public Grid TetrisGrid;
 
         private int Seed;
 
@@ -161,8 +161,33 @@ namespace TetrisClient
         {
             Action action = () =>
             {
+                foreach (Player p in Player.GetPlayersMinus(MainPlayer))
+                {
+                    TetrisGrid = new Grid();
+                    TetrisGrid.Width = 250;
+                    TetrisGrid.Height = 500;
+                    TetrisGrid.HorizontalAlignment = HorizontalAlignment.Left;
+                    TetrisGrid.VerticalAlignment = VerticalAlignment.Bottom;
+                    TetrisGrid.Background = (SolidColorBrush) new BrushConverter().ConvertFrom("#F4F4F4");
+                    for (int i = 0; i < 16; i++)
+                    {
+                        ColumnDefinition gridCol = new ColumnDefinition();
+                        gridCol.Width = new GridLength(25);
+                        TetrisGrid.ColumnDefinitions.Add(gridCol);
+                    }
+                    for (int i = 0; i < 20; i++)
+                    {
+                        RowDefinition gridRow = new RowDefinition();
+                        gridRow.Height = new GridLength(25);
+                        TetrisGrid.RowDefinitions.Add(gridRow);
+                    }
+                    OpponentGrids.Children.Add(TetrisGrid);
+
+                    p.TetrisWell = new string[TetrisGrid.RowDefinitions.Count, TetrisGrid.ColumnDefinitions.Count];
+                    p.PlayerGrid = TetrisGrid;
+                }
+
                 Bm = new BoardManager(this);
-                IncomingWell = new string[TetrisGridP2.RowDefinitions.Count, TetrisGridP2.ColumnDefinitions.Count];
                 DrawGrids();
 
                 Focus();
@@ -174,7 +199,6 @@ namespace TetrisClient
 
             };
             Dispatcher.Invoke(action);
-
         }
 
         /// <summary>
@@ -293,9 +317,7 @@ namespace TetrisClient
         /// </summary>
         public void ClearGrids()
         {
-
             TetrisGridP1.Children.Clear();
-            TetrisGridP2.Children.Clear();
             NextBlockGrid.Children.Clear();
         }
 
@@ -322,20 +344,28 @@ namespace TetrisClient
 
             _connection.On<object[]>("UpdateWell", message =>
             {
-                IncomingWell = ((Newtonsoft.Json.Linq.JArray) message[1]).ToObject<string[,]>();
+                Player p = Player.FindPlayer(Guid.Parse((string) message[0]));
+                p.TetrisWell = ((Newtonsoft.Json.Linq.JArray) message[1]).ToObject<string[,]>();
             });
 
             ClearGrids();
 
-            for (int i = 0; i < IncomingWell.GetLength(0); i++)
+            foreach (Player p in Player.GetPlayersMinus(MainPlayer))
             {
-                for (int j = 0; j < IncomingWell.GetLength(1); j++)
+                if (p.TetrisWell != null && p.PlayerGrid != null)
                 {
-                    Rectangle rectangle = CreateRectangle(IncomingWell[i, j], null);
+                    p.PlayerGrid.Children.Clear();
+                    for (int i = 0; i < p.TetrisWell.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < p.TetrisWell.GetLength(1); j++)
+                        {
+                            Rectangle rectangle = CreateRectangle(p.TetrisWell[i, j], null);
 
-                    TetrisGridP2.Children.Add(rectangle);
-                    Grid.SetRow(rectangle, i);
-                    Grid.SetColumn(rectangle, j);
+                            p.PlayerGrid.Children.Add(rectangle);
+                            Grid.SetRow(rectangle, i);
+                            Grid.SetColumn(rectangle, j);
+                        }
+                    }
                 }
             }
 

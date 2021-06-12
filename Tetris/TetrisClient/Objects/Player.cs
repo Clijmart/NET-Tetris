@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace TetrisClient.Objects
 {
@@ -13,6 +15,7 @@ namespace TetrisClient.Objects
         public int LinesCleared { get; set; }
         public int Time { get; set; }
 
+        public Grid PlayerGrid { get; set; }
         public bool Ready { get; set; }
 
         public Player (Guid playerID)
@@ -36,6 +39,7 @@ namespace TetrisClient.Objects
             }
             Player p = new(playerID);
             Players.Add(p);
+            Players = Players.OrderBy(x=>x.PlayerID).ToList();
             return p;
         }
 
@@ -54,6 +58,13 @@ namespace TetrisClient.Objects
         public static List<Player> GetPlayers()
         {
             return Players;
+        }
+
+        public static List<Player> GetPlayersMinus(Player player)
+        {
+            List<Player> newPlayers = Players;
+            newPlayers.Remove(player);
+            return newPlayers;
         }
     }
 }
