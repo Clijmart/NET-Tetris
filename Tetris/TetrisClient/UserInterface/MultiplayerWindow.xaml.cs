@@ -387,10 +387,15 @@ namespace TetrisClient
                         for (int j = 0; j < p.TetrisWell.GetLength(1); j++)
                         {
                             Rectangle rectangle = CreateRectangle(p.TetrisWell[i, j], null);
+                            Rectangle innerRectangle = CreateInnerRectangle(p.TetrisWell[i, j], null);
 
                             p.PlayerGrid.Children.Add(rectangle);
+                            p.PlayerGrid.Children.Add(innerRectangle);
+
                             Grid.SetRow(rectangle, i);
                             Grid.SetColumn(rectangle, j);
+                            Grid.SetRow(innerRectangle, i);
+                            Grid.SetColumn(innerRectangle, j);
                         }
                     }
                 }
@@ -402,10 +407,14 @@ namespace TetrisClient
                 for (int j = 0; j < Bm.TetrisWell.GetLength(1); j++)
                 {
                     Rectangle rectangle = CreateRectangle(Bm.TetrisWell[i, j], null);
+                    Rectangle innerRectangle = CreateInnerRectangle(Bm.TetrisWell[i, j], null);
 
                     TetrisGridP1.Children.Add(rectangle);
+                    TetrisGridP1.Children.Add(innerRectangle);
                     Grid.SetRow(rectangle, i);
                     Grid.SetColumn(rectangle, j);
+                    Grid.SetRow(innerRectangle, i);
+                    Grid.SetColumn(innerRectangle, j);
                 }
             }
 
@@ -444,10 +453,15 @@ namespace TetrisClient
                     }
 
                     Rectangle rectangle = CreateRectangle(Bm.CurrentBlock.Color, null);
+                    Rectangle innerRectangle = CreateInnerRectangle(Bm.CurrentBlock.Color, null);
 
                     TetrisGridP1.Children.Add(rectangle);
+                    TetrisGridP1.Children.Add(innerRectangle);
+
                     Grid.SetRow(rectangle, i + currentY);
                     Grid.SetColumn(rectangle, j + currentX);
+                    Grid.SetRow(innerRectangle, i + currentY);
+                    Grid.SetColumn(innerRectangle, j + currentX);
                 }
             }
 
@@ -463,10 +477,14 @@ namespace TetrisClient
                     }
 
                     Rectangle rectangle = CreateRectangle(Bm.NextBlock.Color, null);
+                    Rectangle innerRectangle = CreateInnerRectangle(Bm.NextBlock.Color, null);
 
                     NextBlockGrid.Children.Add(rectangle);
+                    NextBlockGrid.Children.Add(innerRectangle);
                     Grid.SetRow(rectangle, i);
                     Grid.SetColumn(rectangle, j);
+                    Grid.SetRow(innerRectangle, i);
+                    Grid.SetColumn(innerRectangle, j);
                 }
             }
         }
@@ -490,6 +508,33 @@ namespace TetrisClient
             };
 
             return rectangle;
+        }
+
+        private static Rectangle CreateInnerRectangle(string fill, string border)
+        {
+            Rectangle innerRectangle = new();
+            if (fill != null)
+            {
+                SolidColorBrush innerColor = (SolidColorBrush)new BrushConverter().ConvertFrom(fill);
+                innerColor.Color = InterpolateColors(innerColor.Color, Brushes.White.Color, 0.25f);
+                innerRectangle.Width = 15;
+                innerRectangle.Height = 15;
+                innerRectangle.Fill = innerColor;
+            }
+
+            return innerRectangle;
+        }
+
+        public static Color InterpolateColors(Color color1, Color color2, float percentage)
+        {
+            double a1 = color1.A / 255.0, r1 = color1.R / 255.0, g1 = color1.G / 255.0, b1 = color1.B / 255.0;
+            double a2 = color2.A / 255.0, r2 = color2.R / 255.0, g2 = color2.G / 255.0, b2 = color2.B / 255.0;
+
+            byte a3 = Convert.ToByte((a1 + (a2 - a1) * percentage) * 255);
+            byte r3 = Convert.ToByte((r1 + (r2 - r1) * percentage) * 255);
+            byte g3 = Convert.ToByte((g1 + (g2 - g1) * percentage) * 255);
+            byte b3 = Convert.ToByte((b1 + (b2 - b1) * percentage) * 255);
+            return Color.FromArgb(a3, r3, g3, b3);
         }
     }
 }
