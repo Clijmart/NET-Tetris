@@ -5,19 +5,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
-        Title="MultiplayerWindow"  Height="610" MinWidth="963"
+        Title="MultiplayerWindow"  Height="600" MinWidth="700"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
     <Grid>
-        <Button Content="Ready up!" Name="ReadyUpButton" Click="StartGame_OnClick" Margin="0,0,62,242" Background="#FF2F7FDE" HorizontalAlignment="Right" Width="78" Height="40" VerticalAlignment="Bottom"></Button>
-        <Label Name="Status" Content="Waiting for Connection..." Margin="0,0,27,397" VerticalAlignment="Bottom" Height="25" HorizontalAlignment="Right" Width="142"/>
-        <Button Content="&#xE112; Go Back" Click="GoBackButton" HorizontalAlignment="Left" Margin="843,0,0,527" VerticalAlignment="Bottom" Height="27" Width="78" Background="{x:Null}" Cursor="Hand" FontFamily="Segoe UI Symbol" Foreground="#FF7C7C7C" BorderBrush="{x:Null}" RenderTransformOrigin="0.687,0.565"/>
-        <TextBox Name="InputField" TextAlignment="Center"  Margin="0,0,20,356" Text="Enter Server IP..." TextWrapping="Wrap" VerticalAlignment="Bottom" Height="21" Cursor="IBeam" HorizontalAlignment="Right" Width="162"/>
-        <Button Content="Connect" Name="ConnectButton" Click="ConnectButtonMethod" Margin="0,0,42,298" Background="#FF2F7FDE" HorizontalAlignment="Right" Width="115" Height="38" VerticalAlignment="Bottom"/>
-        <TextBlock x:Name="PlayersText" Margin="0,0,20,20" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="162" Foreground="#FF5D5D5D" Background="#FFF4F4F4"/>
-        <Grid x:Name="OpponentGrids" HorizontalAlignment="Left" MinWidth="250" Margin="25,0,0,62" Height="500" VerticalAlignment="Bottom">
+        <Grid x:Name="OpponentGrids" HorizontalAlignment="Left" MinWidth="250" Margin="25,0,0,50" Height="500" VerticalAlignment="Bottom">
         </Grid>
-        <Grid x:Name="TetrisGridP1" Background="#f4f4f4" HorizontalAlignment="Left" Width="250" Margin="299,0,0,62" Height="500" VerticalAlignment="Bottom">
+        <Grid x:Name="TetrisGridP1" Background="#FFF4F4F4" HorizontalAlignment="Right" Width="250" Margin="0,0,150,50" Height="500" VerticalAlignment="Bottom">
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
@@ -53,7 +47,7 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <Grid x:Name="NextBlockGrid" Margin="592,0,0,454" Background="#f4f4f4" MinHeight="100" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100">
+        <Grid x:Name="NextBlockGrid" Margin="0,75,25,0" Background="#FFF4F4F4" MinHeight="100" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100">
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
@@ -67,14 +61,20 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <TextBlock x:Name="Level" Margin="592,0,0,396" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D" Background="#FFF4F4F4"/>
-        <TextBlock x:Name="Lines" Margin="592,0,0,339" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
-        <TextBlock x:Name="Score" Margin="592,0,0,278" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
-        <TextBlock x:Name="Time" Margin="592,0,0,130" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
-        <Label Content="Level" HorizontalAlignment="Left" Margin="592,0,0,426" VerticalAlignment="Bottom" Height="26" Foreground="#FF5D5D5D"/>
-        <Label Content="Lines" HorizontalAlignment="Left" Margin="592,0,0,369" VerticalAlignment="Bottom" Height="26" Foreground="#FF5D5D5D"/>
-        <Label Content="Score" HorizontalAlignment="Left" Margin="592,0,0,313" Foreground="#FF5D5D5D" Height="26" VerticalAlignment="Bottom"/>
-        <Label Content="Time" HorizontalAlignment="Left" Margin="592,0,0,160" VerticalAlignment="Bottom" Height="26" Foreground="#FF5D5D5D"/>
-
+        <Button Content="&#xE112; Go Back" Click="GoBackButton" HorizontalAlignment="Right" Margin="0,25,25,0" VerticalAlignment="Top" Height="25" Width="100" Background="{x:Null}" Cursor="Hand" FontFamily="Segoe UI Symbol" Foreground="#FF7C7C7C" BorderBrush="{x:Null}" RenderTransformOrigin="0.687,0.565"/>
+        <TextBox Name="InputField" TextAlignment="Center"  Margin="0,0,25,350" Text="Enter Server IP..." TextWrapping="Wrap" VerticalAlignment="Bottom" Height="30" Cursor="IBeam" HorizontalAlignment="Right" Width="100"/>
+        <Label Name="Status" Content="Waiting..." Margin="0,0,25,300" VerticalAlignment="Bottom" Height="25" HorizontalAlignment="Right" Width="100"/>
+        <Button Content="Connect" Name="ConnectButton" Click="ConnectButtonMethod" Margin="0,0,25,250" Background="#FF2F7FDE" HorizontalAlignment="Right" Width="100" Height="50" VerticalAlignment="Bottom"/>
+        <Button Content="Ready up!" Name="ReadyUpButton" Click="StartGame_OnClick" Margin="0,0,25,200" Background="#FF2F7FDE" HorizontalAlignment="Right" Width="100" Height="50" VerticalAlignment="Bottom"></Button>
+        <TextBlock x:Name="PlayersText" Margin="0,0,25,20" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Foreground="#FF5D5D5D" Background="#FFF4F4F4"/>
+        
+        <TextBlock x:Name="Level" Margin="0,0,25,280" Background="#FFF4F4F4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Foreground="#FF5D5D5D"/>
+        <TextBlock x:Name="Lines" Margin="0,0,25,220" Background="#FFF4F4F4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Foreground="#FF5D5D5D"/>
+        <TextBlock x:Name="Score" Margin="0,0,25,160" Background="#FFF4F4F4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Foreground="#FF5D5D5D"/>
+        <TextBlock x:Name="Time" Margin="0,0,25,100" Background="#FFF4F4F4" MinHeight="30" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Foreground="#FF5D5D5D"/>
+        <Label x:Name="LevelLabel" Content="Level" HorizontalAlignment="Right" Margin="0,0,25,310" VerticalAlignment="Bottom" Height="25" Width="100" Foreground="#FF5D5D5D"/>
+        <Label x:Name="LinesLabel" Content="Lines" HorizontalAlignment="Right" Margin="0,0,25,250" VerticalAlignment="Bottom" Height="25" Width="100" Foreground="#FF5D5D5D"/>
+        <Label x:Name="ScoreLabel" Content="Score" HorizontalAlignment="Right" Margin="0,0,25,190" VerticalAlignment="Bottom" Height="25" Width="100" Foreground="#FF5D5D5D"/>
+        <Label x:Name="TimeLabel" Content="Time" HorizontalAlignment="Right" Margin="0,0,25,130" VerticalAlignment="Bottom" Height="25" Width="100" Foreground="#FF5D5D5D"/>
     </Grid>
 </Window>

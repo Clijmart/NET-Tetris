@@ -31,6 +31,17 @@ namespace TetrisClient
             ReadyUpButton.Visibility = Visibility.Hidden;
             PlayersText.Visibility = Visibility.Hidden;
 
+            Level.Visibility = Visibility.Hidden;
+            Lines.Visibility = Visibility.Hidden;
+            Score.Visibility = Visibility.Hidden;
+            Time.Visibility = Visibility.Hidden;
+            LevelLabel.Visibility = Visibility.Hidden;
+            LinesLabel.Visibility = Visibility.Hidden;
+            ScoreLabel.Visibility = Visibility.Hidden;
+            TimeLabel.Visibility = Visibility.Hidden;
+
+            NextBlockGrid.Visibility = Visibility.Hidden;
+
             MainPlayer = Player.FindPlayer(Guid.NewGuid());
             UpdatePlayersText();
         }
@@ -161,11 +172,13 @@ namespace TetrisClient
         {
             Action action = () =>
             {
+                int opponents = 0;
                 foreach (Player p in Player.GetPlayersMinus(MainPlayer))
                 {
                     TetrisGrid = new Grid();
                     TetrisGrid.Width = 250;
                     TetrisGrid.Height = 500;
+                    TetrisGrid.Margin = new Thickness(25 + 275 * opponents, 0, 0, 50);
                     TetrisGrid.HorizontalAlignment = HorizontalAlignment.Left;
                     TetrisGrid.VerticalAlignment = VerticalAlignment.Bottom;
                     TetrisGrid.Background = (SolidColorBrush) new BrushConverter().ConvertFrom("#F4F4F4");
@@ -185,7 +198,10 @@ namespace TetrisClient
 
                     p.TetrisWell = new string[TetrisGrid.RowDefinitions.Count, TetrisGrid.ColumnDefinitions.Count];
                     p.PlayerGrid = TetrisGrid;
+                    opponents++;
                 }
+
+                Application.Current.MainWindow.Width = 25 + 275 * (opponents + 1) + 125;
 
                 Bm = new BoardManager(this);
                 DrawGrids();
@@ -196,6 +212,17 @@ namespace TetrisClient
                 InputField.Visibility = Visibility.Hidden;
                 PlayersText.Visibility = Visibility.Hidden;
                 Status.Visibility = Visibility.Hidden;
+
+                Level.Visibility = Visibility.Visible;
+                Lines.Visibility = Visibility.Visible;
+                Score.Visibility = Visibility.Visible;
+                Time.Visibility = Visibility.Visible;
+                LevelLabel.Visibility = Visibility.Visible;
+                LinesLabel.Visibility = Visibility.Visible;
+                ScoreLabel.Visibility = Visibility.Visible;
+                TimeLabel.Visibility = Visibility.Visible;
+
+                NextBlockGrid.Visibility = Visibility.Visible;
 
             };
             Dispatcher.Invoke(action);
