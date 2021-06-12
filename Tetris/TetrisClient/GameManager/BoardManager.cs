@@ -22,7 +22,7 @@ namespace TetrisClient
         public int Time { get; set; }
         public Timer Timer { get; set; }
         public int LinesCleared { get; set; }
-        public int Score { get; set; }
+        public long Score { get; set; }
 
         public bool BlockRepeat { get; set; }
 

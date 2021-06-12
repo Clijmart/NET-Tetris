@@ -16,9 +16,9 @@ namespace TetrisServer.Hubs
             await Clients.Others.SendAsync("SendStatus", Message);
         }
 
-        public async Task UpdateWell(object[] Message)
+        public async Task UpdatePlayer(object[] Message)
         {
-            await Clients.Others.SendAsync("UpdateWell", Message);
+            await Clients.Others.SendAsync("UpdatePlayer", Message);
         }
         
         public async Task StartGame()

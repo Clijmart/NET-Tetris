@@ -9,8 +9,7 @@
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
     <Grid x:Name="MainGrid">
-        <Grid x:Name="OpponentGrids" HorizontalAlignment="Left" MinWidth="250" Margin="25,0,0,50" Height="500" VerticalAlignment="Bottom">
-        </Grid>
+        <Grid x:Name="OpponentGrids" HorizontalAlignment="Left" MinWidth="250" Margin="25,0,0,50" Height="500" VerticalAlignment="Bottom"/>
         <Grid x:Name="MainTetrisGrid" Background="#FFF4F4F4" HorizontalAlignment="Right" Width="250" Margin="0,0,150,50" Height="500" VerticalAlignment="Bottom">
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>

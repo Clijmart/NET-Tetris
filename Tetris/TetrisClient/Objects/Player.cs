@@ -11,11 +11,13 @@ namespace TetrisClient.Objects
 
         public Guid PlayerID { get; set; }
         public string[,] TetrisWell { get; set; }
-        public int Score { get; set; }
+        public long Score { get; set; }
         public int LinesCleared { get; set; }
         public int Time { get; set; }
 
         public Grid PlayerGrid { get; set; }
+        public TextBlock NameBlock { get; set; }
+        public TextBlock ScoreBlock { get; set; }
         public bool Ready { get; set; }
 
         public Player (Guid playerID)

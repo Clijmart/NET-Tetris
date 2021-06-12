@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -165,36 +166,7 @@ namespace TetrisClient
         {
             Action action = () =>
             {
-                int opponents = 0;
-                foreach (Player p in Player.GetPlayersMinus(MainPlayer))
-                {
-                    TetrisGrid = new Grid();
-                    TetrisGrid.Width = 250;
-                    TetrisGrid.Height = 500;
-                    TetrisGrid.Margin = new Thickness(275 * opponents, 0, 0, 0);
-                    TetrisGrid.HorizontalAlignment = HorizontalAlignment.Left;
-                    TetrisGrid.VerticalAlignment = VerticalAlignment.Bottom;
-                    TetrisGrid.Background = (SolidColorBrush) new BrushConverter().ConvertFrom("#F4F4F4");
-                    for (int i = 0; i < 16; i++)
-                    {
-                        ColumnDefinition gridCol = new ColumnDefinition();
-                        gridCol.Width = new GridLength(25);
-                        TetrisGrid.ColumnDefinitions.Add(gridCol);
-                    }
-                    for (int i = 0; i < 20; i++)
-                    {
-                        RowDefinition gridRow = new RowDefinition();
-                        gridRow.Height = new GridLength(25);
-                        TetrisGrid.RowDefinitions.Add(gridRow);
-                    }
-                    OpponentGrids.Children.Add(TetrisGrid);
-
-                    p.TetrisWell = new string[TetrisGrid.RowDefinitions.Count, TetrisGrid.ColumnDefinitions.Count];
-                    p.PlayerGrid = TetrisGrid;
-                    opponents++;
-                }
-
-                Width = 25 + 275 * (opponents + 1) + 150;
+                PrepareGrids();
 
                 Bm = new BoardManager(this);
                 DrawGrids();
@@ -206,6 +178,67 @@ namespace TetrisClient
                 NextBlockGrid.Visibility = Visibility.Visible;
             };
             Dispatcher.Invoke(action);
+        }
+
+        public void PrepareGrids()
+        {
+            int opponents = 0;
+            foreach (Player p in Player.GetPlayersMinus(MainPlayer))
+            {
+                TetrisGrid = new Grid();
+                TetrisGrid.Width = 250;
+                TetrisGrid.Height = 500;
+                TetrisGrid.Margin = new Thickness(275 * opponents, 0, 0, 0);
+                TetrisGrid.HorizontalAlignment = HorizontalAlignment.Left;
+                TetrisGrid.VerticalAlignment = VerticalAlignment.Bottom;
+                TetrisGrid.Background = (SolidColorBrush) new BrushConverter().ConvertFrom("#F4F4F4");
+
+                for (int i = 0; i < 16; i++)
+                {
+                    ColumnDefinition gridCol = new ColumnDefinition();
+                    gridCol.Width = new GridLength(25);
+                    TetrisGrid.ColumnDefinitions.Add(gridCol);
+                }
+
+                for (int i = 0; i < 20; i++)
+                {
+                    RowDefinition gridRow = new RowDefinition();
+                    gridRow.Height = new GridLength(25);
+                    TetrisGrid.RowDefinitions.Add(gridRow);
+                }
+                p.TetrisWell = new string[TetrisGrid.RowDefinitions.Count, TetrisGrid.ColumnDefinitions.Count];
+
+                /*
+                string player = "Player" + Player.GetPlayers().IndexOf(p);
+                TextBlock nameBlock = new()
+                {
+                    Text = player,
+                    FontWeight = FontWeights.Bold
+                };
+
+                TextBlock scoreBlock = new()
+                {
+                    Text = "" + p.Score,
+                };
+
+                RowDefinition nameRow = new RowDefinition();
+                nameRow.Height = new GridLength(50);
+                TetrisGrid.RowDefinitions.Add(nameRow);
+
+                p.PlayerGrid = TetrisGrid;
+                p.NameBlock = nameBlock;
+                p.ScoreBlock = scoreBlock;
+
+                TetrisGrid.Children.Add(nameBlock);
+                //TetrisGrid.Children.Add(scoreBlock);
+                */
+
+                OpponentGrids.Children.Add(TetrisGrid);
+
+                opponents++;
+            }
+
+            Width = 25 + 275 * (opponents + 1) + 150;
         }
 
         /// <summary>
@@ -309,7 +342,6 @@ namespace TetrisClient
         /// </summary>
         public void UpdateText()
         {
-
             Level.Text = Bm.CalculateLevel().ToString();
             Lines.Text = Bm.LinesCleared.ToString();
             Score.Text = Bm.Score.ToString();
@@ -323,12 +355,13 @@ namespace TetrisClient
         /// </summary>
         public void DrawGrids()
         {
-            _connection.InvokeAsync<object[]>("UpdateWell", new object[] { MainPlayer.PlayerID, BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock) });
+            _connection.InvokeAsync<object[]>("UpdatePlayer", new object[] { MainPlayer.PlayerID, BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score });
 
-            _connection.On<object[]>("UpdateWell", message =>
+            _connection.On<object[]>("UpdatePlayer", message =>
             {
                 Player p = Player.FindPlayer(Guid.Parse((string) message[0]));
                 p.TetrisWell = ((Newtonsoft.Json.Linq.JArray) message[1]).ToObject<string[,]>();
+                p.Score = (long) message[2];
             });
 
             MainTetrisGrid.Children.Clear();
@@ -344,6 +377,7 @@ namespace TetrisClient
                 {
                     p.PlayerGrid.Children.Clear();
                     InterfaceManager.DrawWell(p.PlayerGrid, p.TetrisWell);
+                    //p.ScoreBlock.Text = "" + p.Score;
                 }
             }
         }
