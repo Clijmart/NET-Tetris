@@ -15,7 +15,7 @@ namespace TetrisClient
         {
             Speed = 1;
             Volume = 0.1;
-            MusicPath = new(Environment.CurrentDirectory + "/resources/Tetris_theme.wav", UriKind.Relative);
+            MusicPath = new(Environment.CurrentDirectory + "/Resources/Tetris_theme.wav", UriKind.Relative);
             MusicPlayer = new MediaPlayer();
 
         }
@@ -44,6 +44,17 @@ namespace TetrisClient
         public void StopMusic()
         {
             MusicPlayer.Stop();
+        }
+    }
+
+    public class GameSounds
+    {
+        public static void PlaySound()
+        {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.Open(new(Environment.CurrentDirectory + "/Resources/RotateBlock.wav", UriKind.Relative));
+            mediaPlayer.Position = TimeSpan.Zero;
+            mediaPlayer.Play();
         }
     }
 }

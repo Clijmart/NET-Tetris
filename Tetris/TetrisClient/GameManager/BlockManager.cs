@@ -123,18 +123,7 @@ namespace TetrisClient
         {
             if (BlockManager.CanMove(Bm.TetrisWell, this))
             {
-                for (int i = 0; i < Shape.Value.GetLength(0); i++)
-                {
-                    for (int j = 0; j < Shape.Value.GetLength(1); j++)
-                    {
-                        if (Shape.Value[i, j] != 1)
-                        {
-                            continue;
-                        }
-
-                        Bm.TetrisWell[i + Y, j + X] = Color;
-                    }
-                }
+                Bm.TetrisWell = BlockManager.PlaceBlockInWell(Bm.TetrisWell, this);
                 Bm.NextTurn();
             }
             else
@@ -187,6 +176,25 @@ namespace TetrisClient
 
     public static class BlockManager
     {
+        public static string[,] PlaceBlockInWell(string[,] tetrisWell, Block block)
+        {
+            string[,] newWell = (string[,]) tetrisWell.Clone();
+            for (int i = 0; i < block.Shape.Value.GetLength(0); i++)
+            {
+                for (int j = 0; j < block.Shape.Value.GetLength(1); j++)
+                {
+                    if (block.Shape.Value[i, j] != 1)
+                    {
+                        continue;
+                    }
+
+                    newWell[i + block.Y, j + block.X] = block.Color;
+                }
+            }
+
+            return newWell;
+        }
+
         /// <summary>
         /// Checks if the Block can be moved to the specified location in the tetris well.
         /// </summary>

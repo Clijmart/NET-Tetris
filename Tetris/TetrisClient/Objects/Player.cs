@@ -45,6 +45,11 @@ namespace TetrisClient.Objects
 
         public static bool AllReady()
         {
+            if (Players.Count < 2)
+            {
+                return false;
+            }
+
             foreach (Player player in Players)
             {
                 if (!player.Ready)
