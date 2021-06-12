@@ -32,7 +32,7 @@ namespace TetrisClient
         {
             MultiplayerWindow = multiplayerWindow;
             TetrisWell = new string[MultiplayerWindow.TetrisGridP1.RowDefinitions.Count, MultiplayerWindow.TetrisGridP1.ColumnDefinitions.Count];
-            randStatus = multiplayerWindow.P1Random;
+            randStatus = multiplayerWindow.RandomSeeded;
             InitBoardManager();
         }
 

@@ -14,9 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Menu.png" />
-      <None Remove="resources\Menu.png" />
-      <None Remove="resources\SplashScreen.png" />
+      <None Remove="Resources\Menu.png" />
+      <None Remove="Resources\SplashScreen.png" />
     </ItemGroup>
     
     <ItemGroup>
@@ -29,14 +28,18 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Resource Include="Menu.png" />
-      <SplashScreen Include="resources\SplashScreen.png" />
+      <Resource Include="Resources\Menu.png" />
+      <SplashScreen Include="Resources\SplashScreen.png" />
     </ItemGroup>
     
     <ItemGroup>
-      <None Update="resources\Tetris_theme.wav">
+      <None Update="Resources\Tetris_theme.wav">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Page Include="App.xaml" />
     </ItemGroup>
 
 </Project>

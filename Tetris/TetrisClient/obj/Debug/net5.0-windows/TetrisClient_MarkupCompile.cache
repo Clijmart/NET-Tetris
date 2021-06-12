@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\ieman\source\repos\practicum-5-net-2020-ex-gamechane-engineers\Tetris\TetrisClient\obj\Debug\net5.0-windows\
+C:\Users\martc\VS Projects\practicum-5-net-2020-ex-gamechane-engineers\Tetris\TetrisClient\obj\Debug\net5.0-windows\
 TetrisClient
 none
 false
 TRACE;DEBUG;NET;NET5_0;NETCOREAPP
-C:\Users\ieman\source\repos\practicum-5-net-2020-ex-gamechane-engineers\Tetris\TetrisClient\App.xaml
-41525760359
+C:\Users\martc\VS Projects\practicum-5-net-2020-ex-gamechane-engineers\Tetris\TetrisClient\App.xaml
+3-945647561
 
-11-588512764
-210-917057725
-MainWindow.xaml;Menu.xaml;MultiplayerWindow.xaml;TetrisControls.xaml;
+11650619399
+210-469997135
+UserInterface\MainWindow.xaml;UserInterface\Menu.xaml;UserInterface\MultiplayerWindow.xaml;
 resources\splashscreen.png
 False
 

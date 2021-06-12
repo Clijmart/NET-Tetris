@@ -7,18 +7,19 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using TetrisClient.Objects;
 
 namespace TetrisClient
 {
     public partial class MultiplayerWindow : Window
     {
         private HubConnection _connection;
-        public Random P1Random;
+        public Player MainPlayer;
+
+        public Random RandomSeeded;
 
         static string[,] IncomingWell;
 
-        private bool P1Ready = false;
-        private bool P2Ready = false;
         private int Seed;
 
 
@@ -28,10 +29,13 @@ namespace TetrisClient
         {
             InitializeComponent();
             ReadyUpButton.Visibility = Visibility.Hidden;
+            PlayersText.Visibility = Visibility.Hidden;
+
+            MainPlayer = Player.FindPlayer(Guid.NewGuid());
+            UpdatePlayersText();
         }
 
-        // Events kunnen `async` zijn in WPF:
-        private async void StartGame_OnClick(object sender, RoutedEventArgs e)
+        private void StartGame_OnClick(object sender, RoutedEventArgs e)
         {
             // Als de connectie nog niet is geïnitialiseerd, dan kan er nog niks verstuurd worden:
             if (_connection.State != HubConnectionState.Connected)
@@ -41,24 +45,26 @@ namespace TetrisClient
 
             if (Seed == 0)
             {
-                Seed = Guid.NewGuid().GetHashCode();
+                Seed = new Random().Next();
             }
-            P1Random = new Random(Seed);
+            RandomSeeded = new Random(Seed);
 
-            P1Ready = true;
-            if (P2Ready)
-            {
-                InitGame();
-            }
+            MainPlayer.Ready = true;
+            UpdatePlayersText();
 
             // Het aanroepen van de TetrisHub.cs methode `ReadyUp`.
             // Hier geven we de int mee die de methode `ReadyUp` verwacht.
-            await _connection.InvokeAsync("ReadyUp", Seed);
+            _connection.InvokeAsync("SendStatus", new object[] { MainPlayer.PlayerID, MainPlayer.Ready, Seed });
+
+            if (Player.AllReady())
+            {
+                InitGame();
+            }
         }
 
         private void GoBackButton(object sender, RoutedEventArgs e)
         {
-           if(Bm != null)
+           if (Bm != null)
             {
                 Bm.EndGame();
 
@@ -85,23 +91,41 @@ namespace TetrisClient
                 .WithAutomaticReconnect()
                 .Build();
 
-                // De eerste paramater moet gelijk zijn met de methodenaam in TetrisHub.cs
-                // Wat er tussen de <..> staat bepaald wat de type van de paramater `seed` is.
-                // Op deze manier loopt het onderstaande gelijk met de methode in TetrisHub.cs.
-                _connection.On<int>("ReadyUp", seed =>
+                _connection.On<Guid>("Join", playerID =>
                 {
-                    // Seed van de andere client:
-                    if (Seed == 0)
+                    Player p = Player.FindPlayer(playerID);
+
+                    Application.Current.Dispatcher.Invoke(delegate() {
+                        UpdatePlayersText();
+                    });
+
+                    _connection.InvokeAsync("SendStatus", new object[] { MainPlayer.PlayerID, MainPlayer.Ready, Seed });
+                });
+
+                _connection.On<object[]>("SendStatus", message =>
+                {
+                    Player p = Player.FindPlayer(Guid.Parse((string) message[0]));
+                    p.Ready = (bool) message[1];
+
+                    Application.Current.Dispatcher.Invoke(delegate() {
+                        UpdatePlayersText();
+                    });
+
+                    int seed = (int) ((long) message[2] % int.MaxValue);
+                    if (seed != 0)
                     {
                         Seed = seed;
                     }
 
-                    P2Ready = true;
-                    if (P1Ready)
+                    if (Player.AllReady())
                     {
                         InitGame();
                     }
                 });
+
+                // De eerste paramater moet gelijk zijn met de methodenaam in TetrisHub.cs
+                // Wat er tussen de <..> staat bepaald wat de type van de paramater `seed` is.
+                // Op deze manier loopt het onderstaande gelijk met de methode in TetrisHub.cs.
 
 
                 await Task.Run(async () => await _connection.StartAsync());
@@ -113,6 +137,8 @@ namespace TetrisClient
                 {
                     Status.Content = "Connected!";
                     ReadyUpButton.Visibility = Visibility.Visible;
+                    PlayersText.Visibility = Visibility.Visible;
+                    await _connection.InvokeAsync("Join", MainPlayer.PlayerID);
                 }
                 else
                 {
@@ -143,6 +169,8 @@ namespace TetrisClient
                 ConnectButton.Visibility = Visibility.Hidden;
                 ReadyUpButton.Visibility = Visibility.Hidden;
                 InputField.Visibility = Visibility.Hidden;
+                PlayersText.Visibility = Visibility.Hidden;
+                Status.Visibility = Visibility.Hidden;
 
             };
             Dispatcher.Invoke(action);
@@ -154,7 +182,6 @@ namespace TetrisClient
         /// </summary>
         public void EndGame()
         {
-
             Menu menu = new Menu();
             menu.Show();
             Close();
@@ -233,6 +260,20 @@ namespace TetrisClient
             }
         }
 
+        public void UpdatePlayersText()
+        {
+            string text = "";
+            int playerNumber = 1;
+            foreach (Player p in Player.GetPlayers())
+            {
+                text += "Player" + playerNumber + " ";
+                text += p.Ready ? "Ready" : "Not Ready";
+                text += "\n";
+                playerNumber++;
+            }
+            PlayersText.Text = text;
+        }
+
         /// <summary>
         /// Updates all Text.
         /// </summary>
@@ -277,11 +318,11 @@ namespace TetrisClient
                 }
             }
 
-            _connection.InvokeAsync<string[,]>("UpdateWell", newWell);
+            _connection.InvokeAsync<object[]>("UpdateWell", new object[] { MainPlayer.PlayerID, newWell });
 
-            _connection.On<string[,]>("UpdateWell", incomingWell =>
+            _connection.On<object[]>("UpdateWell", message =>
             {
-                IncomingWell = incomingWell;
+                IncomingWell = ((Newtonsoft.Json.Linq.JArray) message[1]).ToObject<string[,]>();
             });
 
             ClearGrids();
