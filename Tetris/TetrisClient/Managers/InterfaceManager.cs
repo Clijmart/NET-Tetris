@@ -2,12 +2,18 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 
 namespace TetrisClient.GameManager
 {
     public class InterfaceManager
     {
+        /// <summary>
+        /// Draws a well on the grid.
+        /// </summary>
+        /// <param name="subGrid">The grid to draw the well onto.</param>
+        /// <param name="well">The well to draw.</param>
         public static void DrawWell(Grid subGrid, string[,] well)
         {
             for (int i = 0; i < well.GetLength(0); i++)
@@ -19,6 +25,13 @@ namespace TetrisClient.GameManager
             }
         }
 
+        /// <summary>
+        /// Draws a block on the grid.
+        /// </summary>
+        /// <param name="subGrid">The grid to draw the well onto.</param>
+        /// <param name="block">The block to draw.</param>
+        /// <param name="isGhost">Whether the block should be drawn as a ghost.</param>
+        /// <param name="offset">Whether the block coordinates should be offset.</param>
         public static void DrawBlock(Grid subGrid, Block block, bool isGhost, bool offset)
         {
             int[,] shape = block.Shape.Value;
@@ -34,6 +47,14 @@ namespace TetrisClient.GameManager
             }
         }
 
+        /// <summary>
+        /// Draws a square on the grid.
+        /// </summary>
+        /// <param name="subGrid">The grid to draw the square onto.</param>
+        /// <param name="colorString">The color to draw the square.</param>
+        /// <param name="x">The x coordinate to draw the square at.</param>
+        /// <param name="y">The y coordinate to draw the square at.</param>
+        /// <param name="isHollow">Whether the block should be made hollow.</param>
         public static void DrawSquare(Grid subGrid, string colorString, int x, int y, bool isHollow)
         {
             if (colorString == null)
@@ -46,6 +67,7 @@ namespace TetrisClient.GameManager
             Grid.SetColumn(mainRectangle, x);
             Grid.SetRow(mainRectangle, y);
 
+            // Creates the 3D effect if the square isn't hollow.
             if (!isHollow)
             {
                 Polygon triangle = CreateTriangle(color);
@@ -61,11 +83,11 @@ namespace TetrisClient.GameManager
         }
 
         /// <summary>
-        /// Creates a Rectangle that can be used to draw a cell in the grid.
+        /// Creates a rectangle.
         /// </summary>
-        /// <param name="fill">The color used to fill the Rectangle.</param>
-        /// <param name="border">The color used for the border of the Rectangle.</param>
-        /// <returns>A new Rectangle with the given colors.</returns>
+        /// <param name="color">The color to draw the rectangle.</param>
+        /// <param name="isHollow">Whether the block should be made hollow.</param>
+        /// <returns>A rectangle.</returns>
         public static Rectangle CreateRectangle(Color color, bool isHollow)
         {
             Rectangle rectangle = new()
@@ -83,13 +105,18 @@ namespace TetrisClient.GameManager
             else
             {
                 color = InterpolateColors(color, Brushes.White.Color, 0.25f);
-                
+
                 rectangle.Fill = new SolidColorBrush(color);
             }
 
             return rectangle;
         }
 
+        /// <summary>
+        /// Creates a triangle.
+        /// </summary>
+        /// <param name="color">The color to draw the triangle.</param>
+        /// <returns>A polygon.</returns>
         public static Polygon CreateTriangle(Color color)
         {
             Polygon triangle = new()
@@ -103,10 +130,15 @@ namespace TetrisClient.GameManager
             {
                 new Point(0, 0), new Point(25, 25), new Point(0, 25)
             };
-            
+
             return triangle;
         }
 
+        /// <summary>
+        /// Creates a small rectangle.
+        /// </summary>
+        /// <param name="color">The color to draw the rectangle.</param>
+        /// <returns>A rectangle.</returns>
         public static Rectangle CreateInnerRectangle(Color color)
         {
             Rectangle rectangle = new()
@@ -119,6 +151,14 @@ namespace TetrisClient.GameManager
             return rectangle;
         }
 
+        /// <summary>
+        /// Combines two colors.
+        /// Primarily used to darken or lighten a given color.
+        /// </summary>
+        /// <param name="color1">The first color.</param>
+        /// <param name="color2">The second color.</param>
+        /// <param name="percentage">A float stating how much the second color should merge into the first.</param>
+        /// <returns>A color.</returns>
         public static Color InterpolateColors(Color color1, Color color2, float percentage)
         {
             double a1 = color1.A / 255.0, r1 = color1.R / 255.0, g1 = color1.G / 255.0, b1 = color1.B / 255.0;
@@ -129,6 +169,80 @@ namespace TetrisClient.GameManager
             byte g3 = Convert.ToByte((g1 + (g2 - g1) * percentage) * 255);
             byte b3 = Convert.ToByte((b1 + (b2 - b1) * percentage) * 255);
             return Color.FromArgb(a3, r3, g3, b3);
+        }
+
+        /// <summary>
+        /// Creates an info block.
+        /// </summary>
+        /// <param name="subGrid">The grid to add the block to.</param>
+        /// <param name="text">Text to place in the block.</param>
+        /// <param name="moveCount">Amount of times to move the block to the right.</param>
+        /// <returns>A textblock.</returns>
+        public static TextBlock CreateInfoBlock(Grid subGrid, string text, int moveCount)
+        {
+            TextBlock infoBlock = new()
+            {
+                Width = 250,
+                Height = 50,
+                Margin = new Thickness(275 * moveCount, 0, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Text = text,
+                FontWeight = FontWeights.Bold,
+                FontFamily = (FontFamily) Application.Current.TryFindResource("MainFont"),
+                FontSize = 30,
+                Foreground = (SolidColorBrush) Application.Current.TryFindResource("Text"),
+                TextAlignment = TextAlignment.Center,
+            };
+
+            subGrid.Children.Add(infoBlock);
+            return infoBlock;
+        }
+
+        /// <summary>
+        /// Creates a tetris grid.
+        /// </summary>
+        /// <param name="subGrid">The grid to add the tetris grid to.</param>
+        /// <param name="moveCount">Amount of times to move the grid to the right.</param>
+        /// <param name="rows">Amount of rows to add to the grid.</param>
+        /// <param name="cols">Amount of columns to add to the grid.</param>
+        /// <returns>A grid.</returns>
+        public static Grid CreateTetrisGrid(Grid subGrid, int moveCount, int rows, int cols)
+        {
+            Grid tetrisGrid = new()
+            {
+                Width = 250,
+                Height = 500,
+                Margin = new Thickness(275 * moveCount, 0, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Background = (SolidColorBrush) Application.Current.TryFindResource("Background"),
+            };
+
+            for (int i = 0; i < cols; i++)
+            {
+                ColumnDefinition gridCol = new();
+                gridCol.Width = new GridLength(25);
+                tetrisGrid.ColumnDefinitions.Add(gridCol);
+            }
+
+            for (int i = 0; i < rows; i++)
+            {
+                RowDefinition gridRow = new();
+                gridRow.Height = new GridLength(25);
+                tetrisGrid.RowDefinitions.Add(gridRow);
+            }
+
+            tetrisGrid.Effect = new DropShadowEffect()
+            {
+                BlurRadius = 10,
+                Color = (Color) Application.Current.TryFindResource("TextColor"),
+                ShadowDepth = 0,
+                Opacity = 1
+            };
+
+            subGrid.Children.Add(tetrisGrid);
+            return tetrisGrid;
         }
     }
 }

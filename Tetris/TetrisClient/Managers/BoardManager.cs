@@ -47,23 +47,25 @@ namespace TetrisClient
 
         public void InitBoardManager()
         {
+            // Create all needed blocks and move them to the correct positions.
             CurrentBlock = new Block(this);
             NextBlock = new Block(this);
             NextBlock.X = NextBlock.Shape.Value.GetLength(1) <= 2 ? 1 : 0;
             NextBlock.Y = NextBlock.Shape.Value.GetLength(0) <= 2 ? 1 : 0;
-
             GhostBlock = CurrentBlock.CalculateGhost();
 
+            // Initialize needed variables.
             Time = 0;
             LinesCleared = 0;
             Score = 0;
 
             NextTurn();
 
-            //  DispatcherTimer setup
+            // Start the timer.
             Timer = new(this);
             Timer.StartTimer();
             Running = true;
+
             if (SettingManager.MusicOn)
             {
                 InitSound();
@@ -89,7 +91,6 @@ namespace TetrisClient
                 if (SettingManager.MusicOn)
                 {
                     SoundManager.IncreaseSpeed();
-
                 }
             }
         }
@@ -97,7 +98,7 @@ namespace TetrisClient
         /// <summary>
         /// Calculates the score using the amount of filled lines and the current level.
         /// </summary>
-        /// <param name="linesfilled">The amount of lines to calculate the schore for.</param>
+        /// <param name="linesfilled">The amount of lines to calculate the score for.</param>
         /// <param name="level">The current level.</param>
         /// <returns>An integer with the calculated score.</returns>
         public static int CalculateScore(int linesFilled, int level)
@@ -175,15 +176,18 @@ namespace TetrisClient
 
         }
 
+        /// <summary>
+        /// Initialize the background music.
+        /// </summary>
         public async void InitSound()
         {
             await Task.Run(() =>
             {
-                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    SoundManager = new SoundManager();
-                    SoundManager.PlayMusic();
-                }));
+                _ = Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                  {
+                      SoundManager = new SoundManager();
+                      SoundManager.PlayMusic();
+                  }));
             });
         }
 

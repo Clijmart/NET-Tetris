@@ -86,9 +86,10 @@ namespace TetrisClient
         public bool Rotate()
         {
             bool foundRotation = false;
-            
-            // The locations to check at
-            var tryX = new List<int> { 0, 1, -1 };
+
+            // Wall kicking
+            // If a block can not be rotated, try to find a different solution.
+            List<int> tryX = new() { 0, 1, -1 };
             if (Tetromino == Tetromino.IBlock)
             {
                 tryX.AddRange(new int[] { 2, -2 });
@@ -96,7 +97,7 @@ namespace TetrisClient
 
             Block tempBlock = Clone();
             tempBlock.Shape = tempBlock.Shape.Rotate90();
-            
+
             foreach (int x in tryX)
             {
                 tempBlock.X = X + x;
@@ -106,7 +107,8 @@ namespace TetrisClient
                     break;
                 }
             }
-            
+
+            // If a solution was found, rotate the block.
             if (foundRotation)
             {
                 X = tempBlock.X;
@@ -177,6 +179,12 @@ namespace TetrisClient
 
     public static class BlockManager
     {
+        /// <summary>
+        /// Places a block in the tetris well.
+        /// </summary>
+        /// <param name="tetrisWell">The tetris well to place the block in.</param>
+        /// <param name="block">The block to place.</param>
+        /// <returns>The tetriswell including the placed block.</returns>
         public static string[,] PlaceBlockInWell(string[,] tetrisWell, Block block)
         {
             string[,] newWell = (string[,]) tetrisWell.Clone();
@@ -234,7 +242,9 @@ namespace TetrisClient
             return !willCollide;
         }
 
+        // A list filled with tetrominos.
         private static readonly List<Tetromino> BlockBag = new(Enum.GetValues(typeof(Tetromino)).Length);
+
         /// <summary>
         /// Get a random Tetromino shape from the BlockBag.
         /// </summary>
@@ -249,17 +259,17 @@ namespace TetrisClient
                 }
             }
             int i = BoardManager.randStatus.Next(BlockBag.Count);
-            Tetromino t = BlockBag[i];
+            Tetromino tetromino = BlockBag[i];
             BlockBag.RemoveAt(i);
 
-            return t;
+            return tetromino;
         }
 
         /// <summary>
         /// Get the shape Matrix of a given Tetromino.
         /// </summary>
         /// <param name="tetromino">The Tetromino to find the shape of.</param>
-        /// <returns>The shape Matrix the given Tetromino.</returns>
+        /// <returns>The shape Matrix of the given Tetromino.</returns>
         public static Matrix GetTetrominoShape(Tetromino tetromino)
         {
             return tetromino switch

@@ -20,8 +20,6 @@ namespace TetrisClient
 
         public Random RandomSeeded;
 
-        public Grid tetrisGrid;
-
         private int Seed;
 
         public BoardManager Bm { get; set; }
@@ -68,7 +66,7 @@ namespace TetrisClient
 
         private void ExitButton(object sender, RoutedEventArgs e)
         {
-           if (Bm != null)
+            if (Bm != null)
             {
                 Bm.EndGame();
             }
@@ -76,7 +74,7 @@ namespace TetrisClient
             {
                 _connection.DisposeAsync();
                 Player.RemovePlayer(MainPlayer);
-                Menu menu = new Menu();
+                Menu menu = new();
                 menu.Show();
 
                 Close();
@@ -103,12 +101,12 @@ namespace TetrisClient
                 .WithAutomaticReconnect()
                 .Build();
 
-                _connection.On<string>("RequestStatus", playerId =>
+                _ = _connection.On<string>("RequestStatus", playerId =>
                 {
                     _connection.InvokeAsync("SendRequestedStatus", playerId, MainPlayer.Name, MainPlayer.Ready);
                 });
 
-                _connection.On<string>("OnLeave", playerId =>
+                _ = _connection.On<string>("OnLeave", playerId =>
                 {
                     if (Bm == null)
                     {
@@ -121,7 +119,7 @@ namespace TetrisClient
                     }
                 });
 
-                _connection.On<object[]>("OnJoin", message =>
+                _ = _connection.On<object[]>("OnJoin", message =>
                 {
                     string playerId = (string) message[0];
                     int seed = (int) ((long) message[1] % int.MaxValue);
@@ -145,26 +143,27 @@ namespace TetrisClient
                     _connection.InvokeAsync("SendStatus", MainPlayer.Name, MainPlayer.Ready);
                 });
 
-                _connection.On<object[]>("ReceiveStatus", message =>
-                {
-                    string playerId = (string) message[0];
-                    string name = (string) message[1];
-                    bool ready = (bool) message[2];
-                    System.Diagnostics.Debug.WriteLine("Received ReceiveStatus: " + playerId);
+                _ = _connection.On<object[]>("ReceiveStatus", message =>
+                  {
+                      string playerId = (string) message[0];
+                      string name = (string) message[1];
+                      bool ready = (bool) message[2];
+                      System.Diagnostics.Debug.WriteLine("Received ReceiveStatus: " + playerId);
 
-                    Player p = Player.FindPlayer(playerId);
-                    p.Name = name;
-                    p.Ready = ready;
+                      Player p = Player.FindPlayer(playerId);
+                      p.Name = name;
+                      p.Ready = ready;
 
-                    Application.Current.Dispatcher.Invoke(delegate() {
-                        UpdatePlayersText();
-                    });
+                      Application.Current.Dispatcher.Invoke(delegate ()
+                      {
+                          UpdatePlayersText();
+                      });
 
-                    if (Player.AllReady())
-                    {
-                        InitGame();
-                    }
-                });
+                      if (Player.AllReady())
+                      {
+                          InitGame();
+                      }
+                  });
 
                 await _connection.StartAsync();
 
@@ -183,7 +182,6 @@ namespace TetrisClient
                     System.Diagnostics.Debug.WriteLine(_connection.State);
                     Status.Content = "Can't connect to given IP";
                 }
-
             }
             catch (Exception er)
             {
@@ -193,11 +191,11 @@ namespace TetrisClient
         }
 
         /// <summary>
-        /// Initializes the game by preparing the board and resetting variables.
+        /// Initializes the game by preparing the board, toggling fields and resetting variables.
         /// </summary>
         public void InitGame()
         {
-            Action action = () =>
+            void action()
             {
                 PrepareGrids();
 
@@ -210,136 +208,42 @@ namespace TetrisClient
                 PlayersText.Visibility = Visibility.Hidden;
                 GameSidebar.Visibility = Visibility.Visible;
                 NextBlockGrid.Visibility = Visibility.Visible;
-            };
+            }
             Dispatcher.Invoke(action);
         }
 
+        /// <summary>
+        /// Dynamically creates all extra grids and info blocks.
+        /// </summary>
         public void PrepareGrids()
         {
             int opponents = 0;
             foreach (Player p in Player.GetPlayers())
             {
-                if (p == MainPlayer)
+                if (p != MainPlayer)
                 {
-                    continue;
+                    p.PlayerGrid = InterfaceManager.CreateTetrisGrid(OpponentGrid, opponents, MainTetrisGrid.RowDefinitions.Count, MainTetrisGrid.ColumnDefinitions.Count);
+                    p.TetrisWell = new string[p.PlayerGrid.RowDefinitions.Count, p.PlayerGrid.ColumnDefinitions.Count];
+
+                    p.NameBlock = InterfaceManager.CreateInfoBlock(NameGrid, p.Name, opponents);
+                    p.ScoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "" + p.Score, opponents);
+
+                    opponents++;
                 }
-
-                tetrisGrid = new Grid
-                {
-                    Width = 250,
-                    Height = 500,
-                    Margin = new Thickness(275 * opponents, 0, 0, 0),
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Bottom,
-                    Background = (SolidColorBrush) Application.Current.TryFindResource("Background"),
-                };
-
-                for (int i = 0; i < 16; i++)
-                {
-                    ColumnDefinition gridCol = new();
-                    gridCol.Width = new GridLength(25);
-                    tetrisGrid.ColumnDefinitions.Add(gridCol);
-                }
-
-                for (int i = 0; i < 20; i++)
-                {
-                    RowDefinition gridRow = new RowDefinition();
-                    gridRow.Height = new GridLength(25);
-                    tetrisGrid.RowDefinitions.Add(gridRow);
-                }
-
-                tetrisGrid.Effect = new DropShadowEffect()
-                {
-                    BlurRadius = 10,
-                    Color = (Color) Application.Current.TryFindResource("TextColor"),
-                    ShadowDepth = 0,
-                    Opacity = 1
-                };
-
-                p.TetrisWell = new string[tetrisGrid.RowDefinitions.Count, tetrisGrid.ColumnDefinitions.Count];
-                OpponentGrid.Children.Add(tetrisGrid);
-                p.PlayerGrid = tetrisGrid;
-
-                TextBlock nameBlock = new()
-                {
-                    Width = 250,
-                    Height = 50,
-                    Margin = new Thickness(275 * opponents, 0, 0, 0),
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Bottom,
-                    Text = p.Name,
-                    FontWeight = FontWeights.Bold,
-                    FontFamily = (FontFamily) Application.Current.TryFindResource("MainFont"),
-                    FontSize = 30,
-                    Foreground = (SolidColorBrush) Application.Current.TryFindResource("Text"),
-                    TextAlignment = TextAlignment.Center,
-                };
-                NameGrid.Children.Add(nameBlock);
-                p.NameBlock = nameBlock;
-
-                TextBlock scoreBlock = new()
-                {
-                    Width = 250,
-                    Height = 50,
-                    Margin = new Thickness(275 * opponents, 0, 0, 0),
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Bottom,
-                    Text = "" + p.Score,
-                    FontWeight = FontWeights.Bold,
-                    FontFamily = (FontFamily) Application.Current.TryFindResource("MainFont"),
-                    FontSize = 30,
-                    Foreground = (SolidColorBrush) Application.Current.TryFindResource("Text"),
-                    TextAlignment = TextAlignment.Center,
-                };
-                ScoreGrid.Children.Add(scoreBlock);
-                p.ScoreBlock = scoreBlock;
-
-                opponents++;
             }
 
-            TextBlock mainNameBlock = new()
-            {
-                Width = 250,
-                Height = 50,
-                Margin = new Thickness(275 * opponents, 0, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Text = MainPlayer.Name,
-                FontWeight = FontWeights.Bold,
-                FontFamily = (FontFamily) Application.Current.TryFindResource("MainFont"),
-                FontSize = 30,
-                Foreground = (SolidColorBrush) Application.Current.TryFindResource("Text"),
-                TextAlignment = TextAlignment.Center,
-            };
-            NameGrid.Children.Add(mainNameBlock);
-            MainPlayer.NameBlock = mainNameBlock;
+            MainPlayer.NameBlock = InterfaceManager.CreateInfoBlock(NameGrid, MainPlayer.Name, opponents);
+            MainPlayer.ScoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "" + MainPlayer.Score, opponents);
 
-            TextBlock mainScoreBlock = new()
-            {
-                Width = 250,
-                Height = 50,
-                Margin = new Thickness(275 * opponents, 0, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Text = "" + MainPlayer.Score,
-                FontWeight = FontWeights.Bold,
-                FontFamily = (FontFamily) Application.Current.TryFindResource("MainFont"),
-                FontSize = 30,
-                Foreground = (SolidColorBrush) Application.Current.TryFindResource("Text"),
-                TextAlignment = TextAlignment.Center,
-            };
-            ScoreGrid.Children.Add(mainScoreBlock);
-            MainPlayer.ScoreBlock = mainScoreBlock;
-
-            Width = 25 + 275 * (opponents + 1) + 150;
+            Width = 25 + (275 * (opponents + 1)) + 150;
         }
 
         /// <summary>
-        /// Ends the game by clearing the board and resetting variables.
+        /// Ends the game and goes back to main menu.
         /// </summary>
         public void EndGame()
         {
-            Menu menu = new Menu();
+            Menu menu = new();
             menu.Show();
             Close();
         }
@@ -351,7 +255,10 @@ namespace TetrisClient
         /// <param name="KeyEventArgs">The Arguments that are sent with the KeyEvent.</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Bm == null) return;
+            if (Bm == null)
+            {
+                return;
+            }
             if (e.IsRepeat && Bm.BlockRepeat)
             {
                 return;
@@ -410,12 +317,14 @@ namespace TetrisClient
                         InitGame();
                         return;
                     }
-
                 default:
                     break;
             }
         }
 
+        /// <summary>
+        /// Updates all lobby text.
+        /// </summary>
         public void UpdatePlayersText()
         {
             string text = "";
@@ -429,7 +338,7 @@ namespace TetrisClient
         }
 
         /// <summary>
-        /// Updates all Text.
+        /// Updates all text.
         /// </summary>
         public void UpdateText()
         {
@@ -450,19 +359,22 @@ namespace TetrisClient
         }
 
         /// <summary>
-        /// Draws all Block Grids.
+        /// Draws all block grids.
         /// </summary>
         public void DrawGrids()
         {
+            // Send the game info to the server.
             _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score);
 
-            _connection.On<object[]>("ReceiveGameInfo", message =>
-            {
-                Player p = Player.FindPlayer((string) message[0]);
-                p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
-                p.Score = (long) message[2];
-            });
+            // Receive the game info of other players from the server.
+            _ = _connection.On<object[]>("ReceiveGameInfo", message =>
+              {
+                  Player p = Player.FindPlayer((string) message[0]);
+                  p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
+                  p.Score = (long) message[2];
+              });
 
+            // Draw the main well and blocks.
             MainTetrisGrid.Children.Clear();
             NextBlockGrid.Children.Clear();
             InterfaceManager.DrawWell(MainTetrisGrid, Bm.TetrisWell);
@@ -470,14 +382,10 @@ namespace TetrisClient
             InterfaceManager.DrawBlock(MainTetrisGrid, Bm.CurrentBlock, false, true);
             InterfaceManager.DrawBlock(NextBlockGrid, Bm.NextBlock, false, true);
 
+            // Draw the well and blocks of all other players. 
             foreach (Player p in Player.GetPlayers())
             {
-                if (p == MainPlayer)
-                {
-                    continue;
-                }
-
-                if (p.TetrisWell != null && p.PlayerGrid != null)
+                if (p != MainPlayer && p.TetrisWell != null && p.PlayerGrid != null)
                 {
                     p.PlayerGrid.Children.Clear();
                     InterfaceManager.DrawWell(p.PlayerGrid, p.TetrisWell);
