@@ -143,7 +143,7 @@ namespace TetrisClient
             InterfaceManager.DrawWell(TetrisGrid, Bm.TetrisWell);
             InterfaceManager.DrawBlock(TetrisGrid, Bm.GhostBlock, true, true);
             InterfaceManager.DrawBlock(TetrisGrid, Bm.CurrentBlock, false, true);
-            InterfaceManager.DrawBlock(NextBlockGrid, Bm.NextBlock, false, false);
+            InterfaceManager.DrawBlock(NextBlockGrid, Bm.NextBlock, false, true);
         }
     }
 }

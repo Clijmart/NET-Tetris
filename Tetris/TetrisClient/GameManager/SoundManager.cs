@@ -17,7 +17,6 @@ namespace TetrisClient
             Volume = 0.1;
             MusicPath = new(Environment.CurrentDirectory + "/Resources/Tetris_theme.wav", UriKind.Relative);
             MusicPlayer = new MediaPlayer();
-
         }
         public void PlayMusic()
         {

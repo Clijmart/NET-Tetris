@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TetrisClient"
         mc:Ignorable="d"
-        Title="Tetris" Height="550" Width="400"
+        Title="Tetris" Height="650" Width="450"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown">
-
-
-    <Grid x:Name="MainGrid" Background="LightGray" >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Name="TetrisGrid" Background="#f4f4f4" HorizontalAlignment="Left" Width="250">
+    <Grid x:Name="MainGrid">
+        <Grid.Background>
+            <ImageBrush ImageSource="../../Resources/Game_Background.jpg" Stretch="UniformToFill"/>
+        </Grid.Background>
+        <Grid Name="TetrisGrid" Background="{StaticResource Background}" HorizontalAlignment="Right" Width="250" Margin="0,0,150,50" Height="500" VerticalAlignment="Bottom">
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="10" Color="{StaticResource TextColor}" ShadowDepth="0"/>
+            </Grid.Effect>
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
@@ -51,7 +51,10 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <Grid Name="NextBlockGrid" Margin="265,10,0,0" Background="#f4f4f4" MinHeight="100" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100">
+        <Grid Name="NextBlockGrid" Margin="0,0,25,450" Background="{StaticResource Background}" MinHeight="100" MinWidth="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100">
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="10" Color="{StaticResource TextColor}" ShadowDepth="0"/>
+            </Grid.Effect>
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
@@ -65,14 +68,19 @@
                 <ColumnDefinition Width="25"/>
             </Grid.ColumnDefinitions>
         </Grid>
-        <TextBlock Name="Level" Margin="265,150,0,0" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D" Background="#FFF4F4F4"/>
-        <TextBlock Name="Lines" Margin="265,207,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
-        <TextBlock Name="Score" Margin="265,264,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
-        <TextBlock Name="Time" Margin="265,416,0,0" Background="#f4f4f4" MinHeight="30" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="#FF5D5D5D"/>
-        <Label Content="Level" HorizontalAlignment="Left" Margin="265,124,0,0" VerticalAlignment="Top" Height="26" Foreground="#FF5D5D5D"/>
-        <Label Content="Lines" HorizontalAlignment="Left" Margin="265,181,0,0" VerticalAlignment="Top" Height="26" Foreground="#FF5D5D5D"/>
-        <Label Content="Score" HorizontalAlignment="Left" Margin="265,0,0,0" VerticalAlignment="Center" Height="26" Foreground="#FF5D5D5D"/>
-        <Label Content="Time" HorizontalAlignment="Left" Margin="265,390,0,0" VerticalAlignment="Top" Height="26" Foreground="#FF5D5D5D"/>
-        <Button Content="Back to Menu" Click="ExitButton" HorizontalAlignment="Left" Margin="265,460,0,0" VerticalAlignment="Top" Width="100" Cursor="Hand" Background="#FF6EA2EE" BorderBrush="#FF2F7FDE"/>
+        <Button Content="&#xE112; Go Back" Click="ExitButton" HorizontalAlignment="Right" Margin="0,25,25,0" VerticalAlignment="Top" Height="25" Width="100" Background="{x:Null}" Cursor="Hand" Foreground="{StaticResource Text}" FontFamily="Segoe UI Symbol" FontSize="15" BorderBrush="{x:Null}" RenderTransformOrigin="0.687,0.565"/>
+        <Grid x:Name="GameSidebar" Background="{StaticResource Background}" Width="100" Height="320" Margin="0,0,25,50" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="10" Color="{StaticResource TextColor}" ShadowDepth="0"/>
+            </Grid.Effect>
+            <Label x:Name="LevelLabel" Content="Level" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="Level" Margin="0,30,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <Label x:Name="LinesLabel" Content="Lines" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="0,80,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="Lines" Margin="0,110,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <Label x:Name="ScoreLabel" Content="Score" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="0,160,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="Score" Margin="0,190,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <Label x:Name="TimeLabel" Content="Time" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="0,240,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="Time" Margin="0,270,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+        </Grid>
     </Grid>
 </Window>

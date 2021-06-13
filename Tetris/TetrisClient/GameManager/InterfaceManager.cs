@@ -14,7 +14,7 @@ namespace TetrisClient.GameManager
             {
                 for (int j = 0; j < well.GetLength(1); j++)
                 {
-                    DrawSquare(subGrid, well[i, j], null, j, i);
+                    DrawSquare(subGrid, well[i, j], j, i, false);
                 }
             }
         }
@@ -28,27 +28,32 @@ namespace TetrisClient.GameManager
                 {
                     if (shape[i, j] == 1)
                     {
-                        DrawSquare(subGrid, isGhost ? null : block.Color, isGhost ? block.Color : null, offset ? j + block.X : j, offset ? i + block.Y : i);
+                        DrawSquare(subGrid, block.Color, offset ? j + block.X : j, offset ? i + block.Y : i, isGhost);
                     }
                 }
             }
-        } 
+        }
 
-        public static void DrawSquare(Grid subGrid, string fill, string border, int x, int y)
+        public static void DrawSquare(Grid subGrid, string colorString, int x, int y, bool isHollow)
         {
-            Rectangle mainRectangle = CreateRectangle(fill, border);
+            if (colorString == null)
+            {
+                return;
+            }
+            Color color = (Color) ColorConverter.ConvertFromString(colorString);
+            Rectangle mainRectangle = CreateRectangle(color, isHollow);
             subGrid.Children.Add(mainRectangle);
             Grid.SetColumn(mainRectangle, x);
             Grid.SetRow(mainRectangle, y);
 
-            if (fill != null)
+            if (!isHollow)
             {
-                Polygon triangle = CreateTriangle(fill);
+                Polygon triangle = CreateTriangle(color);
                 subGrid.Children.Add(triangle);
                 Grid.SetColumn(triangle, x);
                 Grid.SetRow(triangle, y);
 
-                Rectangle innerRectangle = CreateInnerRectangle(fill);
+                Rectangle innerRectangle = CreateInnerRectangle(color);
                 subGrid.Children.Add(innerRectangle);
                 Grid.SetColumn(innerRectangle, x);
                 Grid.SetRow(innerRectangle, y);
@@ -61,53 +66,55 @@ namespace TetrisClient.GameManager
         /// <param name="fill">The color used to fill the Rectangle.</param>
         /// <param name="border">The color used for the border of the Rectangle.</param>
         /// <returns>A new Rectangle with the given colors.</returns>
-        public static Rectangle CreateRectangle(string fill, string border)
+        public static Rectangle CreateRectangle(Color color, bool isHollow)
         {
             Rectangle rectangle = new()
             {
                 Width = 25,
                 Height = 25,
-                Stroke = (SolidColorBrush) new BrushConverter().ConvertFrom(border ?? "#FFFFFFFF"),
-                StrokeThickness = fill == null && border != null ? 3 : 1,
-                Fill = fill == null ? null : (SolidColorBrush) new BrushConverter().ConvertFrom(fill),
             };
+
+            if (isHollow)
+            {
+                color = InterpolateColors(color, (Color) ColorConverter.ConvertFromString("#00FFFFFF"), 0.25f);
+                rectangle.Stroke = new SolidColorBrush(color);
+                rectangle.StrokeThickness = 2;
+            }
+            else
+            {
+                color = InterpolateColors(color, Brushes.White.Color, 0.25f);
+                
+                rectangle.Fill = new SolidColorBrush(color);
+            }
 
             return rectangle;
         }
 
-        public static Polygon CreateTriangle(string fill)
+        public static Polygon CreateTriangle(Color color)
         {
             Polygon triangle = new()
             {
-                Width = 23,
-                Height = 23,
+                Width = 25,
+                Height = 25,
             };
 
-            SolidColorBrush innerColor = (SolidColorBrush) new BrushConverter().ConvertFrom(fill);
-            innerColor.Color = InterpolateColors(innerColor.Color, Brushes.Black.Color, 0.25f);
-            triangle.Fill = innerColor;
+            triangle.Fill = new SolidColorBrush(InterpolateColors(color, Brushes.Black.Color, 0.25f));
             triangle.Points = new PointCollection
             {
-                new Point(1, 1), new Point(24, 24), new Point(1, 24)
+                new Point(0, 0), new Point(25, 25), new Point(0, 25)
             };
             
             return triangle;
         }
 
-        public static Rectangle CreateInnerRectangle(string fill)
+        public static Rectangle CreateInnerRectangle(Color color)
         {
             Rectangle rectangle = new()
             {
-                Width = 15,
-                Height = 15,
+                Width = 17,
+                Height = 17,
+                Fill = new SolidColorBrush(color),
             };
-
-            if (fill != null)
-            {
-                SolidColorBrush innerColor = (SolidColorBrush) new BrushConverter().ConvertFrom(fill);
-                innerColor.Color = InterpolateColors(innerColor.Color, Brushes.White.Color, 0.25f);
-                rectangle.Fill = innerColor;
-            }
 
             return rectangle;
         }

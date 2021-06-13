@@ -6,9 +6,9 @@ namespace TetrisServer.Hubs
 {
     public class TetrisHub : Hub
     {
-        public async Task Join(Guid PlayerID)
+        public async Task Join(object[] Message)
         {
-            await Clients.Others.SendAsync("Join", PlayerID);
+            await Clients.Others.SendAsync("Join", Message);
         }
 
         public async Task SendStatus(object[] Message)

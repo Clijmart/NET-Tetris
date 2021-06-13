@@ -48,6 +48,8 @@ namespace TetrisClient
         {
             CurrentBlock = new Block(this);
             NextBlock = new Block(this);
+            NextBlock.X = NextBlock.Shape.Value.GetLength(1) <= 2 ? 1 : 0;
+            NextBlock.Y = NextBlock.Shape.Value.GetLength(0) <= 2 ? 1 : 0;
 
             GhostBlock = CurrentBlock.CalculateGhost();
 
@@ -160,6 +162,8 @@ namespace TetrisClient
             GhostBlock = CurrentBlock.CalculateGhost();
             CurrentBlock.Bm.TetrisWell = TetrisWell;
             NextBlock = new Block(this);
+            NextBlock.X = NextBlock.Shape.Value.GetLength(1) < 3 ? 1 : 0;
+            NextBlock.Y = NextBlock.Shape.Value.GetLength(0) < 4 ? 1 : 0;
         }
 
         public async void InitSound()

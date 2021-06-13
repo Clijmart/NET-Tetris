@@ -331,14 +331,14 @@ namespace TetrisClient
         {
             return tetromino switch
             {
-                Tetromino.IBlock => "#78F0F0",
-                Tetromino.JBlock => "#7878F0",
-                Tetromino.LBlock => "#F0C878",
-                Tetromino.OBlock => "#F0F078",
-                Tetromino.SBlock => "#78F078",
-                Tetromino.ZBlock => "#F07878",
-                Tetromino.TBlock => "#C878F0",
-                _ => "#C878F0",
+                Tetromino.IBlock => "#00F0F0",
+                Tetromino.JBlock => "#0000F0",
+                Tetromino.LBlock => "#F0A000",
+                Tetromino.OBlock => "#F0F000",
+                Tetromino.SBlock => "#00F000",
+                Tetromino.TBlock => "#A000F0",
+                Tetromino.ZBlock => "#F00000",
+                _ => "#A0A0F0",
             };
         }
     }

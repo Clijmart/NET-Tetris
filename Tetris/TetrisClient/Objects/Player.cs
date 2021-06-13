@@ -10,6 +10,7 @@ namespace TetrisClient.Objects
         private static List<Player> Players = new List<Player>();
 
         public Guid PlayerID { get; set; }
+        public string Name { get; set; }
         public string[,] TetrisWell { get; set; }
         public long Score { get; set; }
         public int LinesCleared { get; set; }
