@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using TetrisClient.Managers;
 
 namespace TetrisClient
 {
@@ -63,8 +64,10 @@ namespace TetrisClient
             Timer = new(this);
             Timer.StartTimer();
             Running = true;
-
-            InitSound();
+            if (SettingManager.MusicOn)
+            {
+                InitSound();
+            }
         }
 
         /// <summary>
@@ -83,7 +86,11 @@ namespace TetrisClient
             if (PreviousLevel != Level)
             {
                 PreviousLevel = Level;
-                SoundManager.IncreaseSpeed();
+                if (SettingManager.MusicOn)
+                {
+                    SoundManager.IncreaseSpeed();
+
+                }
             }
         }
 
@@ -187,7 +194,11 @@ namespace TetrisClient
         {
             Running = false;
             Timer.StopTimer();
-            SoundManager.StopMusic();
+
+            if (SettingManager.MusicOn)
+            {
+                SoundManager.StopMusic();
+            }
 
             if (MainWindow != null)
             {

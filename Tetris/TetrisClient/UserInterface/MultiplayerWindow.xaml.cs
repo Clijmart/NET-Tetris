@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using TetrisClient.GameManager;
+using TetrisClient.Managers;
 using TetrisClient.Objects;
 
 namespace TetrisClient
@@ -28,6 +29,9 @@ namespace TetrisClient
         public MultiplayerWindow()
         {
             InitializeComponent();
+            ConnectionField.Text = SettingManager.StoredConnection;
+            NameField.Text = SettingManager.StoredName;
+
             ReadyUpButton.Visibility = Visibility.Hidden;
             PlayersText.Visibility = Visibility.Hidden;
 
@@ -85,6 +89,9 @@ namespace TetrisClient
             {
                 ConnectionField.Text = "127.0.0.1:5000";
             }
+            SettingManager.StoredName = NameField.Text;
+            SettingManager.StoredConnection = ConnectionField.Text;
+
             string url = "http://" + ConnectionField.Text + "/TetrisHub";
             System.Diagnostics.Debug.WriteLine(url);
 
@@ -132,6 +139,8 @@ namespace TetrisClient
                     {
                         UpdatePlayersText();
                     });
+
+                    SettingManager.StoredName = MainPlayer.Name;
 
                     _connection.InvokeAsync("SendStatus", MainPlayer.Name, MainPlayer.Ready);
                 });
@@ -227,7 +236,7 @@ namespace TetrisClient
 
                 for (int i = 0; i < 16; i++)
                 {
-                    ColumnDefinition gridCol = new ColumnDefinition();
+                    ColumnDefinition gridCol = new();
                     gridCol.Width = new GridLength(25);
                     tetrisGrid.ColumnDefinitions.Add(gridCol);
                 }
@@ -238,6 +247,15 @@ namespace TetrisClient
                     gridRow.Height = new GridLength(25);
                     tetrisGrid.RowDefinitions.Add(gridRow);
                 }
+
+                tetrisGrid.Effect = new DropShadowEffect()
+                {
+                    BlurRadius = 10,
+                    Color = (Color) Application.Current.TryFindResource("TextColor"),
+                    ShadowDepth = 0,
+                    Opacity = 1
+                };
+
                 p.TetrisWell = new string[tetrisGrid.RowDefinitions.Count, tetrisGrid.ColumnDefinitions.Count];
                 OpponentGrid.Children.Add(tetrisGrid);
                 p.PlayerGrid = tetrisGrid;

@@ -19,6 +19,7 @@
         <Button Content="Singleplayer"  Click="ButtonSinglePlayer" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.515,0.642" Height="42" Width="144" Margin="0,228,0,0" FontFamily="Lucida Sans" FontSize="14" Background="#FF68BEF0" BorderBrush="{x:Null}"  Cursor="Hand"/>
         <Label Content="or" Margin="0,274,0,0" HorizontalAlignment="Center" Width="22" Height="26" VerticalAlignment="Top" FontSize="14"/>
         <Button Content="Multiplayer" Click="ButtonMultiPlayer" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.515,0.642" Height="42" Width="144" Margin="0,306,0,0" FontFamily="Lucida Sans" FontSize="14" BorderBrush="{x:Null}" Background="#FF68BEF0" Cursor="Hand"/>
+        <ToggleButton x:Name="SoundButton" Content="🕨" Click="ButtonSound" HorizontalAlignment="Right" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="35" Width="35" Margin="0,0,15,15" FontSize="20" Cursor="Hand" Background="Transparent" BorderThickness="0" Focusable="False"></ToggleButton>
         <Label Content="TETRIS" HorizontalAlignment="Center" Margin="0,70,0,0" VerticalAlignment="Top" FontFamily="Lucida Sans" FontWeight="Bold" FontSize="72">
             <Label.Foreground>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
