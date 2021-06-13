@@ -18,11 +18,12 @@ namespace TetrisClient
         public Block(BoardManager bm)
         {
             Bm = bm;
-            X = ((bm.TetrisWell.GetUpperBound(1) - bm.TetrisWell.GetLowerBound(1)) / 2) - 1; // Center the Block
 
             Tetromino = BlockManager.GetRandomTetromino();
             Shape = BlockManager.GetTetrominoShape(Tetromino);
             Color = BlockManager.GetTetrominoColor(Tetromino);
+
+            X = ((bm.TetrisWell.GetUpperBound(1) - bm.TetrisWell.GetLowerBound(1)) / 2) - ((Shape.Value.GetLength(1) - 1) / 2); // Center the Block
         }
 
         /// <summary>

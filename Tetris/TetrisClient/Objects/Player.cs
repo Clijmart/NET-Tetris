@@ -9,7 +9,7 @@ namespace TetrisClient.Objects
     {
         private static List<Player> Players = new List<Player>();
 
-        public Guid PlayerID { get; set; }
+        public string PlayerId { get; set; }
         public string Name { get; set; }
         public string[,] TetrisWell { get; set; }
         public long Score { get; set; }
@@ -21,9 +21,9 @@ namespace TetrisClient.Objects
         public TextBlock ScoreBlock { get; set; }
         public bool Ready { get; set; }
 
-        public Player (Guid playerID)
+        public Player (string playerID)
         {
-            PlayerID = playerID;
+            PlayerId = playerID;
             Score = 0;
             LinesCleared = 0;
             Time = 0;
@@ -31,18 +31,18 @@ namespace TetrisClient.Objects
             Ready = false;
         }
 
-        public static Player FindPlayer(Guid playerID)
+        public static Player FindPlayer(string playerID)
         {
             foreach (Player player in Players)
             {
-                if (player.PlayerID == playerID)
+                if (player.PlayerId == playerID)
                 {
                     return player;
                 }
             }
             Player p = new(playerID);
             Players.Add(p);
-            Players = Players.OrderBy(x=>x.PlayerID).ToList();
+            Players = Players.OrderBy(x=>x.Name).ToList();
             return p;
         }
 
@@ -68,11 +68,9 @@ namespace TetrisClient.Objects
             return Players;
         }
 
-        public static List<Player> GetPlayersMinus(Player player)
+        public static void RemovePlayer(Player player)
         {
-            List<Player> newPlayers = Players;
-            newPlayers.Remove(player);
-            return newPlayers;
+            Players.Remove(player);
         }
     }
 }

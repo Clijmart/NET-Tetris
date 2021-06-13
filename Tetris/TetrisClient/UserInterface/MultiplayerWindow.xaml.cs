@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
-using System.Windows.Shapes;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using TetrisClient.GameManager;
 using TetrisClient.Objects;
 
@@ -35,14 +33,6 @@ namespace TetrisClient
 
             GameSidebar.Visibility = Visibility.Hidden;
             NextBlockGrid.Visibility = Visibility.Hidden;
-
-            MainPlayer = Player.FindPlayer(Guid.NewGuid());
-            MainPlayer.Name = NameField.Text;
-            if (MainPlayer.Name == "" || MainPlayer.Name == null)
-            {
-                MainPlayer.Name = "Player " + (Player.GetPlayers().IndexOf(MainPlayer) + 1);
-            }
-            UpdatePlayersText();
         }
 
         private void StartGame_OnClick(object sender, RoutedEventArgs e)
@@ -64,9 +54,7 @@ namespace TetrisClient
             ReadyUpButton.Background = (SolidColorBrush) new BrushConverter().ConvertFrom(MainPlayer.Ready ? "#FF2FCE7F" : "#FF2F7FDE");
             UpdatePlayersText();
 
-            // Het aanroepen van de TetrisHub.cs methode `ReadyUp`.
-            // Hier geven we de int mee die de methode `ReadyUp` verwacht.
-            _connection.InvokeAsync("SendStatus", new object[] { MainPlayer.PlayerID, MainPlayer.Name, MainPlayer.Ready, Seed });
+            _connection.InvokeAsync("SendStatus", MainPlayer.Name, MainPlayer.Ready);
 
             if (Player.AllReady())
             {
@@ -79,10 +67,11 @@ namespace TetrisClient
            if (Bm != null)
             {
                 Bm.EndGame();
-
             }
             else
             {
+                _connection.DisposeAsync();
+                Player.RemovePlayer(MainPlayer);
                 Menu menu = new Menu();
                 menu.Show();
 
@@ -107,43 +96,60 @@ namespace TetrisClient
                 .WithAutomaticReconnect()
                 .Build();
 
-                _connection.On<object[]>("Join", message =>
+                _connection.On<string>("RequestStatus", playerId =>
                 {
-                    Player p = Player.FindPlayer(Guid.Parse((string) message[0]));
-                    p.Name = (string) message[1];
-                    if (p.Name == "" || p.Name == null)
+                    _connection.InvokeAsync("SendRequestedStatus", playerId, MainPlayer.Name, MainPlayer.Ready);
+                });
+
+                _connection.On<string>("OnLeave", playerId =>
+                {
+                    if (Bm == null)
                     {
-                        p.Name = "Player " + (Player.GetPlayers().IndexOf(p) + 1);
+                        Player.RemovePlayer(Player.FindPlayer(playerId));
+
+                        Application.Current.Dispatcher.Invoke(delegate ()
+                        {
+                            UpdatePlayersText();
+                        });
                     }
+                });
+
+                _connection.On<object[]>("OnJoin", message =>
+                {
+                    string playerId = (string) message[0];
+                    int seed = (int) ((long) message[1] % int.MaxValue);
+                    int playerCount = (int) ((long) message[2] % int.MaxValue);
+
+                    MainPlayer = Player.FindPlayer(playerId);
+                    MainPlayer.Name = NameField.Text;
+                    if (MainPlayer.Name == "" || MainPlayer.Name == null)
+                    {
+                        MainPlayer.Name = "Player " + playerCount;
+                    }
+                    Seed = seed;
 
                     Application.Current.Dispatcher.Invoke(delegate ()
                     {
                         UpdatePlayersText();
                     });
 
-                    _connection.InvokeAsync("SendStatus", new object[] { MainPlayer.PlayerID, MainPlayer.Name, MainPlayer.Ready, Seed });
+                    _connection.InvokeAsync("SendStatus", MainPlayer.Name, MainPlayer.Ready);
                 });
 
-                _connection.On<object[]>("SendStatus", message =>
+                _connection.On<object[]>("ReceiveStatus", message =>
                 {
-                    Player p = Player.FindPlayer(Guid.Parse((string) message[0]));
-                    p.Name = (string) message[1];
-                    if (p.Name == "" || p.Name == null)
-                    {
-                        p.Name = "Player " + (Player.GetPlayers().IndexOf(p) + 1);
-                    }
+                    string playerId = (string) message[0];
+                    string name = (string) message[1];
+                    bool ready = (bool) message[2];
+                    System.Diagnostics.Debug.WriteLine("Received ReceiveStatus: " + playerId);
 
-                    p.Ready = (bool) message[2];
+                    Player p = Player.FindPlayer(playerId);
+                    p.Name = name;
+                    p.Ready = ready;
 
                     Application.Current.Dispatcher.Invoke(delegate() {
                         UpdatePlayersText();
                     });
-
-                    int seed = (int) ((long) message[3] % int.MaxValue);
-                    if (seed != 0)
-                    {
-                        Seed = seed;
-                    }
 
                     if (Player.AllReady())
                     {
@@ -151,15 +157,7 @@ namespace TetrisClient
                     }
                 });
 
-                // De eerste paramater moet gelijk zijn met de methodenaam in TetrisHub.cs
-                // Wat er tussen de <..> staat bepaald wat de type van de paramater `seed` is.
-                // Op deze manier loopt het onderstaande gelijk met de methode in TetrisHub.cs.
-
-
-                await Task.Run(async () => await _connection.StartAsync());
-                // Let op: het starten van de connectie moet *nadat* alle event listeners zijn gezet!
-                // Als de methode waarin dit voorkomt al `async` (asynchroon) is, dan kan `Task.Run` weggehaald worden.
-                // In het startersproject staat dit in de constructor, daarom is dit echter wel nodig:
+                await _connection.StartAsync();
 
                 if (_connection.State.Equals(HubConnectionState.Connected))
                 {
@@ -170,9 +168,6 @@ namespace TetrisClient
                     InputGrid.Visibility = Visibility.Hidden;
                     Status.Visibility = Visibility.Hidden;
                     ConnectButton.Visibility = Visibility.Hidden;
-
-                    MainPlayer.Name = NameField.Text;
-                    await _connection.InvokeAsync("Join", new object[] { MainPlayer.PlayerID, MainPlayer.Name });
                 }
                 else
                 {
@@ -213,8 +208,13 @@ namespace TetrisClient
         public void PrepareGrids()
         {
             int opponents = 0;
-            foreach (Player p in Player.GetPlayersMinus(MainPlayer))
+            foreach (Player p in Player.GetPlayers())
             {
+                if (p == MainPlayer)
+                {
+                    continue;
+                }
+
                 tetrisGrid = new Grid
                 {
                     Width = 250,
@@ -223,12 +223,6 @@ namespace TetrisClient
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Bottom,
                     Background = (SolidColorBrush) Application.Current.TryFindResource("Background"),
-                    Effect = new DropShadowEffect()
-                    {
-                        BlurRadius = 10,
-                        Color = (Color) Application.Current.TryFindResource("TextColor"),
-                        ShadowDepth = 0,
-                    }
                 };
 
                 for (int i = 0; i < 16; i++)
@@ -409,11 +403,6 @@ namespace TetrisClient
             string text = "";
             foreach (Player p in Player.GetPlayers())
             {
-                if (p.Name == "" || p.Name == null)
-                {
-                    p.Name = "Player " + (Player.GetPlayers().IndexOf(p) + 1);
-                }
-
                 text += p.Ready ? "✓ " : "✗ ";
                 text += p.Name;
                 text += "\n";
@@ -447,12 +436,12 @@ namespace TetrisClient
         /// </summary>
         public void DrawGrids()
         {
-            _connection.InvokeAsync<object[]>("UpdatePlayer", new object[] { MainPlayer.PlayerID, BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score });
+            _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score);
 
-            _connection.On<object[]>("UpdatePlayer", message =>
+            _connection.On<object[]>("ReceiveGameInfo", message =>
             {
-                Player p = Player.FindPlayer(Guid.Parse((string) message[0]));
-                p.TetrisWell = ((Newtonsoft.Json.Linq.JArray) message[1]).ToObject<string[,]>();
+                Player p = Player.FindPlayer((string) message[0]);
+                p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
                 p.Score = (long) message[2];
             });
 
@@ -463,8 +452,13 @@ namespace TetrisClient
             InterfaceManager.DrawBlock(MainTetrisGrid, Bm.CurrentBlock, false, true);
             InterfaceManager.DrawBlock(NextBlockGrid, Bm.NextBlock, false, true);
 
-            foreach (Player p in Player.GetPlayersMinus(MainPlayer))
+            foreach (Player p in Player.GetPlayers())
             {
+                if (p == MainPlayer)
+                {
+                    continue;
+                }
+
                 if (p.TetrisWell != null && p.PlayerGrid != null)
                 {
                     p.PlayerGrid.Children.Clear();

@@ -159,11 +159,13 @@ namespace TetrisClient
         public void SelectNextBlock()
         {
             CurrentBlock = NextBlock.Clone();
+            CurrentBlock.X = ((TetrisWell.GetUpperBound(1) - TetrisWell.GetLowerBound(1)) / 2) - ((CurrentBlock.Shape.Value.GetLength(1) - 1) / 2);
             GhostBlock = CurrentBlock.CalculateGhost();
             CurrentBlock.Bm.TetrisWell = TetrisWell;
             NextBlock = new Block(this);
             NextBlock.X = NextBlock.Shape.Value.GetLength(1) < 3 ? 1 : 0;
             NextBlock.Y = NextBlock.Shape.Value.GetLength(0) < 4 ? 1 : 0;
+
         }
 
         public async void InitSound()
