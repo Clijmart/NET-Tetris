@@ -31,6 +31,12 @@ namespace TetrisClient.Objects
             Ready = false;
         }
 
+        /// <summary>
+        /// Find a player with a given identifier.
+        /// If the player can not be found, create it.
+        /// </summary>
+        /// <param name="playerID">The player identifier to look for.</param>
+        /// <returns>The found or created player object.</returns>
         public static Player FindPlayer(string playerID)
         {
             foreach (Player player in Players)
@@ -46,6 +52,10 @@ namespace TetrisClient.Objects
             return p;
         }
 
+        /// <summary>
+        /// Checks if there's enough players and if they are all ready.
+        /// </summary>
+        /// <returns>Whether all players are ready.</returns>
         public static bool AllReady()
         {
             if (Players.Count < 2)
@@ -63,11 +73,19 @@ namespace TetrisClient.Objects
             return true;
         }
 
+        /// <summary>
+        /// Get all connected players.
+        /// </summary>
+        /// <returns>A list of players.</returns>
         public static List<Player> GetPlayers()
         {
             return Players;
         }
 
+        /// <summary>
+        /// Removes a player from the list.
+        /// </summary>
+        /// <param name="player">The player to remove.</param>
         public static void RemovePlayer(Player player)
         {
             Players.Remove(player);

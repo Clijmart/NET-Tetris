@@ -36,7 +36,7 @@ namespace TetrisClient
         {
             if (Speed <= 1.15)
             {
-                Speed = Speed + 0.03;
+                Speed += 0.03;
                 MusicPlayer.SpeedRatio = Speed;
             }
         }
@@ -50,7 +50,7 @@ namespace TetrisClient
     {
         public static void PlaySound()
         {
-            MediaPlayer mediaPlayer = new MediaPlayer();
+            MediaPlayer mediaPlayer = new();
             mediaPlayer.Open(new(Environment.CurrentDirectory + "/Resources/RotateBlock.wav", UriKind.Relative));
             mediaPlayer.Position = TimeSpan.Zero;
             mediaPlayer.Play();

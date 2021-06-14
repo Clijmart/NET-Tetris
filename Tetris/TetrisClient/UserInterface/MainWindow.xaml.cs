@@ -39,11 +39,17 @@ namespace TetrisClient
         public void EndGame()
         {
             MessageBox.Show("Game Over!");
-            Menu menu = new Menu();
+            Menu menu = new();
             menu.Show();
 
             Close();
         }
+
+        /// <summary>
+        /// Handles the exit button event.
+        /// </summary>
+        /// <param name="sender">The sender of the KeyEvent.</param>
+        /// <param name="e">The Arguments that are sent with the Event.</param>
         private void ExitButton(object sender, RoutedEventArgs e)
         {
             Bm.EndGame();
@@ -53,7 +59,7 @@ namespace TetrisClient
         /// Handles the KeyEvents sent by the player.
         /// </summary>
         /// <param name="sender">The sender of the KeyEvent.</param>
-        /// <param name="KeyEventArgs">The Arguments that are sent with the KeyEvent.</param>
+        /// <param name="e">The Arguments that are sent with the KeyEvent.</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.IsRepeat && Bm.BlockRepeat)

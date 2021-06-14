@@ -45,6 +45,9 @@ namespace TetrisClient
             InitBoardManager();
         }
 
+        /// <summary>
+        /// Initialize the board by creating blocks, starting a timer and preparing the first turn.
+        /// </summary>
         public void InitBoardManager()
         {
             // Create all needed blocks and move them to the correct positions.
@@ -83,6 +86,9 @@ namespace TetrisClient
             return Level;
         }
 
+        /// <summary>
+        /// Increases the music speed when you level up.
+        /// </summary>
         public void IncreaseSpeedWithLevel()
         {
             if (PreviousLevel != Level)
@@ -100,7 +106,7 @@ namespace TetrisClient
         /// </summary>
         /// <param name="linesfilled">The amount of lines to calculate the score for.</param>
         /// <param name="level">The current level.</param>
-        /// <returns>An integer with the calculated score.</returns>
+        /// <returns>The calculated score.</returns>
         public static int CalculateScore(int linesFilled, int level)
         {
             int s = 0;
