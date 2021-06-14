@@ -73,16 +73,20 @@ namespace TetrisClient
                 // Receive a leave notification from the server, so the player can be removed clientside too.
                 _ = _connection.On<string>("OnLeave", playerId =>
                 {
+                    Player p = Player.FindPlayer(playerId);
                     if (Bm == null)
                     {
-                        Player p = Player.FindPlayer(playerId);
-                        p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
                         Player.RemovePlayer(p);
 
                         Application.Current.Dispatcher.Invoke(delegate ()
                         {
                             UpdatePlayersText();
                         });
+                    }
+                    else
+                    {
+                        p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
+                        Player.RemovePlayer(p);
                     }
                 });
 
@@ -277,15 +281,18 @@ namespace TetrisClient
         /// </summary>
         public async void GoToMenu()
         {
-            Bm.Timer.StopTimer();
-            if (SettingManager.MusicOn)
+            if (Bm != null)
             {
-                Bm.SoundManager.StopMusic();
+                Bm.Timer.StopTimer();
+                if (SettingManager.MusicOn)
+                {
+                    Bm.SoundManager.StopMusic();
+                }
             }
+            Player.ClearPlayers();
 
             // Disconnect from the server.
             await _connection.DisposeAsync();
-            Player.ClearPlayers();
 
             Menu menu = new();
             menu.Show();
@@ -427,12 +434,19 @@ namespace TetrisClient
             // Receive the game info of other players from the server.
             _ = _connection.On<object[]>("ReceiveGameInfo", message =>
               {
-                  Player p = Player.FindPlayer((string) message[0]);
-                  p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
-                  p.Score = (long) message[2];
-                  p.LinesCleared = (int) ((long) message[3] % int.MaxValue);
-                  p.Time = (int) ((long) message[4] % int.MaxValue);
-                  p.Alive = (bool) message[5];
+                  try
+                  {
+                      Player p = Player.FindPlayer((string) message[0]);
+                      p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
+                      p.Score = (long) message[2];
+                      p.LinesCleared = (int) ((long) message[3] % int.MaxValue);
+                      p.Time = (int) ((long) message[4] % int.MaxValue);
+                      p.Alive = (bool) message[5];
+                  }
+                  catch (Exception e)
+                  {
+                      System.Diagnostics.Debug.Write(e);
+                  }
               });
 
             // Draw the main well and blocks.
