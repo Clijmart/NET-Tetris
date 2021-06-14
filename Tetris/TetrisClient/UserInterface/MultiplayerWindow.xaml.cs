@@ -72,8 +72,7 @@ namespace TetrisClient
             }
             else
             {
-                _connection.DisposeAsync();
-                Player.RemovePlayer(MainPlayer);
+                
                 Menu menu = new();
                 menu.Show();
 
@@ -243,6 +242,8 @@ namespace TetrisClient
         /// </summary>
         public void EndGame()
         {
+            _connection.DisposeAsync();
+            Player.RemovePlayer(MainPlayer);
             Menu menu = new();
             menu.Show();
             Close();
