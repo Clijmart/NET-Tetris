@@ -7,10 +7,10 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using TetrisClient.GameManager;
 using TetrisClient.Managers;
+using TetrisClient.UserInterface;
 
 namespace TetrisClient
 {
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -18,7 +18,7 @@ namespace TetrisClient
     {
         public BoardManager Bm { get; set; }
 
-        private TextBlock scoreBlock { get; set; }
+        private TextBlock ScoreBlock { get; set; }
 
         public MainWindow()
         {
@@ -41,7 +41,7 @@ namespace TetrisClient
 
         public void PrepareGrids()
         {
-            scoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "0", 0);
+            ScoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "0", 0);
         }
 
         /// <summary>
@@ -52,39 +52,13 @@ namespace TetrisClient
             Bm.Running = false;
             TetrisGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
 
-            ShowResults();
-        }
-
-        /// <summary>
-        /// Show game results.
-        /// </summary>
-        public void ShowResults()
-        {
             if (SettingManager.MusicOn)
             {
                 Bm.SoundManager.StopMusic();
             }
 
-            if (SettingManager.GameSoundsOn)
-            {
-                new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/GameOver.wav", UriKind.Relative).ToString()).Play();
-            }
-            MessageBox.Show(string.Format("Game ended with a score of {0}!", Bm.Score));
-        }
-
-        /// <summary>
-        /// Closes the game.
-        /// </summary>
-        public void CloseGame()
-        {
-            Bm.Timer.StopTimer();
-            if (SettingManager.MusicOn)
-            {
-                Bm.SoundManager.StopMusic();
-            }
-
-            Menu menu = new();
-            menu.Show();
+            ResultWindow results = new(-1, Bm.Score, Bm.CalculateLevel(), Bm.LinesCleared, Bm.Time);
+            results.Show();
             Close();
         }
 
@@ -95,11 +69,15 @@ namespace TetrisClient
         /// <param name="e">The Arguments that are sent with the Event.</param>
         private void ExitButton(object sender, RoutedEventArgs e)
         {
-            if (Bm.Running)
+            Bm.Timer.StopTimer();
+            if (SettingManager.MusicOn)
             {
-                EndGame();
+                Bm.SoundManager.StopMusic();
             }
-            CloseGame();
+
+            Menu menu = new();
+            menu.Show();
+            Close();
         }
 
         /// <summary>
@@ -184,7 +162,7 @@ namespace TetrisClient
         {
             Level.Text = "" + Bm.CalculateLevel();
             Lines.Text = "" + Bm.LinesCleared;
-            scoreBlock.Text = "" + Bm.Score;
+            ScoreBlock.Text = "" + Bm.Score;
 
             TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");

@@ -83,7 +83,6 @@ namespace TetrisClient
         public int CalculateLevel()
         {
             Level = LinesCleared / 10;
-            IncreaseSpeedWithLevel();
             return Level;
         }
 
@@ -168,6 +167,8 @@ namespace TetrisClient
             }
 
             Score += CalculateScore(rowsFilled, CalculateLevel());
+
+            IncreaseSpeedWithLevel();
 
             LinesCleared += rowsFilled;
             SelectNextBlock();

@@ -114,5 +114,13 @@ namespace TetrisClient.Objects
         {
             Players.Remove(player);
         }
+
+        /// <summary>
+        /// Clears the player list.
+        /// </summary>
+        public static void ClearPlayers()
+        {
+            Players = new List<Player>();
+        }
     }
 }

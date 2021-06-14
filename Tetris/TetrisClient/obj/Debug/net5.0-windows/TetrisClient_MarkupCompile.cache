@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET5_0;NETCOREAPP
 C:\Users\martc\VS Projects\practicum-5-net-2020-ex-gamechane-engineers\Tetris\TetrisClient\App.xaml
-3-945647561
+41068211323
 
-13-353350036
+14667104308
 210-469997135
-UserInterface\MainWindow.xaml;UserInterface\Menu.xaml;UserInterface\MultiplayerWindow.xaml;
+UserInterface\MainWindow.xaml;UserInterface\Menu.xaml;UserInterface\MultiplayerWindow.xaml;UserInterface\ResultWindow.xaml;
 resources\splashscreen.png
 False
 

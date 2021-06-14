@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using TetrisClient.GameManager;
 using TetrisClient.Managers;
 using TetrisClient.Objects;
+using TetrisClient.UserInterface;
 
 namespace TetrisClient
 {
@@ -74,7 +75,9 @@ namespace TetrisClient
                 {
                     if (Bm == null)
                     {
-                        Player.RemovePlayer(Player.FindPlayer(playerId));
+                        Player p = Player.FindPlayer(playerId);
+                        p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
+                        Player.RemovePlayer(p);
 
                         Application.Current.Dispatcher.Invoke(delegate ()
                         {
@@ -193,30 +196,6 @@ namespace TetrisClient
         }
 
         /// <summary>
-        /// Handles the exit button event.
-        /// </summary>
-        /// <param name="sender">The sender of the KeyEvent.</param>
-        /// <param name="e">The Arguments that are sent with the Event.</param>
-        private void ExitButton(object sender, RoutedEventArgs e)
-        {
-            if (Bm != null)
-            {
-                if (Bm.Running)
-                {
-                    EndGame();
-                }
-                CloseGame();
-            }
-            else
-            {
-                Menu menu = new();
-                menu.Show();
-
-                Close();
-            }
-        }
-
-        /// <summary>
         /// Initializes the game by preparing the board, toggling fields and resetting variables.
         /// </summary>
         public void InitGame()
@@ -273,47 +252,54 @@ namespace TetrisClient
             MainTetrisGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
             Bm.Running = false;
 
-            System.Diagnostics.Debug.WriteLine("EndGame");
-            // Send the game info to the server.
             _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
         }
 
-        /// <summary>
-        /// Show game results.
-        /// </summary>
-        public void ShowResults()
+        public async void GoToResults()
         {
-            if (SettingManager.MusicOn)
-            {
-                Bm.SoundManager.StopMusic();
-            }
-
-            if (SettingManager.GameSoundsOn)
-            {
-                new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/GameOver.wav", UriKind.Relative).ToString()).Play();
-            }
-            MessageBox.Show(string.Format("You placed #{0} with a score of {1}!", Player.GetPlacing(MainPlayer) + 1, MainPlayer.Score));
-        }
-
-        /// <summary>
-        /// Closes the game.
-        /// </summary>
-        public async void CloseGame()
-        {
-            // Disconnect from the server.
-            await _connection.DisposeAsync();
-
             Bm.Timer.StopTimer();
             if (SettingManager.MusicOn)
             {
                 Bm.SoundManager.StopMusic();
             }
 
-            Player.RemovePlayer(MainPlayer);
+            // Disconnect from the server.
+            await _connection.DisposeAsync();
+
+            ResultWindow results = new(Player.GetPlacing(MainPlayer), Bm.Score, Bm.CalculateLevel(), Bm.LinesCleared, Bm.Time);
+            results.Show();
+            Player.ClearPlayers();
+            Close();
+        }
+
+        /// <summary>
+        /// Closes the game.
+        /// </summary>
+        public async void GoToMenu()
+        {
+            Bm.Timer.StopTimer();
+            if (SettingManager.MusicOn)
+            {
+                Bm.SoundManager.StopMusic();
+            }
+
+            // Disconnect from the server.
+            await _connection.DisposeAsync();
+            Player.ClearPlayers();
 
             Menu menu = new();
             menu.Show();
             Close();
+        }
+
+        /// <summary>
+        /// Handles the exit button event.
+        /// </summary>
+        /// <param name="sender">The sender of the KeyEvent.</param>
+        /// <param name="e">The Arguments that are sent with the Event.</param>
+        private void ExitButton(object sender, RoutedEventArgs e)
+        {
+            GoToMenu();
         }
 
         /// <summary>
@@ -383,8 +369,7 @@ namespace TetrisClient
                     }
                 case Key.Escape:
                     {
-                        EndGame();
-                        CloseGame();
+                        GoToMenu();
                         return;
                     }
                 default:

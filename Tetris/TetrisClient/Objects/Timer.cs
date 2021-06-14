@@ -87,8 +87,7 @@ namespace TetrisClient
 
             if (Bm.MultiplayerWindow != null && Player.AllDead())
             {
-                Bm.MultiplayerWindow.ShowResults();
-                Bm.MultiplayerWindow.CloseGame();
+                Bm.MultiplayerWindow.GoToResults();
             }
         }
     }
