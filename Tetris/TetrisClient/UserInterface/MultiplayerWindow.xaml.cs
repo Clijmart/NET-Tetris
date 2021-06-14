@@ -141,6 +141,29 @@ namespace TetrisClient
                     }
                 });
 
+                // Receive the game info of other players from the server.
+                _ = _connection.On<object[]>("ReceiveGameInfo", message =>
+                {
+                    try
+                    {
+                        Player p = Player.FindPlayer((string) message[0]);
+                        p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
+                        p.Score = (long) message[2];
+                        p.LinesCleared = (int) ((long) message[3] % int.MaxValue);
+                        p.Time = (int) ((long) message[4] % int.MaxValue);
+                        p.Alive = (bool) message[5];
+
+                        Application.Current.Dispatcher.Invoke(delegate ()
+                        {
+                            DrawGrids();
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.Write(e);
+                    }
+                });
+
                 // Actually create the connection.
                 await _connection.StartAsync();
 
@@ -209,7 +232,7 @@ namespace TetrisClient
                 PrepareGrids();
 
                 Bm = new BoardManager(this);
-                DrawGrids();
+                UpdateGrid();
 
                 Focus();
 
@@ -334,7 +357,7 @@ namespace TetrisClient
                     {
                         if (Bm.CurrentBlock.MoveLeft())
                         {
-                            DrawGrids();
+                            UpdateGrid();
                         }
                         return;
                     }
@@ -342,7 +365,7 @@ namespace TetrisClient
                     {
                         if (Bm.CurrentBlock.MoveRight())
                         {
-                            DrawGrids();
+                            UpdateGrid();
                         }
                         return;
                     }
@@ -353,14 +376,14 @@ namespace TetrisClient
                             Bm.CurrentBlock.Place();
                         }
 
-                        DrawGrids();
+                        UpdateGrid();
                         return;
                     }
                 case Key.Up:
                     {
                         if (Bm.CurrentBlock.Rotate())
                         {
-                            DrawGrids();
+                            UpdateGrid();
                         }
                         return;
                     }
@@ -370,7 +393,7 @@ namespace TetrisClient
                         if (!Bm.CurrentBlock.MoveDown())
                         {
                             Bm.CurrentBlock.Place();
-                            DrawGrids();
+                            UpdateGrid();
                         }
                         return;
                     }
@@ -420,10 +443,7 @@ namespace TetrisClient
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
         }
 
-        /// <summary>
-        /// Draws all block grids.
-        /// </summary>
-        public void DrawGrids()
+        public void UpdateGrid()
         {
             // Send the game info to the server.
             if (Bm.Running)
@@ -431,24 +451,14 @@ namespace TetrisClient
                 _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
             }
 
-            // Receive the game info of other players from the server.
-            _ = _connection.On<object[]>("ReceiveGameInfo", message =>
-              {
-                  try
-                  {
-                      Player p = Player.FindPlayer((string) message[0]);
-                      p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
-                      p.Score = (long) message[2];
-                      p.LinesCleared = (int) ((long) message[3] % int.MaxValue);
-                      p.Time = (int) ((long) message[4] % int.MaxValue);
-                      p.Alive = (bool) message[5];
-                  }
-                  catch (Exception e)
-                  {
-                      System.Diagnostics.Debug.Write(e);
-                  }
-              });
+            DrawGrids();
+        }
 
+        /// <summary>
+        /// Draws all block grids.
+        /// </summary>
+        public void DrawGrids()
+        {
             // Draw the main well and blocks.
             MainTetrisGrid.Children.Clear();
             NextBlockGrid.Children.Clear();
