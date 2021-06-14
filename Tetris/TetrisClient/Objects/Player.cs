@@ -15,6 +15,7 @@ namespace TetrisClient.Objects
         public long Score { get; set; }
         public int LinesCleared { get; set; }
         public int Time { get; set; }
+        public bool Alive { get; set; }
 
         public Grid PlayerGrid { get; set; }
         public TextBlock NameBlock { get; set; }
@@ -27,6 +28,7 @@ namespace TetrisClient.Objects
             Score = 0;
             LinesCleared = 0;
             Time = 0;
+            Alive = true;
 
             Ready = false;
         }
@@ -52,6 +54,12 @@ namespace TetrisClient.Objects
             return p;
         }
 
+        public static int GetPlacing(Player player)
+        {
+            List<Player> playersSorted = Players.OrderByDescending(x => x.Score).ThenByDescending(x => x.LinesCleared).ThenByDescending(x => x.Time).ToList();
+            return playersSorted.IndexOf(player);
+        }
+
         /// <summary>
         /// Checks if there's enough players and if they are all ready.
         /// </summary>
@@ -66,6 +74,22 @@ namespace TetrisClient.Objects
             foreach (Player player in Players)
             {
                 if (!player.Ready)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Check if all players are dead.
+        /// </summary>
+        /// <returns>Whether all players are dead.</returns>
+        public static bool AllDead()
+        {
+            foreach (Player player in Players)
+            {
+                if (player.Alive)
                 {
                     return false;
                 }

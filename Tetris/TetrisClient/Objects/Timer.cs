@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using TetrisClient.Objects;
 
 namespace TetrisClient
 {
@@ -45,37 +46,49 @@ namespace TetrisClient
         /// <param name="EventArgs">The Arguments that are sent with the TimerTick.</param>
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (Bm.Running)
+            if (Bm.Running || !Player.AllDead())
             {
-                Bm.Time++;
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                if (Bm.Running)
                 {
+                    Bm.Time++;
+                }
+                _ = System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                  {
+                      if (Bm.Time % (10 - Math.Min(8, Bm.CalculateLevel() * 2)) == 0)
+                      {
+                          if (Bm.Running)
+                          {
+                              if (!Bm.CurrentBlock.MoveDown())
+                              {
+                                  Bm.CurrentBlock.Place();
+                              }
+                          }
 
-                if (Bm.Time % (10 - Math.Min(8, Bm.CalculateLevel() * 2)) == 0)
-                {
-                    if (!Bm.CurrentBlock.MoveDown())
-                    {
-                        Bm.CurrentBlock.Place();
-                    }
-                    if (Bm.MainWindow != null)
-                        {
-                            Bm.MainWindow.DrawGrids();
-                        }
-                    else
-                        {
-                            Bm.MultiplayerWindow.DrawGrids();
-                        }
-                    }
-                    if (Bm.MainWindow != null)
-                    {
-                        Bm.MainWindow.UpdateText();
-                    }
-                    else
-                    {
-                        Bm.MultiplayerWindow.UpdateText();
-                    }
-                }));
-                
+                          if (Bm.MainWindow != null)
+                          {
+                              Bm.MainWindow.DrawGrids();
+                          }
+                          else
+                          {
+                              Bm.MultiplayerWindow.DrawGrids();
+                          }
+                      }
+
+                      if (Bm.MainWindow != null)
+                      {
+                          Bm.MainWindow.UpdateText();
+                      }
+                      else
+                      {
+                          Bm.MultiplayerWindow.UpdateText();
+                      }
+                  }));
+            }
+
+            if (Bm.MultiplayerWindow != null && Player.AllDead())
+            {
+                Bm.MultiplayerWindow.ShowResults();
+                Bm.MultiplayerWindow.CloseGame();
             }
         }
     }

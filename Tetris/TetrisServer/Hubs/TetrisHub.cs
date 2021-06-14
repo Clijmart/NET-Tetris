@@ -57,9 +57,12 @@ namespace TetrisServer.Hubs
         /// </summary>
         /// <param name="tetrisWell">The tetris well of the client.</param>
         /// <param name="score">The score of the client.</param>
-        public async Task SendGameInfo(object[] tetrisWell, long score)
+        /// <param name="linesCleared">The amount of lines the client has cleared.</param>
+        /// <param name="time">The client time.</param>
+        /// <param name="alive">Whether the client is still alive.</param>
+        public async Task SendGameInfo(object[] tetrisWell, long score, int linesCleared, int time, bool alive)
         {
-            await Clients.Others.SendAsync("ReceiveGameInfo", new object[] { Context.ConnectionId, tetrisWell, score });
+            await Clients.Others.SendAsync("ReceiveGameInfo", new object[] { Context.ConnectionId, tetrisWell, score, linesCleared, time, alive });
         }
     }
 

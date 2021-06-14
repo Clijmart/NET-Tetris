@@ -27,7 +27,7 @@ namespace TetrisClient
 
         public bool BlockRepeat { get; set; }
 
-        private SoundManager SoundManager { get; set; }
+        public SoundManager SoundManager { get; set; }
 
         public BoardManager(MultiplayerWindow multiplayerWindow)
         {
@@ -202,14 +202,6 @@ namespace TetrisClient
         /// </summary>
         public void EndGame()
         {
-            Running = false;
-            Timer.StopTimer();
-
-            if (SettingManager.MusicOn)
-            {
-                SoundManager.StopMusic();
-            }
-
             if (MainWindow != null)
             {
                 MainWindow.EndGame();

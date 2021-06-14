@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using TetrisClient.GameManager;
+using TetrisClient.Managers;
 
 namespace TetrisClient
 {
@@ -14,6 +15,8 @@ namespace TetrisClient
     public partial class MainWindow : Window
     {
         public BoardManager Bm { get; set; }
+
+        private TextBlock scoreBlock { get; set; }
 
         public MainWindow()
         {
@@ -28,20 +31,39 @@ namespace TetrisClient
         /// </summary>
         public void InitGame()
         {
+            PrepareGrids();
             Bm = new BoardManager(this);
 
             DrawGrids();
         }
 
+        public void PrepareGrids()
+        {
+            scoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "0", 0);
+        }
+
         /// <summary>
-        /// Ends the game by clearing the board and resetting variables.
+        /// Ends the game.
         /// </summary>
         public void EndGame()
         {
-            MessageBox.Show("Game Over!");
+            Bm.Running = false;
+            MessageBox.Show(string.Format("Game ended with a score of {1}!", Bm.Score));
+        }
+
+        /// <summary>
+        /// Closes the game.
+        /// </summary>
+        public void CloseGame()
+        {
+            Bm.Timer.StopTimer();
+            if (SettingManager.MusicOn)
+            {
+                Bm.SoundManager.StopMusic();
+            }
+
             Menu menu = new();
             menu.Show();
-
             Close();
         }
 
@@ -52,7 +74,11 @@ namespace TetrisClient
         /// <param name="e">The Arguments that are sent with the Event.</param>
         private void ExitButton(object sender, RoutedEventArgs e)
         {
-            Bm.EndGame();
+            if (Bm.Running)
+            {
+                EndGame();
+            }
+            CloseGame();
         }
 
         /// <summary>
@@ -62,6 +88,11 @@ namespace TetrisClient
         /// <param name="e">The Arguments that are sent with the KeyEvent.</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (Bm == null || !Bm.Running)
+            {
+                return;
+            }
+
             if (e.IsRepeat && Bm.BlockRepeat)
             {
                 return;
@@ -130,9 +161,9 @@ namespace TetrisClient
         /// </summary>
         public void UpdateText()
         {
-            Level.Text = Bm.CalculateLevel().ToString();
-            Lines.Text = Bm.LinesCleared.ToString();
-            Score.Text = Bm.Score.ToString();
+            Level.Text = "" + Bm.CalculateLevel();
+            Lines.Text = "" + Bm.LinesCleared;
+            scoreBlock.Text = "" + Bm.Score;
 
             TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");

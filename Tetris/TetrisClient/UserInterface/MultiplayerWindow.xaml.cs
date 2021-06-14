@@ -200,7 +200,11 @@ namespace TetrisClient
         {
             if (Bm != null)
             {
-                Bm.EndGame();
+                if (Bm.Running)
+                {
+                    EndGame();
+                }
+                CloseGame();
             }
             else
             {
@@ -262,16 +266,36 @@ namespace TetrisClient
         /// <summary>
         /// Ends the game and goes back to main menu.
         /// </summary>
-        public async void EndGame()
+        public void EndGame()
+        {
+            MainPlayer.Alive = false;
+            Bm.Running = false;
+
+            // Send the game info to the server.
+            _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
+        }
+
+        public async void CloseGame()
         {
             // Disconnect from the server.
             await _connection.DisposeAsync();
 
+            Bm.Timer.StopTimer();
+            if (SettingManager.MusicOn)
+            {
+                Bm.SoundManager.StopMusic();
+            }
+
             Player.RemovePlayer(MainPlayer);
-            
+
             Menu menu = new();
             menu.Show();
             Close();
+        }
+
+        public void ShowResults()
+        {
+            MessageBox.Show(string.Format("You placed #{0} with a score of {1}!", Player.GetPlacing(MainPlayer) + 1, MainPlayer.Score));
         }
 
         /// <summary>
@@ -281,7 +305,7 @@ namespace TetrisClient
         /// <param name="e">The Arguments that are sent with the KeyEvent.</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Bm == null)
+            if (Bm == null || !Bm.Running)
             {
                 return;
             }
@@ -335,14 +359,14 @@ namespace TetrisClient
                         if (!Bm.CurrentBlock.MoveDown())
                         {
                             Bm.CurrentBlock.Place();
+                            DrawGrids();
                         }
-                        DrawGrids();
                         return;
                     }
                 case Key.Escape:
                     {
                         EndGame();
-                        InitGame();
+                        CloseGame();
                         return;
                     }
                 default:
@@ -379,8 +403,8 @@ namespace TetrisClient
                 }
             }
 
-            Level.Text = Bm.CalculateLevel().ToString();
-            Lines.Text = Bm.LinesCleared.ToString();
+            Level.Text = "" + Bm.CalculateLevel();
+            Lines.Text = "" + Bm.LinesCleared;
 
             TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
@@ -392,7 +416,7 @@ namespace TetrisClient
         public void DrawGrids()
         {
             // Send the game info to the server.
-            _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score);
+            _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
 
             // Receive the game info of other players from the server.
             _ = _connection.On<object[]>("ReceiveGameInfo", message =>
@@ -400,6 +424,9 @@ namespace TetrisClient
                   Player p = Player.FindPlayer((string) message[0]);
                   p.TetrisWell = ((JArray) message[1]).ToObject<string[,]>();
                   p.Score = (long) message[2];
+                  p.LinesCleared = (int) ((long) message[3] % int.MaxValue);
+                  p.Time = (int) ((long) message[4] % int.MaxValue);
+                  p.Alive = (bool) message[5];
               });
 
             // Draw the main well and blocks.
@@ -415,8 +442,16 @@ namespace TetrisClient
             {
                 if (p != MainPlayer && p.TetrisWell != null && p.PlayerGrid != null)
                 {
-                    p.PlayerGrid.Children.Clear();
-                    InterfaceManager.DrawWell(p.PlayerGrid, p.TetrisWell);
+                    if (p.Alive)
+                    {
+                        p.PlayerGrid.Children.Clear();
+                        InterfaceManager.DrawWell(p.PlayerGrid, p.TetrisWell);
+                    }
+                    else
+                    {
+                        p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
+                    }
+
                 }
             }
         }

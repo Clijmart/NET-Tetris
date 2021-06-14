@@ -7,6 +7,7 @@
         <SolidColorBrush x:Key="Text" Color="#FF2F7FDE"/>
         <SolidColorBrush x:Key="Background" Color="#FF1E1E1E"/>
         <SolidColorBrush x:Key="BackgroundLight" Color="#FF3E3E3E"/>
+        <SolidColorBrush x:Key="PlayerNotAlive" Color="#55FA0F0F"/>
         <Color x:Key="TextColor">#FF2F7FDE</Color>
         <Color x:Key="BackgroundColor">#FF1E1E1E</Color>
         <Color x:Key="BackgroundLightColor">#FF3E3E3E</Color>
