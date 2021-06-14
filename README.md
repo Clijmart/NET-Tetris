@@ -1,5 +1,5 @@
 # Practicum - 5 - .NET
-
+![alt text](https://github.com/huict/practicum-5-net-2020-ex-gamechane-engineers/blob/main/Tetris/TetrisClient/resources/SplashScreen.png)
 ## Controls
 ### Arrow keys
 
