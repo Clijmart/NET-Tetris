@@ -56,7 +56,7 @@ namespace TetrisClient.Objects
 
         public static int GetPlacing(Player player)
         {
-            List<Player> playersSorted = Players.OrderByDescending(x => x.Score).ThenByDescending(x => x.LinesCleared).ThenByDescending(x => x.Time).ToList();
+            List<Player> playersSorted = Players.OrderByDescending(x => x.Score).ThenByDescending(x => x.LinesCleared).ThenBy(x => x.Time).ToList();
             return playersSorted.IndexOf(player);
         }
 
