@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using TetrisClient.GameManager;
 using TetrisClient.Managers;
@@ -48,7 +50,26 @@ namespace TetrisClient
         public void EndGame()
         {
             Bm.Running = false;
-            MessageBox.Show(string.Format("Game ended with a score of {1}!", Bm.Score));
+            TetrisGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
+
+            ShowResults();
+        }
+
+        /// <summary>
+        /// Show game results.
+        /// </summary>
+        public void ShowResults()
+        {
+            if (SettingManager.MusicOn)
+            {
+                Bm.SoundManager.StopMusic();
+            }
+
+            if (SettingManager.GameSoundsOn)
+            {
+                new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/GameOver.wav", UriKind.Relative).ToString()).Play();
+            }
+            MessageBox.Show(string.Format("Game ended with a score of {0}!", Bm.Score));
         }
 
         /// <summary>

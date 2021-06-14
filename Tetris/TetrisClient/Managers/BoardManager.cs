@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
 using TetrisClient.Managers;
@@ -159,6 +160,11 @@ namespace TetrisClient
                     TetrisWell = newTetrisWell;
                     rowsFilled++;
                 }
+            }
+
+            if (rowsFilled > 0 && SettingManager.GameSoundsOn)
+            {
+                new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/RemoveLines.wav", UriKind.Relative).ToString()).Play();
             }
 
             Score += CalculateScore(rowsFilled, CalculateLevel());

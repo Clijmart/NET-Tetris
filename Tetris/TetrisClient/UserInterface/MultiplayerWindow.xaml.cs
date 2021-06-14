@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -269,12 +270,34 @@ namespace TetrisClient
         public void EndGame()
         {
             MainPlayer.Alive = false;
+            MainTetrisGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
             Bm.Running = false;
 
+            System.Diagnostics.Debug.WriteLine("EndGame");
             // Send the game info to the server.
             _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
         }
 
+        /// <summary>
+        /// Show game results.
+        /// </summary>
+        public void ShowResults()
+        {
+            if (SettingManager.MusicOn)
+            {
+                Bm.SoundManager.StopMusic();
+            }
+
+            if (SettingManager.GameSoundsOn)
+            {
+                new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/GameOver.wav", UriKind.Relative).ToString()).Play();
+            }
+            MessageBox.Show(string.Format("You placed #{0} with a score of {1}!", Player.GetPlacing(MainPlayer) + 1, MainPlayer.Score));
+        }
+
+        /// <summary>
+        /// Closes the game.
+        /// </summary>
         public async void CloseGame()
         {
             // Disconnect from the server.
@@ -291,11 +314,6 @@ namespace TetrisClient
             Menu menu = new();
             menu.Show();
             Close();
-        }
-
-        public void ShowResults()
-        {
-            MessageBox.Show(string.Format("You placed #{0} with a score of {1}!", Player.GetPlacing(MainPlayer) + 1, MainPlayer.Score));
         }
 
         /// <summary>
@@ -416,7 +434,10 @@ namespace TetrisClient
         public void DrawGrids()
         {
             // Send the game info to the server.
-            _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
+            if (Bm.Running)
+            {
+                _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
+            }
 
             // Receive the game info of other players from the server.
             _ = _connection.On<object[]>("ReceiveGameInfo", message =>
@@ -451,7 +472,6 @@ namespace TetrisClient
                     {
                         p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
                     }
-
                 }
             }
         }

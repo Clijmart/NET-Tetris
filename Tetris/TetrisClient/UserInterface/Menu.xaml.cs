@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Media;
+using System.Windows;
 using TetrisClient.Managers;
 
 namespace TetrisClient
@@ -9,7 +11,8 @@ namespace TetrisClient
         {
             InitializeComponent();
 
-            SoundButton.Content = SettingManager.MusicOn ? "🕪" : "🕨";
+            MusicButton.Content = SettingManager.MusicOn ? "🎜" : "𝄽";
+            SoundButton.Content = SettingManager.GameSoundsOn ? "🕪" : "🕨";
         }
 
         /// <summary>
@@ -45,13 +48,32 @@ namespace TetrisClient
         {
             if ((bool) SoundButton.IsChecked)
             {
-                SettingManager.MusicOn = true;
+                SettingManager.GameSoundsOn = true;
                 SoundButton.Content = "🕪";
             }
             else
             {
-                SettingManager.MusicOn = false;
+                SettingManager.GameSoundsOn = false;
                 SoundButton.Content = "🕨";
+            }
+        }
+
+        /// <summary>
+        /// Handles the Music Button key event.
+        /// </summary>
+        /// <param name="sender">The sender of the KeyEvent.</param>
+        /// <param name="e">The Arguments that are sent with the Event.</param>
+        private void ButtonMusic(object sender, RoutedEventArgs e)
+        {
+            if ((bool) MusicButton.IsChecked)
+            {
+                SettingManager.MusicOn = true;
+                MusicButton.Content = "🎜";
+            }
+            else
+            {
+                SettingManager.MusicOn = false;
+                MusicButton.Content = "𝄽";
             }
         }
     }

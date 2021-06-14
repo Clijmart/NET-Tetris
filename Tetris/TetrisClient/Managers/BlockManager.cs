@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Media;
+using TetrisClient.Managers;
 
 namespace TetrisClient
 {
@@ -111,6 +113,10 @@ namespace TetrisClient
             // If a solution was found, rotate the block.
             if (foundRotation)
             {
+                if (SettingManager.GameSoundsOn)
+                {
+                    new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/RotateBlock.wav", UriKind.Relative).ToString()).Play();
+                }
                 X = tempBlock.X;
                 Shape = tempBlock.Shape;
                 Bm.GhostBlock = CalculateGhost();
@@ -126,6 +132,10 @@ namespace TetrisClient
         {
             if (BlockManager.CanMove(Bm.TetrisWell, this))
             {
+                if (SettingManager.GameSoundsOn)
+                {
+                    new SoundPlayer(new Uri(Environment.CurrentDirectory + "/Resources/PlaceBlock.wav", UriKind.Relative).ToString()).Play();
+                }
                 Bm.TetrisWell = BlockManager.PlaceBlockInWell(Bm.TetrisWell, this);
                 Bm.NextTurn();
             }
