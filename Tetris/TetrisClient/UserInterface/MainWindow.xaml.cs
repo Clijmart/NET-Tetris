@@ -39,6 +39,9 @@ namespace TetrisClient
             DrawGrids();
         }
 
+        /// <summary>
+        /// Dynamically creates all extra grids and info blocks.
+        /// </summary>
         public void PrepareGrids()
         {
             ScoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "0", 0);

@@ -18,14 +18,13 @@ namespace TetrisClient.UserInterface
             {
                 PlacingBlock.Visibility = Visibility.Hidden;
             }
-            PlacingBlock.Text = "#" + (placing + 1);
+            PlacingBlock.Text = "You placed #" + (placing + 1);
 
-            ScoreBlock.Text = "Score: " + score;
-            LevelBlock.Text = "Level: " + (level + 1);
-            LinesClearedBlock.Text = "Lines: " + linesCleared;
+            ScoreBlock.Text = score.ToString();
+            LevelBlock.Text = (level + 1).ToString();
+            LinesBlock.Text = linesCleared.ToString();
 
-            TimeSpan timeSpan = new(0, 0, time / 10);
-            TimeBlock.Text = "Time: " + timeSpan.ToString(@"hh\:mm\:ss");
+            TimeBlock.Text = new TimeSpan(0, 0, time / 10).ToString(@"hh\:mm\:ss");
 
             if (SettingManager.GameSoundsOn)
             {
@@ -33,7 +32,12 @@ namespace TetrisClient.UserInterface
             }
         }
 
-        private void ButtonMenu(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Handles the Menu Button key event.
+        /// </summary>
+        /// <param name="sender">The sender of the Event.</param>
+        /// <param name="e">The Arguments that are sent with the Event.</param>
+        private void MenuButtonMethod(object sender, RoutedEventArgs e)
         {
             Menu menu = new();
             menu.Show();

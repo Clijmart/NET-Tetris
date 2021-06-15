@@ -20,6 +20,9 @@ namespace TetrisClient
             DispatcherTimer = new DispatcherTimer(DispatcherPriority.Send);
         }
 
+        /// <summary>
+        /// Starts the timer.
+        /// </summary>
         public async void StartTimer()
         {
             await Task.Run(() =>
@@ -33,6 +36,9 @@ namespace TetrisClient
             });
         }
 
+        /// <summary>
+        /// Stops the timer.
+        /// </summary>
         public void StopTimer()
         {
             DispatcherTimer.Stop();
@@ -46,23 +52,28 @@ namespace TetrisClient
         /// <param name="EventArgs">The Arguments that are sent with the TimerTick.</param>
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
+            // Checks if timer needs to do something
             if (Bm.Running || !Player.AllDead())
             {
                 if (Bm.Running)
                 {
                     Bm.Time++;
                 }
+
                 _ = System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
                   {
+                      // Depending on the levelspeed, updates the core game mechanics.
                       if (Bm.Time % (10 - Math.Min(8, Bm.CalculateLevel() * 2)) == 0)
                       {
                           if (Bm.Running)
                           {
+                              // Tries to move or place the current block.
                               if (!Bm.CurrentBlock.MoveDown())
                               {
                                   Bm.CurrentBlock.Place();
                               }
 
+                              // Updates and draws all main UI elements.
                               if (Bm.MainWindow != null)
                               {
                                   Bm.MainWindow.DrawGrids();
@@ -78,6 +89,7 @@ namespace TetrisClient
                   }));
             }
 
+            // Checks if the game should end.
             if (Bm.MultiplayerWindow != null && Player.AllDead())
             {
                 Bm.MultiplayerWindow.GoToResults();

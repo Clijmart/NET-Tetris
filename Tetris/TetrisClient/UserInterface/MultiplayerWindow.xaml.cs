@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Media;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -95,19 +92,12 @@ namespace TetrisClient
                 _ = _connection.On<object[]>("OnJoin", message =>
                 {
                     string playerId = (string) message[0];
-                    int seed = (int) ((long) message[1] % int.MaxValue);
+                    Seed = (int) ((long) message[1] % int.MaxValue);
                     int playerCount = (int) ((long) message[2] % int.MaxValue);
 
                     // Create the main player object.
                     MainPlayer = Player.FindPlayer(playerId);
-                    MainPlayer.Name = NameField.Text;
-                    if (MainPlayer.Name == "" || MainPlayer.Name == null)
-                    {
-                        MainPlayer.Name = "Player " + playerCount;
-                    }
-                    SettingManager.StoredName = MainPlayer.Name;
-
-                    Seed = seed;
+                    SettingManager.StoredName = MainPlayer.Name = NameField.Text is "" or null ? string.Format("Player {0}", playerCount) : NameField.Text;
 
                     Application.Current.Dispatcher.Invoke(delegate ()
                     {
@@ -204,12 +194,6 @@ namespace TetrisClient
                 return;
             }
 
-            if (Seed == 0)
-            {
-                Seed = new Random().Next();
-            }
-            RandomSeeded = new Random(Seed);
-
             MainPlayer.Ready = !MainPlayer.Ready;
 
             ReadyUpButton.Background = (SolidColorBrush) new BrushConverter().ConvertFrom(MainPlayer.Ready ? "#FF2FCE7F" : "#FF2F7FDE");
@@ -228,6 +212,8 @@ namespace TetrisClient
         /// </summary>
         public void InitGame()
         {
+            RandomSeeded = new Random(Seed);
+
             void action()
             {
                 PrepareGrids();
@@ -283,6 +269,9 @@ namespace TetrisClient
             _connection.InvokeAsync("SendGameInfo", BlockManager.PlaceBlockInWell(Bm.TetrisWell, Bm.CurrentBlock), Bm.Score, Bm.LinesCleared, Bm.Time, Bm.Running);
         }
 
+        /// <summary>
+        /// Goes to the Results window and closes the connection.
+        /// </summary>
         public async void GoToResults()
         {
             Bm.Timer.StopTimer();
@@ -301,7 +290,7 @@ namespace TetrisClient
         }
 
         /// <summary>
-        /// Closes the game.
+        /// Goes to the Menu window and closes the connection.
         /// </summary>
         public async void GoToMenu()
         {
@@ -340,16 +329,12 @@ namespace TetrisClient
         /// <param name="e">The Arguments that are sent with the KeyEvent.</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Bm == null || !Bm.Running)
+            // Make sure the key event does not work between blocks swaps.
+            if (Bm == null || !Bm.Running || (e.IsRepeat && Bm.BlockRepeat))
             {
                 return;
             }
 
-            // Make sure the key event does not work between blocks swaps.
-            if (e.IsRepeat && Bm.BlockRepeat)
-            {
-                return;
-            }
             Bm.BlockRepeat = false;
 
             switch (e.Key)
@@ -419,7 +404,7 @@ namespace TetrisClient
                           select player;
             foreach (Player p in players)
             {
-                PlayersText.Text += string.Format("{0} {1}\n", p.Ready ? "✓ " : "✗ ", p.Name);
+                PlayersText.Text += string.Format("{0} {1}\n", p.Ready ? "✓" : "✗", p.Name);
             }
         }
 
@@ -444,6 +429,9 @@ namespace TetrisClient
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
         }
 
+        /// <summary>
+        /// Updates the main grid.
+        /// </summary>
         public void UpdateGrid()
         {
             // Send the game info to the server.

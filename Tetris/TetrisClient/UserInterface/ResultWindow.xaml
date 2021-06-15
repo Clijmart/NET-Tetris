@@ -5,13 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TetrisClient.UserInterface"
         mc:Ignorable="d"
-        Title="ResultWindow" Height="550" Width="400">
-    <Grid RenderTransformOrigin="0.506,0.526">
-        <Button Content="Back to Menu" Click="ButtonMenu" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.515,0.642" Height="42" Width="144" Margin="0,306,0,0" FontFamily="Lucida Sans" FontSize="14" BorderBrush="{x:Null}" Background="#FF68BEF0" Cursor="Hand"/>
-        <TextBlock x:Name="ScoreBlock" Margin="0,50,0,0" TextAlignment="Center" MinHeight="50" MinWidth="200" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
-        <TextBlock x:Name="LevelBlock" Margin="0,100,0,0" TextAlignment="Center" MinHeight="50" MinWidth="200" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
-        <TextBlock x:Name="LinesClearedBlock" Margin="0,150,0,0" TextAlignment="Center" MinHeight="50" MinWidth="200" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
-        <TextBlock x:Name="TimeBlock" Margin="0,200,0,0" TextAlignment="Center" MinHeight="50" MinWidth="200" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
-        <TextBlock x:Name="PlacingBlock" Margin="0,250,0,0" TextAlignment="Center" MinHeight="50" MinWidth="200" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+        Title="Results" Height="550" Width="400">
+    <Grid x:Name="MainGrid">
+        <Grid.Background>
+            <ImageBrush ImageSource="../../Resources/Game_Background.jpg" Stretch="UniformToFill"/>
+        </Grid.Background>
+        <TextBlock x:Name="ScoreBlock" Margin="0,50,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Center" Width="250" Foreground="AntiqueWhite" FontFamily="{StaticResource MainFont}" FontSize="50">
+            <TextBlock.Effect>
+                <DropShadowEffect BlurRadius="20" Color="{StaticResource TextColor}" ShadowDepth="0"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <TextBlock x:Name="PlacingBlock" Margin="0,100,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Center" Width="250" Foreground="AntiqueWhite" FontFamily="{StaticResource MainFont}" FontSize="20">
+            <TextBlock.Effect>
+                <DropShadowEffect BlurRadius="8" Color="{StaticResource TextColor}" ShadowDepth="0"/>
+            </TextBlock.Effect>
+        </TextBlock>
+        <Grid x:Name="ResultBar" Background="{StaticResource Background}" Width="200" Height="240" Margin="0,150,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="10" Color="{StaticResource TextColor}" ShadowDepth="0"/>
+            </Grid.Effect>
+            <Label x:Name="LevelLabel" Content="Level" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="LevelBlock" Margin="0,30,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <Label x:Name="LinesLabel" Content="Lines" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="0,80,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="LinesBlock" Margin="0,110,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <Label x:Name="TimeLabel" Content="Time" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="0,160,0,0" VerticalAlignment="Top" Height="50" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <TextBlock x:Name="TimeBlock" Margin="0,190,0,0" TextAlignment="Center" MinHeight="50" MinWidth="100" VerticalAlignment="Top" HorizontalAlignment="Center" Width="100" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+        </Grid>
+        <Button Content="Back to Menu" Name="MenuButton" Click="MenuButtonMethod" Margin="0,0,0,50" HorizontalAlignment="Center" Width="150" Height="50" VerticalAlignment="Bottom" Background="{StaticResource Text}" Foreground="{StaticResource Background}" FontFamily="{StaticResource MainFont}" FontSize="20" BorderBrush="{x:Null}"/>
     </Grid>
 </Window>

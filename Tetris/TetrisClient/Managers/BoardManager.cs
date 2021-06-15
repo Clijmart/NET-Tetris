@@ -186,7 +186,6 @@ namespace TetrisClient
             NextBlock = new Block(this);
             NextBlock.X = NextBlock.Shape.Value.GetLength(1) < 3 ? 1 : 0;
             NextBlock.Y = NextBlock.Shape.Value.GetLength(0) < 4 ? 1 : 0;
-
         }
 
         /// <summary>

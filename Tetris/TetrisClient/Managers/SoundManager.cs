@@ -18,6 +18,10 @@ namespace TetrisClient
             MusicPath = new(Environment.CurrentDirectory + "/Resources/Tetris_theme.wav", UriKind.Relative);
             MusicPlayer = new MediaPlayer();
         }
+
+        /// <summary>
+        /// Plays the music.
+        /// </summary>
         public void PlayMusic()
         {
             MusicPlayer.Open(MusicPath);
@@ -26,12 +30,17 @@ namespace TetrisClient
             MusicPlayer.MediaEnded += new EventHandler(RestartMusic);
             MusicPlayer.Play();
 
+            // Restarts the music and plays it again.
             void RestartMusic(object sender, EventArgs e)
             {
                 MusicPlayer.Position = TimeSpan.Zero;
                 MusicPlayer.Play();
             }
         }
+
+        /// <summary>
+        /// Increases the music speed.
+        /// </summary>
         public void IncreaseSpeed()
         {
             if (Speed <= 1.15)
@@ -40,20 +49,13 @@ namespace TetrisClient
                 MusicPlayer.SpeedRatio = Speed;
             }
         }
+
+        /// <summary>
+        /// Stops the music.
+        /// </summary>
         public void StopMusic()
         {
             MusicPlayer.Stop();
-        }
-    }
-
-    public class GameSounds
-    {
-        public static void PlaySound()
-        {
-            MediaPlayer mediaPlayer = new();
-            mediaPlayer.Open(new(Environment.CurrentDirectory + "/Resources/RotateBlock.wav", UriKind.Relative));
-            mediaPlayer.Position = TimeSpan.Zero;
-            mediaPlayer.Play();
         }
     }
 }

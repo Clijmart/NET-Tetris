@@ -91,8 +91,8 @@
             </Grid>
 
             <Label Name="Status" Content="Waiting..." HorizontalContentAlignment="Center" Margin="0,210,0,0" VerticalAlignment="Top" Height="50" HorizontalAlignment="Left" Width="100" Foreground="{StaticResource Background}" FontFamily="{StaticResource MainFont}" FontSize="15"/>
-            <Button Content="Connect" Name="ConnectButton" Click="ConnectButtonMethod" Margin="0,240,0,0" Background="{StaticResource Text}" HorizontalAlignment="Left" Width="100" Height="50" VerticalAlignment="Top" Foreground="{StaticResource Background}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
-            <Button Content="Ready up!" Name="ReadyUpButton" Click="StartGame_OnClick" Margin="0,150,0,0" Background="{StaticResource Text}" HorizontalAlignment="Left" Width="100" Height="50" VerticalAlignment="Top" Foreground="{StaticResource Background}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
+            <Button Content="Connect" Name="ConnectButton" Click="ConnectButtonMethod" Margin="0,240,0,0" Background="{StaticResource Text}" HorizontalAlignment="Left" Width="100" Height="50" VerticalAlignment="Top" Foreground="{StaticResource Background}" FontFamily="{StaticResource MainFont}" FontSize="20" BorderBrush="{x:Null}"/>
+            <Button Content="Ready up!" Name="ReadyUpButton" Click="StartGame_OnClick" Margin="0,150,0,0" Background="{StaticResource Text}" HorizontalAlignment="Left" Width="100" Height="50" VerticalAlignment="Top" Foreground="{StaticResource Background}" FontFamily="{StaticResource MainFont}" FontSize="20" BorderBrush="{x:Null}"/>
         </Grid>
         <TextBlock x:Name="PlayersText" Background="{StaticResource Background}" Margin="0,0,150,50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="250" Height="500" Foreground="{StaticResource Text}" FontFamily="{StaticResource MainFont}" FontSize="20"/>
         <Grid x:Name="GameSidebar" Background="{StaticResource Background}" Width="100" Height="320" Margin="0,0,25,50" VerticalAlignment="Bottom" HorizontalAlignment="Right">
