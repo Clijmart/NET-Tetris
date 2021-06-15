@@ -173,6 +173,7 @@ namespace TetrisClient
                 {
                     System.Diagnostics.Debug.WriteLine(_connection.State);
                     Status.Content = "Can't connect!";
+                    ConnectButton.IsEnabled = true;
                 }
             }
             catch (Exception er)
