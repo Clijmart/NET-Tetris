@@ -39,25 +39,25 @@ namespace TetrisClient.Objects
         /// </summary>
         /// <param name="playerID">The player identifier to look for.</param>
         /// <returns>The found or created player object.</returns>
-        public static Player FindPlayer(string playerID)
+        public static Player FindPlayer(string playerId)
         {
-            foreach (Player player in Players)
+            Player player = Players.FirstOrDefault(player => player.PlayerId == playerId);
+            if (player == null)
             {
-                if (player.PlayerId == playerID)
-                {
-                    return player;
-                }
+                player = new(playerId);
+                Players.Add(player);
             }
-            Player p = new(playerID);
-            Players.Add(p);
-            Players = Players.OrderBy(x=>x.Name).ToList();
-            return p;
+            return player;
         }
 
+        /// <summary>
+        /// Gets the placing of the player by their score, cleared lines and time.
+        /// </summary>
+        /// <param name="player">The player to get the placing of.</param>
+        /// <returns>The placing of the player.</returns>
         public static int GetPlacing(Player player)
         {
-            List<Player> playersSorted = Players.OrderByDescending(x => x.Score).ThenByDescending(x => x.LinesCleared).ThenBy(x => x.Time).ToList();
-            return playersSorted.IndexOf(player);
+            return Players.OrderByDescending(x => x.Score).ThenByDescending(x => x.LinesCleared).ThenBy(x => x.Time).ToList().IndexOf(player);
         }
 
         /// <summary>
@@ -66,19 +66,7 @@ namespace TetrisClient.Objects
         /// <returns>Whether all players are ready.</returns>
         public static bool AllReady()
         {
-            if (Players.Count < 2)
-            {
-                return false;
-            }
-
-            foreach (Player player in Players)
-            {
-                if (!player.Ready)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return Players.Count >= 2 && !Players.Any(player => !player.Ready);
         }
 
         /// <summary>
@@ -87,14 +75,7 @@ namespace TetrisClient.Objects
         /// <returns>Whether all players are dead.</returns>
         public static bool AllDead()
         {
-            foreach (Player player in Players)
-            {
-                if (player.Alive)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return !Players.Any(player => player.Alive);
         }
 
         /// <summary>
@@ -103,7 +84,7 @@ namespace TetrisClient.Objects
         /// <returns>A list of players.</returns>
         public static List<Player> GetPlayers()
         {
-            return Players;
+            return Players.OrderBy(p => p.Name).ToList();
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
@@ -158,9 +159,9 @@ namespace TetrisClient
                             DrawGrids();
                         });
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        System.Diagnostics.Debug.Write(e);
+                        System.Diagnostics.Debug.Write("WARNING: Tried to update player after game has ended! Ignoring incoming data.");
                     }
                 });
 
@@ -250,18 +251,18 @@ namespace TetrisClient
         public void PrepareGrids()
         {
             int opponents = 0;
-            foreach (Player p in Player.GetPlayers())
+            var players = from player in Player.GetPlayers()
+                         where player != MainPlayer
+                         select player;
+            foreach (Player p in players)
             {
-                if (p != MainPlayer)
-                {
-                    p.PlayerGrid = InterfaceManager.CreateTetrisGrid(OpponentGrid, opponents, MainTetrisGrid.RowDefinitions.Count, MainTetrisGrid.ColumnDefinitions.Count);
-                    p.TetrisWell = new string[p.PlayerGrid.RowDefinitions.Count, p.PlayerGrid.ColumnDefinitions.Count];
+                p.PlayerGrid = InterfaceManager.CreateTetrisGrid(OpponentGrid, opponents, MainTetrisGrid.RowDefinitions.Count, MainTetrisGrid.ColumnDefinitions.Count);
+                p.TetrisWell = new string[p.PlayerGrid.RowDefinitions.Count, p.PlayerGrid.ColumnDefinitions.Count];
 
-                    p.NameBlock = InterfaceManager.CreateInfoBlock(NameGrid, p.Name, opponents);
-                    p.ScoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "" + p.Score, opponents);
+                p.NameBlock = InterfaceManager.CreateInfoBlock(NameGrid, p.Name, opponents);
+                p.ScoreBlock = InterfaceManager.CreateInfoBlock(ScoreGrid, "" + p.Score, opponents);
 
-                    opponents++;
-                }
+                opponents++;
             }
 
             MainPlayer.NameBlock = InterfaceManager.CreateInfoBlock(NameGrid, MainPlayer.Name, opponents);
@@ -412,14 +413,14 @@ namespace TetrisClient
         /// </summary>
         public void UpdatePlayersText()
         {
-            string text = "";
-            foreach (Player p in Player.GetPlayers())
+            PlayersText.Text = "";
+            var players = from player in Player.GetPlayers()
+                          orderby player.Name
+                          select player;
+            foreach (Player p in players)
             {
-                text += p.Ready ? "✓ " : "✗ ";
-                text += p.Name;
-                text += "\n";
+                PlayersText.Text += string.Format("{0} {1}\n", p.Ready ? "✓ " : "✗ ", p.Name);
             }
-            PlayersText.Text = text;
         }
 
         /// <summary>
@@ -428,16 +429,16 @@ namespace TetrisClient
         public void UpdateText()
         {
             MainPlayer.Score = Bm.Score;
-            foreach (Player p in Player.GetPlayers())
+            var players = from player in Player.GetPlayers()
+                          where player.ScoreBlock != null
+                          select player;
+            foreach (Player p in players)
             {
-                if (p.ScoreBlock != null)
-                {
-                    p.ScoreBlock.Text = "" + p.Score;
-                }
+                p.ScoreBlock.Text = p.Score.ToString();
             }
 
-            Level.Text = "" + Bm.CalculateLevel();
-            Lines.Text = "" + Bm.LinesCleared;
+            Level.Text = Bm.CalculateLevel().ToString();
+            Lines.Text = Bm.LinesCleared.ToString();
 
             TimeSpan timeSpan = new(0, 0, Bm.Time / 10);
             Time.Text = timeSpan.ToString(@"hh\:mm\:ss");
@@ -468,19 +469,21 @@ namespace TetrisClient
             InterfaceManager.DrawBlock(NextBlockGrid, Bm.NextBlock, false, true);
 
             // Draw the well and blocks of all other players. 
-            foreach (Player p in Player.GetPlayers())
+            var players = from player in Player.GetPlayers()
+                          where player != MainPlayer &&
+                          player.TetrisWell != null &&
+                          player.PlayerGrid != null
+                          select player;
+            foreach (Player p in players)
             {
-                if (p != MainPlayer && p.TetrisWell != null && p.PlayerGrid != null)
+                if (p.Alive)
                 {
-                    if (p.Alive)
-                    {
-                        p.PlayerGrid.Children.Clear();
-                        InterfaceManager.DrawWell(p.PlayerGrid, p.TetrisWell);
-                    }
-                    else
-                    {
-                        p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
-                    }
+                    p.PlayerGrid.Children.Clear();
+                    InterfaceManager.DrawWell(p.PlayerGrid, p.TetrisWell);
+                }
+                else
+                {
+                    p.PlayerGrid.Background = (SolidColorBrush) Application.Current.TryFindResource("PlayerNotAlive");
                 }
             }
         }
