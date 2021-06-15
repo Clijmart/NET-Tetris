@@ -33,6 +33,18 @@
     </ItemGroup>
     
     <ItemGroup>
+      <None Update="resources\GameOver.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="resources\PlaceBlock.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="resources\RemoveLines.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="resources\RotateBlock.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="Resources\Tetris_theme.wav">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
