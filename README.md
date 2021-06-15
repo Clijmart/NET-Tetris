@@ -31,7 +31,7 @@ After you have connected, you will see your name in a lobby. When other clients 
 If a locks their well, their grid will turn red. After dying however you can still spectate the other players.
 
 ## Results
-When all players have locked their well, the result page menu will show up.
+When all players have locked their well, the result menu will show up.
 Here you can see a simple recap of the game you just played, including your score, level and time.
 In multiplayer you can also see your final placing compared to the others, which is decided using score, lines cleared and time. So optimize your gameplay!
 
