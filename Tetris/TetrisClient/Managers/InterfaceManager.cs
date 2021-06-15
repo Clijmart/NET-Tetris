@@ -151,9 +151,16 @@ namespace TetrisClient.GameManager
             return rectangle;
         }
 
+        /***************************************************************************************
+        *    Title: Make Color Lighter?
+        *    Author: Unknown
+        *    Date: 2010
+        *    Code version: 1.0
+        *    Availability: https://social.msdn.microsoft.com/Forums/vstudio/26a68ffd-bd51-4a72-8eda-d1dcff556f1d
+        ***************************************************************************************/
         /// <summary>
-        /// Combines two colors.
-        /// Primarily used to darken or lighten a given color.
+        /// Combines two color by merging the ARGB of both colors, shifted by the percentage.
+        /// Primarily used in our program to darken or lighten a given color.
         /// </summary>
         /// <param name="color1">The first color.</param>
         /// <param name="color2">The second color.</param>
