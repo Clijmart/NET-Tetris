@@ -14,7 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Resources\Menu.png" />
       <None Remove="Resources\Game_Background.jpg" />
       <None Remove="Resources\SplashScreen.png" />
     </ItemGroup>
@@ -29,7 +28,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Resource Include="Resources\Menu.png" />
       <Resource Include="Resources\Game_Background.jpg" />
       <SplashScreen Include="Resources\SplashScreen.png" />
     </ItemGroup>
