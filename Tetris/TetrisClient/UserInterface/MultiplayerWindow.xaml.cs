@@ -44,6 +44,7 @@ namespace TetrisClient
         /// <param name="e">The Arguments that are sent with the Event.</param>
         private async void ConnectButtonMethod(object sender, RoutedEventArgs e)
         {
+            ConnectButton.IsEnabled = false;
             // Fill and store the contents of the input fields.
             if (ConnectionField.Text == "")
             {
@@ -178,6 +179,7 @@ namespace TetrisClient
             {
                 System.Diagnostics.Debug.WriteLine(er);
                 Status.Content = "Invalid IP!";
+                ConnectButton.IsEnabled = true;
             }
         }
 
